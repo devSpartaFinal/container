@@ -1,0 +1,45 @@
+.line {
+  text-align: left;
+  border-bottom: 7px solid #505050;
+}
+
+/* 하이라이트 효과 */
+@keyframes highlightPulse {
+0% {
+  background-color: #fb4759;
+}
+50% {
+  background-color: #ffff5ddb;
+}
+100% {
+  background-color: #fb4759;
+}
+}
+
+.highlight-effect {
+animation: highlightPulse 1.5s infinite; /* 1.5초 간격으로 반복 */
+}
+
+.riddle-size {
+width: auto;
+height: 150px;
+margin-top: 5%;
+margin-left: 2%;
+margin-right: 2%;
+position: relative; /* 가상 요소의 위치 조정을 위해 부모 요소를 기준으로 설정 */
+}
+
+.riddle-size2 {
+width: auto;
+height: 130px;
+margin-left: -2%;
+margin-top: -1%;
+position: relative; /* 가상 요소의 위치 조정을 위해 부모 요소를 기준으로 설정 */
+}
+
+.image-size {
+width: 150px;
+height: auto;
+margin-top: 10%;
+}
+

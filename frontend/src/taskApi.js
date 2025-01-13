@@ -1,4 +1,4 @@
-import apiRequest from './apiRequest';
+import { apiRequest }  from './apiRequest';
 
 
 export const signup = async () => {

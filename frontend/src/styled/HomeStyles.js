@@ -6,9 +6,8 @@ export const StyledOuterContainer = styled.div`
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 20px;
-    width: 80vw;  
-    height: 85vh;  
+    width: 100%;  
+    height: 100%;  
     margin: 0 auto;
     background: #ffffff;  
     border-radius: 15px;
@@ -18,4 +17,3 @@ export const StyledOuterContainer = styled.div`
     box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.15);
     position: absolute;
 `;
-

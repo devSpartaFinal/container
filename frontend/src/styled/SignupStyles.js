@@ -14,6 +14,8 @@ export const Container = styled.div`
     left: 50%; /* 화면의 가로 중앙 */
     transform: translate(-50%, -50%); /* 정확히 중앙에 맞추기 위해서 */
     position: absolute;
+    // max-height: 900px;
+    // overflow-y: auto;
 `;
 
 export const Title = styled.h1`
@@ -57,7 +59,7 @@ export const Input = styled.input`
 export const Button = styled.button`
     padding: 10px;
     font-size: 1rem;
-    background-color: #eeeeee;
+    background-color: #fb4759;
     color: white;
     border: none;
     border-radius: 5px;
@@ -66,11 +68,40 @@ export const Button = styled.button`
     margin-bottom: 20px;
 
     &:hover {
-        background-color: #fb4759;
+        background-color: #fd6779;
         color: white;
     }
 
     &:active {
         transform: scale(0.98);
     }
+`;
+
+export const Select = styled.select`
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+`;
+
+export const TextArea = styled.textarea`
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    resize: none;
+`;
+
+export const FieldContainerRow = styled.div`
+    display: flex;
+    gap: 20px; /* 두 필드 사이의 간격 */
+    justify-content: space-between;
+`;
+
+export const FieldContainerCol = styled.div`
+    flex: 1; /* 동일한 너비로 나눔 */
+    display: flex;
+    flex-direction: column;
 `;

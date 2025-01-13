@@ -8,6 +8,11 @@ RUN yarn install
 
 RUN yarn add react-icons
 
+# FontAwesome 관련 패키지 설치
+RUN npm install @fortawesome/fontawesome-svg-core \
+    @fortawesome/free-solid-svg-icons \
+    @fortawesome/react-fontawesome
+
 COPY . .
 
 EXPOSE 3000

@@ -1,63 +1,144 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import {
+  AiFillHome,
+  AiOutlineMessage,
+  AiOutlineRobot,
+  AiOutlineLogin,
+  AiOutlineUserAdd,
+  AiOutlineUser,
+  AiOutlineLogout,
+} from "react-icons/ai";
 import styled from "styled-components";
-import { AiFillHome, AiOutlineUser, AiOutlineLogin, AiOutlineLogout, AiOutlineUserAdd, AiOutlineMessage } from "react-icons/ai";
+import { apiRequest } from "../apiRequest";
 
+const Navigation = ({ isLoggedIn }) => {
+  const location = useLocation();
+  const isActive = (url) => location.pathname === url;
+  const [activeButton, setActiveButton] = useState("");
+  const [highlightLoginButton, setHighlightLoginButton] = useState(false);
+  useEffect(() => {
+    const currentPath = window.location.pathname;
+    if (currentPath === "/home") setActiveButton("home");
+    else if (currentPath === "/login") setActiveButton("login");
+    else if (currentPath === "/signup") setActiveButton("signup");
+    else if (currentPath === "/profile") setActiveButton("profile");
+    else if (currentPath === "/riddle") setActiveButton("riddle");
+    else if (currentPath === "/read") setActiveButton("read");
+    else if (currentPath === "/logout") handleLogout();
+  }, []);
 
-const Navigation = ({ isLoggedIn }) => {  
-
-  const handleLogout = () => {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("username");
-
+  const handleLogout = async () => {
+    document.cookie = "accessToken=; path=/; max-age=0; SameSite=Lax";
+    document.cookie = "access=; path=/; max-age=0; SameSite=Lax";
+    document.cookie = "username=; path=/; max-age=0; SameSite=Lax";
+    document.cookie = "refresh=; path=/; max-age=0; SameSite=Lax";
     window.location.href = "/login";
+  };
+
+  const handleClick = (buttonName) => {
+    setActiveButton(buttonName);
+
+    if (
+      !isLoggedIn &&
+      (buttonName === "home" ||
+        buttonName === "read" ||
+        buttonName === "riddle")
+    ) {
+      setHighlightLoginButton(true);
+    }
   };
 
   return (
     <Nav>
-      <ButtonContainer>
-        <a href="/">
+      <ButtonContainer
+        data-tooltip="Read Riddle Home"
+        active={isActive("/home")}
+        onClick={() => handleClick("home")}
+      >
+        <a href={isLoggedIn ? "/home" : "/#"}>
           <AiFillHome size="70%" title="Home" />
         </a>
       </ButtonContainer>
-      
+
+      <ButtonContainer
+        data-tooltip={
+          isLoggedIn
+            ? "퀴즈를 풀기 전 궁금증을 해소할 수 있는 Read 공간"
+            : "로그인이 필요한 서비스입니다"
+        }
+        active={isActive("/read")}
+        onClick={() => handleClick("read")}
+      >
+        <a href={isLoggedIn ? "/read" : "/#"}>
+          <AiOutlineMessage size="70%" title="Read" />
+        </a>
+      </ButtonContainer>
+
+      <ButtonContainer
+        data-tooltip={
+          isLoggedIn
+            ? "배운 지식을 확인해 볼 수 있는 퀴즈 Riddle 공간"
+            : "로그인이 필요한 서비스입니다"
+        }
+        active={isActive("/riddle")}
+        onClick={() => handleClick("riddle")}
+      >
+        <a href={isLoggedIn ? "/riddle" : "/#"}>
+          <AiOutlineRobot size="70%" title="Riddle" />
+        </a>
+      </ButtonContainer>
+
       {!isLoggedIn && (
-        <ButtonContainer>
-          <a href="/login">
-            <AiOutlineLogin size="70%" title="Login" />
-          </a>
-        </ButtonContainer>
-      )}
-      
-      {!isLoggedIn && (
-        <ButtonContainer>
-          <a href="/signup">
-            <AiOutlineUserAdd size="70%" title="Sign Up" />
-          </a>
-        </ButtonContainer>
-      )}
-      
-      {isLoggedIn && (
-        <ButtonContainer>
-          <a href="/profile">
-            <AiOutlineUser size="70%" title="Profile" />
-          </a>
-        </ButtonContainer>
+        <>
+          <ButtonContainer
+            data-tooltip="회원가입"
+            active={isActive("/signup")}
+            onClick={() => handleClick("signup")}
+          >
+            <a href="/signup">
+              <AiOutlineUserAdd size="70%" title="Sign Up" />
+            </a>
+          </ButtonContainer>
+          <ButtonContainer
+            data-tooltip="로그인"
+            active={isActive("/login") || highlightLoginButton}
+            onClick={() => handleClick("login")}
+            className={highlightLoginButton ? "highlight-effect" : ""}
+            // style={{
+            //   backgroundColor: highlightLoginButton ? "#FFEB3B" : "",
+            //   transition: "background-color 0.3s ease",
+            // }}
+          >
+            <a href="/login">
+              <AiOutlineLogin size="70%" title="Login" />
+            </a>
+          </ButtonContainer>
+        </>
       )}
 
       {isLoggedIn && (
-        <ButtonContainer>
-          <a href="/chats">
-            <AiOutlineMessage size="70%" title="Chats" />
-          </a>
-        </ButtonContainer>
-      )}
-      
-      {isLoggedIn && (
-        <ButtonContainer>
-          <a href="#" onClick={handleLogout}>
-            <AiOutlineLogout size="70%" title="Logout" />
-          </a>
-        </ButtonContainer>
+        <>
+          <ButtonContainer
+            data-tooltip="사용자 프로필"
+            active={isActive("/profile")}
+            onClick={() => handleClick("profile")}
+          >
+            <a href="/profile">
+              <AiOutlineUser size="70%" title="Profile" />
+            </a>
+          </ButtonContainer>
+
+          <ButtonContainer
+            data-tooltip="로그아웃"
+            active={isActive("/logout")}
+            onClick={() => handleClick("logout")}
+          >
+            <a href="/logout">
+              <AiOutlineLogout size="70%" title="Logout" />
+            </a>
+          </ButtonContainer>
+        </>
       )}
     </Nav>
   );
@@ -65,26 +146,24 @@ const Navigation = ({ isLoggedIn }) => {
 
 const Nav = styled.nav`
   display: flex;
-  flex-direction: column; 
+  flex-direction: column;
   align-items: center;
-  justify-content: center; 
-  width: 11em;
-  height: 77.1vh; 
+  justify-content: center;
+  width: 6em;
+  height: 88%;
   padding: 6vh 5px;
   background: #fb4759;
-  position: fixed; /* 화면 왼쪽에 고정 */
+  position: fixed;
   top: 0;
   left: 0;
-  border-radius: 15px 0px 0px 15px;
-  box-shadow: 5px 0px 15px rgba(0, 0, 0, 0.2);
+  // border-radius: 15px 0 0 15px;
+  box-shadow: 5px 0 15px rgba(0, 0, 0, 0.2);
   z-index: 1000;
 
-  @media (max-width: 900px) {
-    display: none; 
+  @media (max-width: 1200px) {
+    display: none;
   }
 `;
-
-
 
 const ButtonContainer = styled.div`
   display: flex;
@@ -92,11 +171,11 @@ const ButtonContainer = styled.div`
   align-items: center;
   width: 4rem;
   height: 4rem;
-  background: ${({ active }) => (active ? "#3f3f3f" : "transparent")};
+  background: ${({ active }) => (active ? "#1c1c1c" : "transparent")};
   border-radius: 50%;
   cursor: pointer;
   transition: all 0.3s ease-in-out;
-  margin-bottom: 1rem; /* 버튼 간격 */
+  margin-bottom: 1rem;
 
   a {
     display: flex;
@@ -114,12 +193,35 @@ const ButtonContainer = styled.div`
   }
 
   &:active {
+    background: #1c1c1c;
     transform: scale(0.95);
   }
 
   @media (max-width: 820px) {
-    margin-bottom: 0; /* 반응형에서는 버튼 간격 제거 */
-    margin-right: 1rem; /* 가로 정렬 시 버튼 간격 */
+    margin-bottom: 0;
+    margin-right: 1rem;
+  }
+
+  &:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 4.5rem; /* 버튼 옆으로 표시 */
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.3);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    opacity: 1;
+    transition: opacity 0.3s ease-in-out;
+  }
+
+  &:hover::after {
+    opacity: 1;
+    visibility: visible;
   }
 `;
 

@@ -1,54 +1,39 @@
 import React, { useState, useEffect } from "react";
-import { Container, Title, Form, Input, Button, Label, FieldContainer } from "../styled/SignupStyles";
-import apiRequest from "../apiRequest";
+import {
+    Container,
+    Title,
+    Form,
+    Input,
+    Button,
+    Label,
+    FieldContainer,
+    Select,
+    TextArea,
+    FieldContainerRow,
+    FieldContainerCol,
+} from "../styled/SignupStyles";
+import { useNavigate } from "react-router-dom";
+import { apiRequest }  from "../apiRequest";
+import { useAuth } from "../context/AuthContext";
 
 const UpdateProfile = () => {
+    const { user, setUser, loading } = useAuth(); 
+    const navigate = useNavigate();
+
     const [formData, setFormData] = useState({
-        username: "",
-        password: "",
-        nickname: "",
-        birth_date: "",
-        email: "",
-        first_name: "",
-        last_name: "",
+        id : user.id,
+        username: user.username,
+        nickname: user.nickname,
+        birth_date: user.birth_date,
+        email: user.email,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        gender: user.gender,
+        intro: user.intro,
     });
 
     const [error, setError] = useState([]); 
     const [success, setSuccess] = useState(false);
-
-    useEffect(() => {
-        const loadUserData = () => {
-            const userID = localStorage.getItem("username");
-            const accessToken = localStorage.getItem("accessToken");
-
-            if (userID && accessToken) {
-                apiRequest
-                    .get(`${userID}`, {
-                        headers: {
-                            Authorization: `Bearer ${accessToken}`,
-                        },
-                    })
-                    .then((response) => {
-                        const userData = response.data;
-                        setFormData({
-                            username: userData.username,
-                            nickname: userData.nickname,
-                            birth_date: userData.birth_date,
-                            email: userData.email,
-                            first_name: userData.first_name,
-                            last_name: userData.last_name,
-                        });
-                    })
-                    .catch((err) => {
-                        console.error("Error loading user data:", err);
-                        setError(["사용자 정보를 불러오는데 실패했습니다."]);
-                    });
-            }
-        };
-
-        loadUserData();
-    }, []);
-
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({
@@ -57,58 +42,21 @@ const UpdateProfile = () => {
         });
     };
 
-    const validatePassword = (password) => {
-        const passwordErrors = [];
-        
-        if (password && password.length < 8) {
-            passwordErrors.push("비밀번호는 최소 8자 이상이어야 합니다.");
-        }
-        if (password && !/[A-Z]/.test(password)) {
-            passwordErrors.push("비밀번호는 최소한 하나의 대문자를 포함해야 합니다.");
-        }
-        if (password && !/[a-z]/.test(password)) {
-            passwordErrors.push("비밀번호는 최소한 하나의 소문자를 포함해야 합니다.");
-        }
-        if (password && !/[0-9]/.test(password)) {
-            passwordErrors.push("비밀번호는 최소한 하나의 숫자를 포함해야 합니다.");
-        }
-        if (password && !/[!@#$%^&*(),.?\":{}|<>]/.test(password)) {
-            passwordErrors.push("비밀번호는 최소한 하나의 특수문자를 포함해야 합니다.");
-        }
-    
-        return passwordErrors;
-    };
-    
-
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
-        const passwordErrors = validatePassword(formData.password);
-        if (passwordErrors.length > 0) {
-            setError(passwordErrors);
-            return;
-        }
-    
         try {
-            const userID = localStorage.getItem("username");
-            const accessToken = localStorage.getItem("accessToken");
-    
-            const response = await apiRequest.put(`${userID}`, formData, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                },
-            });
-    
-            console.log("Profile Update Success:", response.data);
+            await apiRequest.put(`${user.username}`, formData);
     
             setSuccess(true);
-            setError([]); 
+            alert("회원 정보가 성공적으로 수정되었습니다!");
+            navigate("/profile");
         } catch (err) {
             console.error("Profile Update Error:", err);
-            setError(["회원 정보 업데이트에 실패했습니다. 다시 시도해주세요."]);
+            // 서버 응답에서 에러 메시지 추출
+            const serverError = err.response?.data?.detail || "회원정보 업데이트에 실패했습니다.";
+            setError([serverError]); // 서버에서 받은 에러 메시지를 상태로 설정
         }
     };
-    
 
     return (
         <Container>
@@ -125,31 +73,6 @@ const UpdateProfile = () => {
                         onChange={handleChange}
                         placeholder="Enter your ID"
                     />
-                </FieldContainer>
-
-                {/* Password */}
-                <FieldContainer>
-                    <Label htmlFor="password">Password</Label>
-                    <Input
-                        type="password"
-                        id="password"
-                        name="password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        placeholder="Enter your new password"
-                    />
-                    <div>
-                        {error && error.length > 0 && (
-                            <p style={{ color: "red" }}>
-                                {error.map((err, index) => (
-                                    <span key={index}>
-                                        {err}
-                                        <br />
-                                    </span>
-                                ))}
-                            </p>
-                        )}
-                    </div>
                 </FieldContainer>
 
                 {/* Nickname */}
@@ -190,8 +113,10 @@ const UpdateProfile = () => {
                     />
                 </FieldContainer>
 
-                {/* First Name */}
-                <FieldContainer>
+                {/* First Name & Last Name */}
+                <FieldContainerRow>
+                    {/* First Name */}
+                    <FieldContainerCol>
                     <Label htmlFor="first_name">First Name</Label>
                     <Input
                         type="text"
@@ -200,11 +125,12 @@ const UpdateProfile = () => {
                         value={formData.first_name}
                         onChange={handleChange}
                         placeholder="Enter your first name"
+                        required
                     />
-                </FieldContainer>
-
-                {/* Last Name */}
-                <FieldContainer>
+                    </FieldContainerCol>
+        
+                    {/* Last Name */}
+                    <FieldContainerCol>
                     <Label htmlFor="last_name">Last Name</Label>
                     <Input
                         type="text"
@@ -213,13 +139,55 @@ const UpdateProfile = () => {
                         value={formData.last_name}
                         onChange={handleChange}
                         placeholder="Enter your last name"
+                        required
+                    />
+                    </FieldContainerCol>
+                </FieldContainerRow>
+                
+                {/* Gender */}
+                <FieldContainer>
+                    <Label htmlFor="gender">Gender</Label>
+                    <Select
+                    id="gender"
+                    name="gender"
+                    value={formData.gender}
+                    onChange={handleChange}
+                    required
+                    >
+                    <option value="">Select your gender</option>
+                    <option value="M">Male</option>
+                    <option value="F">Female</option>
+                    <option value="O">Other</option>
+                    </Select>
+                </FieldContainer>
+        
+                {/* Intro */}
+                <FieldContainer>
+                    <Label htmlFor="intro">Introduction</Label>
+                    <TextArea
+                    id="intro"
+                    name="intro"
+                    value={formData.intro}
+                    onChange={handleChange}
+                    placeholder=""
+                    rows="4"
                     />
                 </FieldContainer>
-
                 {/* Submit Button */}
                 <Button type="submit">회원 정보 수정 완료</Button>
             </Form>
-
+            <div>
+                {error && error.length > 0 && (
+                    <p style={{ color: "red" }}>
+                        {error.map((err, index) => (
+                            <span key={index}>
+                                {err}
+                                <br />
+                            </span>
+                        ))}
+                    </p>
+                )}
+            </div>
             {/* Success or Error Message */}
             {success && <p>회원 정보가 성공적으로 수정되었습니다!</p>}
         </Container>

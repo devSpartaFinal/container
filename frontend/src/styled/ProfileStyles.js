@@ -79,7 +79,7 @@ export const ButtonContainer = styled.div`
 
 export const ActionButton = styled.button`
   padding: 0.75rem 1.5rem;
-  background-color: ${({ color }) => color || "#fb6d7a"};
+  background-color: ${({ color }) => color || "#fb4759"};
   color: white;
   border: none;
   border-radius: 5px;
@@ -88,7 +88,7 @@ export const ActionButton = styled.button`
   transition: background-color 0.3s;
 
   &:hover {
-    background-color: ${({ hoverColor }) => hoverColor || "#ea3a53"};
+    background-color: ${({ hoverColor }) => hoverColor || "#fd6779"};
   }
 
   &:active {

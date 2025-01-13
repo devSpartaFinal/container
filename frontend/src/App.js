@@ -3,37 +3,82 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./components/Home";
 import About from "./components/About";
 import ChatScreen from "./components/ChatScreen";
+import SetRiddle from "./components/SetRiddle";
 import SignUp from "./components/Signup";
 import Login from "./components/Login";
 import UpdateProfile from "./components/UserUpdate";
+import ChangePassword from "./components/ChangePassword";
 import Profile from "./components/Profile";
+import Riddle from "./components/Riddle";
 import { Background } from "./styled/ChatHomeStyles";
 import Navigation from "./components/Navigation";
 import { StyledOuterContainer } from "./styled/HomeStyles";
 import { AuthProvider } from "./context/AuthContext";
+import AfterEmail from "./components/AfterEmail";
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("accessToken"));
 
-  useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    setIsLoggedIn(!!token);
-  }, []); 
+  const getCookie = (name) => {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+    };
+    const [isLoggedIn, setIsLoggedIn] = useState(null);
+
+    useEffect(() => {
+      const token = getCookie("accessToken");
+      setIsLoggedIn(!!token); // 토큰이 있으면 true, 없으면 false
+    }, []);
+    
+    // useEffect(() => {
+    //   if (window.location.pathname !== '/after_email') {
+    //     const token = getCookie("access");
+    //     setIsLoggedIn(!!token);
+    //   }
+    // }, []); 
 
   return (
     <>
       <Router>
         <Background />
         <StyledOuterContainer>
+        
           <Navigation isLoggedIn={isLoggedIn} />
           <Routes>
+            <Route path="/after_email" element={<AfterEmail />} />
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
+
             <Route
-              path="/chats"
+              path="/home"
+              element={
+                <AuthProvider>
+                  <Home />
+                </AuthProvider>
+              }
+            />
+            <Route
+              path="/read"
               element={
                 <AuthProvider>
                   <ChatScreen />
+                </AuthProvider>
+              }
+            />
+
+            <Route
+              path="/riddle"
+              element={
+                <AuthProvider>
+                  <SetRiddle />
+                </AuthProvider>
+              }
+            />
+            <Route
+              path="/riddle/test"
+              element={
+                <AuthProvider>
+                  <Riddle />
                 </AuthProvider>
               }
             />
@@ -44,6 +89,14 @@ function App() {
               element={
                 <AuthProvider>
                   <UpdateProfile />
+                </AuthProvider>
+              }
+            />
+            <Route
+              path="/change_password"
+              element={
+                <AuthProvider>
+                  <ChangePassword />
                 </AuthProvider>
               }
             />
