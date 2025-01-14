@@ -48,7 +48,7 @@ const SetRiddle = () => {
   const [selectedQuestions, setSelectedQuestions] = useState([]);
   const [quizCount, setQuizCount] = useState(10);
   const [quizDifficulty, setQuizDifficulty] = useState("easy");
-  const [quizType, setQuizType] = useState("4지선다");
+  const [quizType, setQuizType] = useState("4_multiple_choice");
   const [isLoading, setIsLoading] = useState(false);
   const [summaryLoading, setSummaryLoading] = useState(false);
   const navigate = useNavigate();
