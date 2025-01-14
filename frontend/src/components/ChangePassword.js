@@ -37,7 +37,7 @@ const UpdateProfile = () => {
     const validatePassword = (new_password) => {
         const passwordErrors = [];
         
-        if (new_password.length == 0) {
+        if (new_password.length === 0) {
             passwordErrors.push("새로운 비밀번호를 입력해주세요.");
         }
         if (new_password && new_password.length < 8) {

@@ -470,7 +470,7 @@ const Riddle = () => {
       <DropdownRowContainer>
         <DropdownButton onClick={toggle1Dropdown}>
           {selectedCategory || "Category"}
-          <ArrowIcon isOpen={isDropdownOpen1}>
+          <ArrowIcon isOpen={isDropdownOpen1} style={{ paddingRight: '0%'}}>
             <AiOutlineDown />
           </ArrowIcon>
         </DropdownButton>
@@ -626,7 +626,7 @@ const Riddle = () => {
       {showModal && (
         <ModalContainer>
           <ModalContent>
-            <h2>📝 채점결과</h2>
+            <h2 style={{color: "black"}}>📝 채점결과</h2>
             <p
               style={{
                 whiteSpace: "pre-wrap",
@@ -634,6 +634,7 @@ const Riddle = () => {
                 maxHeight: "300px",
                 overflowY: "auto",
                 padding: "10px",
+                color: "black",
               }}
             >
               {feedbackContent}

@@ -27,15 +27,8 @@ function App() {
 
     useEffect(() => {
       const token = getCookie("accessToken");
-      setIsLoggedIn(!!token); // 토큰이 있으면 true, 없으면 false
+      setIsLoggedIn(!!token); 
     }, []);
-    
-    // useEffect(() => {
-    //   if (window.location.pathname !== '/after_email') {
-    //     const token = getCookie("access");
-    //     setIsLoggedIn(!!token);
-    //   }
-    // }, []); 
 
   return (
     <>

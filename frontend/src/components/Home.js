@@ -24,15 +24,15 @@ const Home = () => {
       {/* <Header> */}
       <div>
       <img className="phoneImage" alt="title" src={logo} 
-      style={{ width: '90%', minWidth: '900px', height: '90%', margin: '0 auto', marginLeft: '8%', top: '-100px'}}
+      style={{ width: '90%', minWidth: '900px', height: '90%', margin: '0 auto', marginLeft: '12%'}}
       />
       </div>
       <Content>
         <ButtonGroup>
           <ButtonHalf onClick={() => handleButtonClick("/read")}>
-            <div style={{ marginBottom: '-15%'}}>
+            <div style={{ marginBottom: '-20%'}}>
             <img className="phoneImage" alt="title" src={readLogo} 
-            style={{ width: '70%', height: '80%', marginLeft: '15%', margin: '0 auto', marginTop: '10%', objectFit: 'contain'}}
+            style={{ width: '70%', height: '80%', marginLeft: '-40%', margin: '0 auto', marginTop: '5%', objectFit: 'contain'}}
             />
             </div>
             <ButtonDescription style={{ color: "#D7567F"}}>
@@ -45,9 +45,9 @@ const Home = () => {
             </ButtonDescription>
           </ButtonHalf>
           <ButtonHalf onClick={() => handleButtonClick("/riddle")}>
-          <div style={{ marginBottom: '-15%'}}>
+          <div style={{ marginBottom: '-20%'}}>
             <img className="phoneImage" alt="title" src={riddleLogo} 
-           style={{ width: '70%', height: '80%', marginLeft: '15%', margin: '0 auto', marginTop: '10%', objectFit: 'contain'}}
+           style={{ width: '70%', height: '80%', marginLeft: '-45%', margin: '0 auto', marginTop: '5%', objectFit: 'contain'}}
            />
             </div>
             <ButtonDescription>

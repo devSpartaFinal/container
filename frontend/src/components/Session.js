@@ -32,7 +32,7 @@ const Session = ({
   const selectedSessionRef = useRef(null);
 
   useEffect(() => {
-    if (resetSelectedSession == true || setSessionNo === null) {
+    if (resetSelectedSession === true || setSessionNo === null) {
       setSelectedSessionId(null);
       setSessions([]);
     }

@@ -451,7 +451,7 @@ const ChatScreen = () => {
         disabled={loading}
       />
       <DropdownRowContainer>
-    <DropdownButton onClick={toggle1Dropdown} style={{ position: 'relative' }}>
+    <DropdownButton onClick={toggle1Dropdown} style={{ position: 'relative', hegiht: '50px' }}>
                       {selectedCategory || "Category"}
                       <ArrowIcon isOpen={isDropdownOpen1}
                       

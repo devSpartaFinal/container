@@ -113,12 +113,12 @@ export const DropdownContainer = styled.div`
 export const DropdownButton = styled.button`
   display: flex;
   text-align: center;
-  justify-content: 'center'
-  align-items: 'center',
+  justify-content: center;
+  align-items: center;
   gap: 8px;
   padding: 10px;
   padding-right: 40px;
-  padding-bottom: 25px;
+  padding-bottom: 10px;
   cursor: pointer;
   font-size: 1em;
   background-color: transparent;
@@ -127,7 +127,7 @@ export const DropdownButton = styled.button`
   transition: background-color 0.3s ease;
   width: auto;
   color: #ffffff;
-  height: 88%;
+  hegiht: 40px;
 
   overflow-x: auto;
   overflow-y: hidden;
@@ -250,6 +250,7 @@ export const GenerateButtonContainer = styled.div`
 
 export const GenerateQuizButton = styled.button`
   display: flex;
+  height: 40px;
   align-items: center;
   padding: 10px 20px;
   background-color: #fb4759;

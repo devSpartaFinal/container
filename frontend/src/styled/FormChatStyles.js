@@ -357,6 +357,7 @@ export const ContentButton = styled.button`
   display: flex;
   align-items: center;
   padding: 10px 20px;
+  height: 40px;
   background-color: #63b5da;
   border: 0px solid #63b5da;
 

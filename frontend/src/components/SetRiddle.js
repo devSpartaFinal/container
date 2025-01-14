@@ -360,10 +360,10 @@ const SetRiddle = () => {
             <div
               style={{
                 display: 'flex', 
-                flexDirection: 'column', // 이미지와 텍스트를 세로로 정렬
-                alignItems: 'center', // 가로 중앙 정렬
-                textAlign: 'center', // 텍스트 중앙 정렬
-                width: '100%', // 부모 컨테이너 너비
+                flexDirection: 'column', 
+                alignItems: 'center', 
+                textAlign: 'center',
+                width: '100%', 
               }}
             >
               <img
@@ -371,8 +371,8 @@ const SetRiddle = () => {
                 alt="title"
                 src={book}
                 style={{
-                  width: '10%', // 이미지 비율 조정
-                  height: 'auto', // 높이를 내용 비율에 맞게 조정
+                  width: '10%', 
+                  height: 'auto',
                   marginTop: '0%',
                 }}
               />
@@ -391,8 +391,13 @@ const SetRiddle = () => {
             <DivContainer>
               <DropdownContainer>
               <DropdownButton onClick={toggle1Dropdown} style={{ position: 'relative',
-              height: '50px', // 버튼의 높이를 지정
-
+              height: '50px', 
+              marginLeft: '50px',
+              paddingRight: '30px',
+             width: 'auto',
+              alignItems: 'center', 
+                  justifyContent: 'center', 
+                  textAlign: 'center', 
                }}>
                   {selectedCategory || "Category"}
                   <ArrowIcon isOpen={isDropdownOpen1}
@@ -423,12 +428,12 @@ const SetRiddle = () => {
                 onClick={toggle2Dropdown}
                 style={{
                   position: 'relative',
-                  width: '300px',
-                  height: '50px', // 버튼의 높이를 지정
-                  display: 'flex', // Flexbox 활성화
-                  alignItems: 'center', // 수직 중앙 정렬
-                  justifyContent: 'center', // 가로 중앙 정렬
-                  textAlign: 'center', // 텍스트 중앙 정렬
+                  height: '50px', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center',
+                  paddingRight: '50px',
+                  textAlign: 'center', 
                   padding: '0 10px',
                   boxSizing: 'border-box', 
                 }}
@@ -440,6 +445,7 @@ const SetRiddle = () => {
                     position: 'absolute',
                     top: '30%',
                     right: '5%',
+                    marginRight: '-0%',
                   }}
                   >
                     <AiOutlineDown/>

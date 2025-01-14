@@ -66,18 +66,18 @@ export const Div2Container = styled.div`
 export const DropdownContainer = styled.div`
   position: relative;
   display: inline-block;
-  top: 30%;
+  top: -10%;
   min-width: 20%;
   margin-left: 90%;
 `;
 
 export const DropdownButton = styled.button`
   display: flex;
-  width: 150px;
+  width: 300px;
   align-items: center;
   gap: 8px;
-  padding: 10px 15px;
-  padding-right: 40px;
+  padding: 10px 10px;
+  padding-right: 0px;
   background-color: transparent;
   border: 3px solid #ffffff;
   border-radius: 9px;
@@ -136,6 +136,7 @@ export const InformationContainer = styled.div`
   display: inline-block;
   height: 100%;
   margin-right: -90%;
+  margin-top: -40%;
 `;
 
 
@@ -148,6 +149,7 @@ export const InformationButton = styled.button`
   padding: 20px 4px;
   background-color: rgba(255, 255, 255, 0.5);
   border: none;
+  marginTop: -30%;
   width: 150px;
   height: 130px;  /* 높이를 내용에 맞게 자동으로 설정 */
   border-radius: 10px;
