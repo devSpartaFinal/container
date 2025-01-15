@@ -3,7 +3,8 @@ services:
     build:
       context: ./frontend
     volumes:
-      - ./frontend:/app/frontend 
+      - ./frontend:/app/frontend
+      - /app/frontend/node_modules
     ports:
       - "3000:3000"
     env_file:
