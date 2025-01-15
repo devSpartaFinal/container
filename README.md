@@ -67,8 +67,9 @@ python manage.py runserge
 # 프론트엔드
 npm start
 
-7. docker-compose로 실행
+7. docker-compose로 실행 / 빌드 취소를 원할 경우 (docker-compose down)
 docker-compose up --build
+
 ```
 
 ---
