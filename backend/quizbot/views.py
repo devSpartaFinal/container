@@ -131,9 +131,9 @@ class QuizRequestView(APIView):
                 category=category, title_no=title_no
             ).first()
             content = reference.content
-            chain = llm.quizz_chain(content)
-            response = chain.invoke(request.data)
-            # response = test.quizz_chain(content, request.data)
+            # chain = llm.quizz_chain(content)
+            # response = chain.invoke(request.data)
+            response = test.quizz_chain(content, request.data)
             
             response_dict = json.loads(response)
             quiz = Quiz.objects.create(
