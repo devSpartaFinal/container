@@ -1,3 +1,5 @@
+version: "3.8"
+
 services:
   frontend:
     build:
@@ -10,7 +12,9 @@ services:
     env_file:
       - .env
     environment:
-      REACT_APP_API_URL: http://13.209.96.138:8000
+      REACT_APP_API_URL: http://backend:8000  # 서비스 이름을 사용
+    networks:
+      - mynetwork  # backend도 mynetwork에 포함
 
   backend:
     build:
@@ -37,7 +41,9 @@ services:
       python manage.py createsuperuser --noinput || true &&
       exec python manage.py runserver 0.0.0.0:8000
       "
-      
+    networks:
+      - mynetwork  # backend도 mynetwork에 포함
+
   db:
     image: postgres:15
     container_name: postgres
@@ -49,8 +55,10 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./db/data:/var/lib/postgresql/data # 볼륨 저장
-      - ./db/init:/docker-entrypoint-initdb.d # 컨테이너 생성 시 초기화 sql 파일
+      - ./db/data:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d
+    networks:
+      - mynetwork  # db도 mynetwork에 포함
 
   pgadmin:
     image: dpage/pgadmin4
@@ -64,5 +72,8 @@ services:
     # 볼륨 설정
     volumes:
       - ./db/pgadmin/:/var/lib/pgadmin
+    networks:
+      - mynetwork  # pgadmin도 mynetwork에 포함
 
-# volumes: {}
+networks:
+  mynetwork:  # 사용자 정의 네트워크
