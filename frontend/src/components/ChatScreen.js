@@ -392,46 +392,155 @@ const ChatScreen = () => {
 
   return (
     <>
-      {loading && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: "rgba(0, 0, 0, 0.5)", // 워터마크 배경
-            zIndex: 9999,
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            flexDirection: "column",
-          }}
-        >
-          <div
-            style={{
-              width: "100px",
-              height: "100px",
-              border: "10px solid #f3f3f3", /* 회색 */
-              borderTop: "10px solid #3498db", /* 파란색 */
-              borderRadius: "50%",
-              animation: "spin 2s linear infinite", // 로딩 애니메이션
+      <HomeContainer>
+        <Session
+          onSessionClick={handleSessionClick}
+          resetSelectedSession={setHaveToReset}
+          session_no={session_no}
+          setSessionNo={session_no}
+          setMessages={setMessages}
+          disabled={loading}
+        />
+        <DropdownRowContainer>
+          <DropdownButton onClick={toggle1Dropdown} style={{ position: "relative", height: "50px" }}>
+            {selectedCategory || "Category"}
+            <ArrowIcon
+              isOpen={isDropdownOpen1}
+              style={{
+                position: "absolute",
+                top: "30%",
+                right: "5%",
+              }}
+            >
+              <AiOutlineDown />
+            </ArrowIcon>
+          </DropdownButton>
+          <DropdownLeftRowMenu isOpen={isDropdownOpen1} disabled={messages.length > 1}>
+            {categoryOptions.map((category) => (
+              <DropdownItem key={category} onClick={() => selectCategory(category)}>
+                {category}
+              </DropdownItem>
+            ))}
+          </DropdownLeftRowMenu>
+  
+          <DropdownButton onClick={toggle2Dropdown} style={{ position: "relative" }}>
+            {selectedTitle || "Title"}
+            <ArrowIcon
+              isOpen={isDropdownOpen2}
+              style={{
+                position: "absolute",
+                top: "30%",
+                right: "5%",
+              }}
+            >
+              <AiOutlineDown />
+            </ArrowIcon>
+          </DropdownButton>
+          <DropdownRightRowMenu isOpen={isDropdownOpen2}>
+            {selectedCategory &&
+              titleOptions[selectedCategory]?.map(({ id, text }) => (
+                <DropdownItem key={id} onClick={() => selectTitle(text, id)}>
+                  {text}
+                </DropdownItem>
+              ))}
+          </DropdownRightRowMenu>
+  
+          <GenerateButtonContainer>
+            <GenerateQuizButton onClick={handleSummary}>
+              <AiOutlineReload
+                size={24}
+                style={{
+                  cursor: "pointer",
+                  marginRight: "10px",
+                  color: "#ffffff",
+                }}
+              />
+              Read Summary
+            </GenerateQuizButton>
+          </GenerateButtonContainer>
+        </DropdownRowContainer>
+  
+        {/* 채팅 UI */}
+        <ChatScreenContainer>
+          <ChatHeaderContainer>
+            <ChatHeaderTitle>
+              {selectedCategory} - {selectedTitle}
+            </ChatHeaderTitle>
+            <ToggleButton onClick={toggleSummary} disabled={!selectedCategory || !selectedTitle}>
+              {summaryLoading ? "Loading Summary...." : isSummaryVisible ? "Hide Summary" : "Show Summary"}
+            </ToggleButton>
+            {isSummaryVisible && (
+              <ChatHeaderDescription>
+                <ReactMarkdown>{selectedSummary}</ReactMarkdown>
+              </ChatHeaderDescription>
+            )}
+            <ChatHeaderDivider />
+          </ChatHeaderContainer>
+  
+          <CenterContainer>
+            <Chat>
+              {loading && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                    zIndex: 10,
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    backgroundColor: "rgba(0, 0, 0, 0.2)",
+                    padding: "20px",
+                    borderRadius: "8px",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: "50px",
+                      height: "50px",
+                      border: "5px solid #f3f3f3",
+                      borderTop: "5px solid #3498db",
+                      borderRadius: "50%",
+                      animation: "spin 1s linear infinite",
+                    }}
+                  ></div>
+                  <p style={{ marginTop: "10px", color: "#fff", fontWeight: "bold" }}>
+                    Generating Response...
+                  </p>
+                </div>
+              )}
+              <Conversation messages={messages} />
+  
+              <ChatForm
+                onSendMessage={onSendMessage}
+                onBotMessage={onBotMessage}
+                category={selectedCategory}
+                title_no={selectedTitleIndex}
+                session_no={session_no}
+                setSessionNo={setSessionNo}
+                loading={loading}
+                setLoading={setLoading}
+              />
+            </Chat>
+          </CenterContainer>
+  
+          <PlusButton
+            icon={faSquarePlus}
+            size="2x"
+            disabled={loading}
+            onClick={() => {
+              setLoading(true);
+              fetchSessionNo();
+              setHaveToReset(true);
+              setMessages([]);
+              setSessionNo(null);
             }}
-          ></div>
-          
-          <h1
-            style={{
-              marginTop: "20px",
-              fontSize: "38px",
-              color: "white", // 텍스트 색상
-              fontWeight: "bold",
-            }}
-          >
-            AI 가 답변을 생성중입니다...
-          </h1>
-        </div>
-      )}
-
+          />
+        </ChatScreenContainer>
+      </HomeContainer>
+  
       {/* 로딩 애니메이션을 위한 CSS 추가 */}
       <style>
         {`
@@ -441,135 +550,9 @@ const ChatScreen = () => {
           }
         `}
       </style>
-      <HomeContainer>
-      <Session
-        onSessionClick={handleSessionClick}
-        resetSelectedSession={setHaveToReset}
-        session_no={session_no}
-        setSessionNo={session_no}
-        setMessages={setMessages}
-        disabled={loading}
-      />
-      <DropdownRowContainer>
-    <DropdownButton onClick={toggle1Dropdown} style={{ position: 'relative', hegiht: '50px' }}>
-                      {selectedCategory || "Category"}
-                      <ArrowIcon isOpen={isDropdownOpen1}
-                      
-                      style={{
-                        position: 'absolute',
-                        top: '30%',
-                        right: '5%',
-                      }}
-                      >
-                        <AiOutlineDown/>
-          </ArrowIcon>
-        </DropdownButton>
-        <DropdownLeftRowMenu
-          isOpen={isDropdownOpen1}
-          disabled={messages.length > 1}
-        >
-          {categoryOptions.map((category) => (
-            <DropdownItem
-              key={category}
-              onClick={() => selectCategory(category)}
-            >
-              {category}
-            </DropdownItem>
-          ))}
-        </DropdownLeftRowMenu>
-
-        <DropdownButton onClick={toggle2Dropdown} style={{ position: 'relative' }}>
-                          {selectedTitle || "Title"}
-                          <ArrowIcon isOpen={isDropdownOpen2}
-                          
-                          style={{
-                            position: 'absolute',
-                            top: '30%',
-                            right: '5%',
-                          }}
-                          >
-                            <AiOutlineDown/>
-                          </ArrowIcon>
-        </DropdownButton>
-        <DropdownRightRowMenu isOpen={isDropdownOpen2}>
-          {selectedCategory &&
-            titleOptions[selectedCategory]?.map(({ id, text }) => (
-              <DropdownItem key={id} onClick={() => selectTitle(text, id)}>
-                {text}
-              </DropdownItem>
-            ))}
-        </DropdownRightRowMenu>
-
-        <GenerateButtonContainer>
-          <GenerateQuizButton onClick={handleSummary}>
-            <AiOutlineReload
-              size={24}
-              style={{
-                cursor: "pointer",
-                marginRight: "10px",
-                color: "#ffffff",
-              }}
-            />
-            Read Summary
-          </GenerateQuizButton>
-        </GenerateButtonContainer>
-      </DropdownRowContainer>
-
-      {/* 채팅 UI */}
-      <ChatScreenContainer>
-        <ChatHeaderContainer>
-          <ChatHeaderTitle> {selectedCategory} - {selectedTitle} </ChatHeaderTitle>
-          <ToggleButton
-            onClick={toggleSummary}
-            disabled={!selectedCategory || !selectedTitle}
-          >
-            {summaryLoading
-              ? "Loading Summary...."
-              : isSummaryVisible
-              ? "Hide Summary"
-              : "Show Summary"}
-          </ToggleButton>
-          {isSummaryVisible && (
-            <ChatHeaderDescription>
-              <ReactMarkdown>{selectedSummary}</ReactMarkdown>
-            </ChatHeaderDescription>
-          )}
-          <ChatHeaderDivider />
-        </ChatHeaderContainer>
-
-        <CenterContainer>
-          <Chat>
-            <Conversation messages={messages} />
-
-            <ChatForm
-              onSendMessage={onSendMessage}
-              onBotMessage={onBotMessage}
-              category={selectedCategory}
-              title_no={selectedTitleIndex}
-              session_no={session_no}
-              setSessionNo={setSessionNo}
-              loading={loading}
-              setLoading={setLoading}
-            />
-          </Chat>
-        </CenterContainer>
-
-        <PlusButton
-          icon={faSquarePlus}
-          size="2x"
-          disabled={loading}
-          onClick={() => {
-            setLoading(true);
-            fetchSessionNo();
-            setHaveToReset(true);
-            setMessages([]);
-            setSessionNo(null);
-          }}
-        />
-      </ChatScreenContainer>
-      </HomeContainer>
     </>
   );
+  
 };
 
 export default ChatScreen;
