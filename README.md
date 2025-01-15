@@ -53,7 +53,7 @@ pip install -r requirements.txt
 npm install 
 ```
 
-4. .env 설정
+5. .env 설정
 ```
 # open AI API Key, DRF 초기 secret Key, 본 서비스의 루트 이메일 계정 및 비밀번호
 OPENAI_API_KEY, DRF_SECRET_KEY, HOSTUSER_EMAIL, HOSTUSER_EMAIL_PASSWORD
@@ -66,6 +66,9 @@ python manage.py runserge
   
 # 프론트엔드
 npm start
+
+7. docker-compose로 실행
+docker-compose up --build
 ```
 
 ---
