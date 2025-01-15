@@ -10,7 +10,7 @@ services:
     env_file:
       - .env
     environment:
-      REACT_APP_API_URL: http://localhost:8000
+      REACT_APP_API_URL: http://13.125.174.11:8000
 
   backend:
     build:
