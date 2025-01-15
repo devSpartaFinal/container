@@ -26,7 +26,7 @@ function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(null);
 
     useEffect(() => {
-      const token = getCookie("accessToken");
+      const token = getCookie("accessToken") || getCookie("access");
       setIsLoggedIn(!!token); 
     }, []);
 

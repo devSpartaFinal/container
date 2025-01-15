@@ -9,8 +9,24 @@ import riddleLogo from '../assets/riddle.png'
 const Home = () => {
   const navigate = useNavigate();
 
+  // const handleButtonClick = (url) => {
+  //   const accessToken = Cookies.get("accessToken");
+  //   if (!accessToken) {
+  //     alert("로그인이 필요한 서비스입니다.");
+  //     navigate("/login");
+  //   } else {
+  //     navigate(url);
+  //   }
+  // };
+
+  const getCookie = (name) => {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+};
+
   const handleButtonClick = (url) => {
-    const accessToken = Cookies.get("accessToken");
+    const accessToken = getCookie.get("access");
     if (!accessToken) {
       alert("로그인이 필요한 서비스입니다.");
       navigate("/login");
