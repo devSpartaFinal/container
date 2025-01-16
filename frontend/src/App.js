@@ -16,6 +16,7 @@ import { StyledOuterContainer } from "./styled/HomeStyles";
 import { AuthProvider } from "./context/AuthContext";
 import AfterEmail from "./components/AfterEmail";
 import Feedback from "./components/Feedback";
+import MultiChatRoom from "./components/MultiChatting";
 
 function App() {
 
@@ -59,7 +60,6 @@ function App() {
                 </AuthProvider>
               }
             />
-
             <Route
               path="/riddle"
               element={
@@ -81,6 +81,14 @@ function App() {
               element={
                 <AuthProvider>
                   <Feedback />
+                </AuthProvider>
+              }
+            />
+            <Route
+              path="/multi_chat"
+              element={
+                <AuthProvider>
+                  <MultiChatRoom />
                 </AuthProvider>
               }
             />

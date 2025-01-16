@@ -48,11 +48,22 @@ INSTALLED_APPS = [
     "django_extensions",
     "rest_framework",
     "rest_framework_simplejwt",
+    "channels",
     # Custom Apps
     "accounts",
     "chatbot",
     "quizbot",
+    "chat",
 ]
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -85,6 +96,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "coding_helper.wsgi.application"
+ASGI_APPLICATION = "coding_helper.asgi.application"
 
 
 # Database
@@ -98,7 +110,10 @@ DATABASES = {
             'PASSWORD': POSTGRES_PASSWORD,
             'HOST': POSTGRES_HOST,
             'PORT':'5432'
-        }
+        },
+        # 'OPTIONS': {
+        #     'client_encoding': 'UTF8',
+        # },
     }
 
 # Custom user model

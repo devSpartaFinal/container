@@ -9,7 +9,10 @@ import {
   AiOutlineUser,
   AiOutlineLogout,
   AiOutlineFileText,
+  AiOutlineComment,
 } from "react-icons/ai";
+import { IoExtensionPuzzle } from "react-icons/io5";
+import { MdOutlineGrading } from "react-icons/md";
 import styled from "styled-components";
 import { apiRequest } from "../apiRequest";
 
@@ -28,6 +31,7 @@ const Navigation = ({ isLoggedIn }) => {
     else if (currentPath === "/read") setActiveButton("read");
     else if (currentPath === "/logout") handleLogout();
     else if (currentPath === "/feedback") setActiveButton("feedback");
+    else if (currentPath === "/multi_chat") setActiveButton("multi_chat");
   }, []);
 
   const handleLogout = async () => {
@@ -87,7 +91,7 @@ const Navigation = ({ isLoggedIn }) => {
         onClick={() => handleClick("riddle")}
       >
         <a href={isLoggedIn ? "/riddle" : "/#"}>
-          <AiOutlineRobot size="70%" title="Riddle" />
+          <IoExtensionPuzzle size="70%" title="Riddle" />
         </a>
       </ButtonContainer>
 
@@ -101,7 +105,21 @@ const Navigation = ({ isLoggedIn }) => {
         onClick={() => handleClick("feedback")}
       >
         <a href={isLoggedIn ? "/feedback" : "/#"}>
-          <AiOutlineFileText size="70%" title="feedback" />
+          <MdOutlineGrading size="70%" title="feedback" />
+        </a>
+      </ButtonContainer>
+      
+      <ButtonContainer
+        data-tooltip={
+          isLoggedIn
+            ? "여러 명의 사용자들과 함께 Riddle을 맞추는 공간!"
+            : "로그인이 필요한 서비스입니다"
+        }
+        active={isActive("/multi_chat")}
+        onClick={() => handleClick("multi_chat")}
+      >
+        <a href={isLoggedIn ? "/multi_chat" : "/#"}>
+          <AiOutlineComment size="70%" title="multi_chat" />
         </a>
       </ButtonContainer>
 

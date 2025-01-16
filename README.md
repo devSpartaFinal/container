@@ -57,6 +57,14 @@ npm install
 ```
 # open AI API Key, DRF 초기 secret Key, 본 서비스의 루트 이메일 계정 및 비밀번호
 OPENAI_API_KEY, DRF_SECRET_KEY, HOSTUSER_EMAIL, HOSTUSER_EMAIL_PASSWORD
+
+<예시>
+DJANGO_SETTINGS_MODULE="coding_helper.settings"
+REACT_APP_API_URL="http://localhost:8000"
+POSTGRES_USER="user"
+POSTGRES_PASSWORD="password"
+POSTGRES_DB="postgres"
+POSTGRES_HOST="db"
 ```
 
 6. 실행 
@@ -71,6 +79,10 @@ npm start
 docker-compose up --build
 
 ```
+
+pip install channels
+pip install channels_redis
+
 
 ---
 ## 🗝️ Key Function
