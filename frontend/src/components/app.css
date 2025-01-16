@@ -43,3 +43,8 @@ height: auto;
 margin-top: 10%;
 }
 
+.divider {
+  text-align: left;
+  margin-top: -1%;
+  border-bottom: 5px solid #505050;
+}
