@@ -15,14 +15,14 @@ export const DropdownRowContainer = styled.div`
 export const DropdownLeftRowMenu = styled.ul`
   display: ${({ isOpen }) => (isOpen ? "block" : "none")};
   position: absolute;
-  top: calc(100% + 5px); /* 드롭다운 버튼 바로 아래에 위치 */
+  top: calc(100% + 15px); /* 드롭다운 버튼 바로 아래에 위치 */
   left: 0; /* 기본적으로 왼쪽으로 펼쳐짐 */
   background-color : rgba(255, 255, 255, 0.9);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   list-style: none;
   margin: 0;
   padding: 5px 0;
-  width: 130px; /* 드롭다운 너비 */
+  width: 200px; /* 드롭다운 너비 */
   border: 1px solid #d1d1d1;
   border-radius: 10px;
   z-index: 1000;
@@ -39,8 +39,8 @@ export const DropdownLeftRowMenu = styled.ul`
 export const DropdownRightRowMenu = styled.ul`
   display: ${({ isOpen }) => (isOpen ? "block" : "none")};
   position: absolute;
-  top: calc(100% + 5px); /* 두 번째 드롭다운 버튼 바로 아래 */
-  left: 17%; /* 두 번째 드롭다운 메뉴가 첫 번째 드롭다운의 오른쪽에 위치하도록 */
+  top: calc(100% + 20px); /* 두 번째 드롭다운 버튼 바로 아래 */
+  left: 15%; /* 두 번째 드롭다운 메뉴가 첫 번째 드롭다운의 오른쪽에 위치하도록 */
   margin-left: 10px; /* 두 번째 드롭다운과 첫 번째 드롭다운 사이에 간격 추가 */
   background-color : rgba(255, 255, 255, 0.9);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -357,7 +357,7 @@ export const ContentButton = styled.button`
   display: flex;
   align-items: center;
   padding: 10px 20px;
-  height: 40px;
+  height: 50px;
   background-color: #63b5da;
   border: 0px solid #63b5da;
 

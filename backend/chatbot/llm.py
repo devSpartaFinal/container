@@ -88,9 +88,6 @@ def summary_chain():
     4. **Practical Applications**: Provide examples of real-world use cases.
     5. **Code Snippets**: Format all code snippets using ```code``` blocks.  
     6. **References**: Gather all links mentioned in the text and list them at the end as references.
-    <user prompt>
-    {user_input}
-    </user prompt>
 
     <example>
     ## Summary  
@@ -128,7 +125,6 @@ def summary_chain():
         RunnableMap(
             {
                 "content": itemgetter("content"),
-                "user_input": itemgetter("user_input"),
             }
         )
         | prompt

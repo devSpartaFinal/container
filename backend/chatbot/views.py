@@ -13,7 +13,7 @@ import json
 import pdfplumber
 import requests
 from bs4 import BeautifulSoup
-from . import rag, llm
+from . import rag, llm, test
 from quizbot.models import Reference
 
 
@@ -68,7 +68,7 @@ class RagChatbotView(APIView):
             category = chat_history.content_info["category"]
             user_input = request.data["user_input"]
 
-            if category == "Official-Docs":
+            if category == "OFFICIAL_DOCS":
                 title = chat_history.content_info["title"]
                 response = rag.officail_rag(title, user_input, memory)
             else:
@@ -83,7 +83,7 @@ class RagChatbotView(APIView):
             title_no = request.data["title_no"]
             user_input = request.data["user_input"]
 
-            if category == "Official-Docs":
+            if category == "OFFICIAL_DOCS":
                 memory = [{"SYSTEM": "init conversation"}]
                 documents = Documents.objects.filter(title_no=title_no).first()
                 title = documents.title
@@ -174,16 +174,28 @@ class SummaryView(APIView):
     def get(self, request):
         category = request.query_params.get("category")
         title_no = request.query_params.get("title_no")
-        user_input = request.query_params.get("user_input")
-        reference = Reference.objects.filter(
-            category=category, title_no=title_no
-        ).first()
-        if reference:
-            content = reference.content
-        else:
-            content = "자료 읽기에 실패하였습니다."
-        chain = llm.summary_chain()
-        response = chain.invoke({"user_input": user_input, "content": content})
+        keyword = request.query_params.get("keyword")
+
+        if category == "OFFICIAL_DOCS":
+            documents = Documents.objects.filter(title_no=title_no).first()
+            title = documents.title
+            retriever = test.get_retriever(title)
+            multi_query = test.multi_query_llm(keyword)
+            contents = []
+            for query in multi_query:
+                contents.append(retriever.invoke(query))
+            response = test.summary(contents, keyword)
+ 
+        else : 
+            reference = Reference.objects.filter(
+                category=category, title_no=title_no
+            ).first()
+            if reference:
+                content = reference.content
+            else:
+                content = "자료 읽기에 실패하였습니다."
+            chain = llm.summary_chain()
+            response = chain.invoke({"content": content})
 
         return Response(
             {"result": response},

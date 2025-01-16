@@ -52,7 +52,7 @@ const Login = ({ setIsLoggedIn, isLoggedIn }) => {
   useEffect(() => {
     const stored_accessToken = localStorage.getItem("accessToken");
     const accessToken = Cookies.get("accessToken");
-    if (stored_accessToken == accessToken && accessToken) setIsLoggedIn(true);
+    if (stored_accessToken === accessToken && accessToken) setIsLoggedIn(true);
     else {
       setIsLoggedIn(false);
       return;
