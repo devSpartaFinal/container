@@ -160,7 +160,7 @@ class EmailVerificationView(APIView):
                     status=status.HTTP_200_OK,
                 )
 
-                res = HttpResponseRedirect("https://d1m41hchirwy8k.cloudfront.net/")
+                res = HttpResponseRedirect("http://d1m41hchirwy8k.cloudfront.net/")
 
                 # JWT 토큰을 쿠키에 저장
                 res.set_cookie("username", user.username, httponly=False)
