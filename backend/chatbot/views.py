@@ -174,9 +174,9 @@ class SummaryView(APIView):
     def get(self, request):
         category = request.query_params.get("category")
         title_no = request.query_params.get("title_no")
-        keyword = request.query_params.get("keyword")
 
         if category == "OFFICIAL_DOCS":
+            keyword = request.query_params.get("keyword")
             documents = Documents.objects.filter(title_no=title_no).first()
             title = documents.title
             retriever = test.get_retriever(title)

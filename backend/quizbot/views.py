@@ -130,9 +130,9 @@ class QuizRequestView(APIView):
         try:
             category = request.data["category"]
             title_no = request.data["title_no"]
-            keyword = request.data["keyword"]
-
+            
             if category == "OFFICIAL_DOCS":
+                keyword = request.data["keyword"]
                 documents = Documents.objects.filter(title_no=title_no).first()
                 title = documents.title
                 retriever = get_retriever(title)
@@ -183,7 +183,7 @@ class QuizRequestView(APIView):
                 {"error": "Reference not found"}, status=status.HTTP_404_NOT_FOUND
             )
 
-class TotalFeedabckView(APIView):
+class QuizResultView(APIView):
     def get(self, request, quiz_id):
         try:
             feedback_input = {}
@@ -231,7 +231,7 @@ class TotalFeedabckView(APIView):
             )
 
 
-class IndividualFeedabckView(APIView):
+class TotalFeedbackView(APIView):
     def get(self, request, quiz_id):
         try:
             chain = llm.individual_feedback_chain()
