@@ -18,17 +18,38 @@ export const SessionList = styled.div`
   
 `;
 
-export const SessionItem = styled.li`
-  padding: 10px 10px;
+export const SessionItem = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
   margin-bottom: 10px;
-  background:rgb(255, 255, 255);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-  cursor: pointer;
+  background: ${({ isSelected }) => (isSelected ? "rgba(85, 162, 240, 0.8)" : "#fff")};
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   border-radius: 10px;
-  background-color: ${({ isSelected }) => (isSelected ? "rgba(85, 162, 240, 0.8)" : "transparent")};
-  font-weight: ${({ isSelected }) => (isSelected ? "bold" : "normal")};
+  cursor: pointer;
+  position: relative;
+
   &:hover {
-    background-color: rgba(102, 138, 169, 0.57);
+    background: rgba(102, 138, 169, 0.57);
+
+    .exit-icon {
+      display: flex;
+    }
+  }
+
+  .session-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+
+  .exit-icon {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    color: #ff6b6b;
+    cursor: pointer;
   }
 `;
 

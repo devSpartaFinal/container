@@ -61,6 +61,7 @@ class RagChatbotView(APIView):
         user = request.user
         # ChatHistory 조회 또는 생성
         chat_history = self.get_chat_history(chat_id, user) if chat_id else None
+        content = ""
 
         if chat_history:
             # 기존 채팅 기반 처리

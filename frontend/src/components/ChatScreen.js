@@ -355,16 +355,7 @@ const ChatScreen = () => {
     setSummaryLoading(true);
 
     try {
-      let response;
-      if (selectedCategory === "OFFICIAL_DOCS")
-      {
-        response = await chatApiRequest.get(`/summary/?category=${selectedCategory}&title_no=${selectedTitleIndex}&user_input=${selectedTitle}`);
-      }
-      else
-      {
-        response = await chatApiRequest.get(`/summary/?category=${selectedCategory}&title_no=${selectedTitleIndex}&user_input=${selectedTitle}&keyword=${selectedKeyword}`
-        );
-      }
+      const response = await chatApiRequest.get(`/summary/?category=${selectedCategory}&title_no=${selectedTitleIndex}&user_input=${selectedTitle}&keyword=${selectedKeyword}`);
       setSelectedSummary(response.data.result);
     } catch (error) {
       console.error("Error generating quiz:", error);
@@ -518,8 +509,7 @@ const ChatScreen = () => {
           </ChatHeaderContainer>
   
           <CenterContainer>
-            <Chat>
-              {loading && (
+          {loading && (
                 <div
                   style={{
                     position: "absolute",
@@ -551,6 +541,7 @@ const ChatScreen = () => {
                   </p>
                 </div>
               )}
+            <Chat>
               <Conversation messages={messages} />
   
               <ChatForm
