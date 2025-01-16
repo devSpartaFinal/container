@@ -5,7 +5,7 @@ from .models import Quiz, Question, Choice
 class QuizSerializer(serializers.ModelSerializer):
     class Meta:
         model = Quiz
-        fields = '__all__'
+        fields = ['id', 'title']
 
 # 문제
 class QuestionSerializer(serializers.ModelSerializer):

@@ -8,6 +8,7 @@ import {
   AiOutlineUserAdd,
   AiOutlineUser,
   AiOutlineLogout,
+  AiOutlineFileText,
 } from "react-icons/ai";
 import styled from "styled-components";
 import { apiRequest } from "../apiRequest";
@@ -26,6 +27,7 @@ const Navigation = ({ isLoggedIn }) => {
     else if (currentPath === "/riddle") setActiveButton("riddle");
     else if (currentPath === "/read") setActiveButton("read");
     else if (currentPath === "/logout") handleLogout();
+    else if (currentPath === "/feedback") setActiveButton("feedback");
   }, []);
 
   const handleLogout = async () => {
@@ -86,6 +88,20 @@ const Navigation = ({ isLoggedIn }) => {
       >
         <a href={isLoggedIn ? "/riddle" : "/#"}>
           <AiOutlineRobot size="70%" title="Riddle" />
+        </a>
+      </ButtonContainer>
+
+      <ButtonContainer
+        data-tooltip={
+          isLoggedIn
+            ? "Riddle의 결과를 확인할 수 있는 공간"
+            : "로그인이 필요한 서비스입니다"
+        }
+        active={isActive("/feedback")}
+        onClick={() => handleClick("feedback")}
+      >
+        <a href={isLoggedIn ? "/feedback" : "/#"}>
+          <AiOutlineFileText size="70%" title="feedback" />
         </a>
       </ButtonContainer>
 

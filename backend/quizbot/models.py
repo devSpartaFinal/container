@@ -14,6 +14,7 @@ class Question(models.Model):
     content = models.TextField()  # 문제
     answer_type = models.CharField(max_length=100)  # 문제 형태(객관식, 단답형, ox)
     user_answer = models.JSONField(default=dict) # 사용자 답변
+    feedback = models.TextField(blank=True, null=True)   # 문제별 피드백
 
 class Choice(models.Model):
     question = models.ForeignKey(

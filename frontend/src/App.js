@@ -15,6 +15,7 @@ import Navigation from "./components/Navigation";
 import { StyledOuterContainer } from "./styled/HomeStyles";
 import { AuthProvider } from "./context/AuthContext";
 import AfterEmail from "./components/AfterEmail";
+import Feedback from "./components/Feedback";
 
 function App() {
 
@@ -72,6 +73,14 @@ function App() {
               element={
                 <AuthProvider>
                   <Riddle />
+                </AuthProvider>
+              }
+            />
+            <Route
+              path="/feedback"
+              element={
+                <AuthProvider>
+                  <Feedback />
                 </AuthProvider>
               }
             />

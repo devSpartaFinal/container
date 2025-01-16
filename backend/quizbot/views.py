@@ -126,6 +126,11 @@ class QuizRequestView(APIView):
         icontains는 대소문자를 구분하지 않고 해당 문자열을 포함하는지 확인하는 조건
         """
 
+        queryset = Quiz.objects.all()
+        serializer = QuizSerializer(queryset, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
     def post(self, request):
         try:
             category = request.data["category"]
@@ -264,6 +269,10 @@ class TotalFeedbackView(APIView):
                 feedback = json.loads(chain.invoke(data))
                 data["feedback"] = feedback
                 feedback_output.append(data)
+
+                # 개별 피드백 DB의 feedback 컬럼에 저장
+                question.feedback = feedback
+                question.save()
 
             return Response(
                 feedback_output,
