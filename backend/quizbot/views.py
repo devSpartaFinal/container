@@ -1,10 +1,13 @@
 from .serializers import *
+from django.conf import settings
 from rest_framework.views import APIView
 from rest_framework.response import Response
 import json
 from . import llm, test
 from .models import *
 from rest_framework import status
+from chatbot.models import Documents
+from chatbot.test import *
 
 
 class QuizAPIView(APIView):
@@ -127,10 +130,22 @@ class QuizRequestView(APIView):
         try:
             category = request.data["category"]
             title_no = request.data["title_no"]
-            reference = Reference.objects.filter(
-                category=category, title_no=title_no
-            ).first()
-            content = reference.content
+            keyword = request.data["keyword"]
+
+            if category == "Official-Docs":
+                documents = Documents.objects.filter(title_no=title_no).first()
+                title = documents.title
+                retriever = get_retriever(title)
+                multi_query = multi_query_llm(keyword)
+                contents = []
+                for query in multi_query:
+                    contents.append(retriever.invoke(query))
+                content = summary(contents, keyword)
+            else :
+                reference = Reference.objects.filter(
+                    category=category, title_no=title_no
+                ).first()
+                content = reference.content
             # chain = llm.quizz_chain(content)
             # response = chain.invoke(request.data)
             response = test.quizz_chain(content, request.data)

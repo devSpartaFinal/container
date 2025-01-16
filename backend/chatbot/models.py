@@ -31,12 +31,11 @@ class UserDocs(models.Model):
 
 
 class Documents(models.Model):
-    category = models.CharField(max_length=255)
+    category = models.CharField(max_length=255, null=True, blank=True)
     title = models.CharField(max_length=255, null=True, blank=True)
+    content = models.TextField(null=True, blank=True)
     title_no = models.PositiveIntegerField(null=True, blank=True)
-    url = models.URLField(default=None, null=True)
-    content = models.TextField()
-
+    
     class Meta:
         managed = False  # Django가 이 테이블을 관리하지 않도록 설정
         db_table = 'documents'
