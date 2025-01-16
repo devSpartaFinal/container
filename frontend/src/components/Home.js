@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
@@ -26,7 +26,9 @@ const Home = () => {
 };
 
   const handleButtonClick = (url) => {
-    const accessToken = getCookie.get("access");
+    const accessToken = getCookie("access");
+    document.cookie = `accessToken=${accessToken}; path=/; max-age=86400; SameSite=Lax`;
+
     if (!accessToken) {
       alert("로그인이 필요한 서비스입니다.");
       navigate("/login");
@@ -205,14 +207,11 @@ const ButtonDescription = styled.p`
   font-size: 1.2em;
   // color: #ffffff;
   font-weight: 300;
-<<<<<<< HEAD
-  margin: 0;
-=======
   margin: -30px;
   margin-bottom: 20%;
->>>>>>> 0757913 (style-chatIntro-2: 스타일 2차 수정)
   text-align: left;
   font-weight: bold;
+  font-size: 1em;
   color: #008C8C;
   padding-left: 6%;
   padding-right: 20px;

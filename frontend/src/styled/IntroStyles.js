@@ -250,7 +250,7 @@ export const GenerateButtonContainer = styled.div`
 
 export const GenerateQuizButton = styled.button`
   display: flex;
-  height: 40px;
+  height: 50px;
   align-items: center;
   padding: 10px 20px;
   background-color: #fb4759;

@@ -76,6 +76,7 @@ const Riddle = () => {
   const [feedbackContent, setFeedbackContent] = useState("");
   const [feedbackDetails, setFeedbackDetails] = useState({});
   const [isFeedbackShown, setIsFeedbackShown] = useState(false);
+  const [selectedKeyword, setSelectedKeyword] = useState(location.state?.selectedKeyword ||"");
 
   const closeModal = () => {
     setShowModal(false);
@@ -176,6 +177,7 @@ const Riddle = () => {
     "DJANGO",
     "DRF",
     "DOCKER",
+    "OFFICIAL_DOCS",
   ];
 
   const titleOptions = {
@@ -345,6 +347,11 @@ const Riddle = () => {
         text: "Docker와 GitHub Actions를 활용한 CI/CD 및 클라우드 자동 배포 실습",
       },
     ],
+    OFFICIAL_DOCS: [
+      { id: 1, text: "Django" },
+      { id: 2, text: "Django_DRF" },
+      { id: 3, text: "React" },
+    ],
   };
 
   const toggle1Dropdown = () => {
@@ -362,6 +369,7 @@ const Riddle = () => {
     setSelectedTitle(null);
     setSelectedQuestions([]);
     setIsDropdownOpen1(false);
+    setSelectedKeyword("");
   };
 
   const selectTitle = (titleText, titleId) => {
@@ -389,6 +397,7 @@ const Riddle = () => {
       type: quizType,
       count: quizCount,
       difficulty: quizDifficulty,
+      keyword: selectedKeyword,
       level: "beginner",
     };
 
@@ -468,7 +477,7 @@ const Riddle = () => {
       )}
       <HomeContainer>
       <DropdownRowContainer>
-        <DropdownButton onClick={toggle1Dropdown}>
+        <DropdownButton onClick={toggle1Dropdown} style={{ height: '50px'}}>
           {selectedCategory || "Category"}
           <ArrowIcon isOpen={isDropdownOpen1} style={{ paddingRight: '0%'}}>
             <AiOutlineDown />
@@ -485,7 +494,15 @@ const Riddle = () => {
           ))}
         </DropdownLeftRowMenu>
 
-        <DropdownButton onClick={toggle2Dropdown}>
+        <DropdownButton 
+        onClick={() => {
+          if (!selectedCategory) {
+            alert("카데고리를 먼저 선택해주세요");
+            return;
+          }
+          toggle2Dropdown();
+        }}
+        style={{ height: '50px'}}>
           {selectedTitle || "Title"}
           <ArrowIcon isOpen={isDropdownOpen2}>
             <AiOutlineDown />
@@ -499,6 +516,28 @@ const Riddle = () => {
               </DropdownItem>
             ))}
         </DropdownRightRowMenu>
+
+        {selectedCategory === "OFFICIAL_DOCS" && selectedTitle &&
+          (
+          <input
+                      type="text"
+                      value={selectedKeyword} 
+                      placeholder="Keyword of the document"
+                      onChange={(e) => setSelectedKeyword(e.target.value)} 
+                      style={{
+                        fontSize: '1.0em',
+                        marginLeft: '5px',
+                        width: '210px',
+                        height: '50px',
+                        borderRadius: '10px',
+                        color: "black",
+                        backgroundColor: "rgba(255, 255, 255, 0.5)",
+                        border: '3px solid #ffffff',
+                        padding: '0 10px',
+                        boxSizing: 'border-box',
+                      }}
+                    />
+          )}
 
         <ContentButton>
           <span>{quizCount}</span>

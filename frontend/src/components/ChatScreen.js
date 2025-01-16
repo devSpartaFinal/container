@@ -238,6 +238,7 @@ const ChatScreen = () => {
   const [selectedTitleIndex, setSelectedTitleIndex] = useState(
     location.state?.titleIndex || null
   );
+  const [selectedKeyword, setSelectedKeyword] = useState("");
   const [messages, setMessages] = useState([
     {
       id: 1,
@@ -319,6 +320,7 @@ const ChatScreen = () => {
     setIsDropdownOpen1(false);
     setSelectedSummary("");
     setSessionNo(null);
+    setSelectedKeyword("");
   };
 
   const selectTitle = (titleText, titleId) => {
@@ -353,9 +355,16 @@ const ChatScreen = () => {
     setSummaryLoading(true);
 
     try {
-      const response = await chatApiRequest.get(
-        `/summary/?category=${selectedCategory}&title_no=${selectedTitleIndex}&user_input=${selectedTitle}`
-      );
+      let response;
+      if (selectedCategory === "OFFICIAL_DOCS")
+      {
+        response = await chatApiRequest.get(`/summary/?category=${selectedCategory}&title_no=${selectedTitleIndex}&user_input=${selectedTitle}`);
+      }
+      else
+      {
+        response = await chatApiRequest.get(`/summary/?category=${selectedCategory}&title_no=${selectedTitleIndex}&user_input=${selectedTitle}&keyword=${selectedKeyword}`
+        );
+      }
       setSelectedSummary(response.data.result);
     } catch (error) {
       console.error("Error generating quiz:", error);
@@ -423,7 +432,16 @@ const ChatScreen = () => {
             ))}
           </DropdownLeftRowMenu>
   
-          <DropdownButton onClick={toggle2Dropdown} style={{ position: "relative" }}>
+          <DropdownButton 
+          
+          onClick={() => {
+            if (!selectedCategory) {
+              alert("카데고리를 먼저 선택해주세요");
+              return;
+            }
+            toggle2Dropdown();
+          }}
+          style={{ position: "relative", height: "50px" }}>
             {selectedTitle || "Title"}
             <ArrowIcon
               isOpen={isDropdownOpen2}
@@ -444,6 +462,28 @@ const ChatScreen = () => {
                 </DropdownItem>
               ))}
           </DropdownRightRowMenu>
+          
+          {selectedCategory === "OFFICIAL_DOCS" && selectedTitle &&
+          (
+          <input
+                      type="text"
+                      placeholder="요약만을 위한 키워드를 작성해주세요"
+                      value={selectedKeyword} 
+                      onChange={(e) => setSelectedKeyword(e.target.value)} 
+                      style={{
+                        fontSize: '0.9em',
+                        marginLeft: '5px',
+                        width: '230px',
+                        height: '50px',
+                        borderRadius: '10px',
+                        color: "black",
+                        backgroundColor: "rgba(255, 255, 255, 0.5)",
+                        border: '3px solid #ffffff',
+                        padding: '0 10px',
+                        boxSizing: 'border-box',
+                      }}
+                    />
+          )}
   
           <GenerateButtonContainer>
             <GenerateQuizButton onClick={handleSummary}>

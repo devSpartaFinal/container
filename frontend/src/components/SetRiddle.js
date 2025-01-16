@@ -44,6 +44,7 @@ const SetRiddle = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedTitle, setSelectedTitle] = useState(null);
   const [selectedTitleIndex, setSelectedTitleIndex] = useState(null);
+  const [selectedKeyword, setSelectedKeyword] = useState("");
   const [selectedSummary, setSelectedSummary] = useState(null);
   const [selectedQuestions, setSelectedQuestions] = useState([]);
   const [quizCount, setQuizCount] = useState(10);
@@ -275,14 +276,31 @@ const SetRiddle = () => {
     }
     setIsLoading(true);
 
-    const formData = {
-      category: selectedCategory,
-      title_no: selectedTitleIndex,
-      type: quizType,
-      count: quizCount,
-      difficulty: quizDifficulty,
-      level: "beginner",
-    };
+    let formData = {};
+    if (selectedCategory === "OFFICIAL_DOCS")
+    {
+      formData = {
+        category: selectedCategory,
+        title_no: selectedTitleIndex,
+        keyword: selectedKeyword,
+        type: quizType,
+        count: quizCount,
+        difficulty: quizDifficulty,
+        level: "beginner",
+      };
+    }
+
+    else {
+
+      formData = {
+        category: selectedCategory,
+        title_no: selectedTitleIndex,
+        type: quizType,
+        count: quizCount,
+        difficulty: quizDifficulty,
+        level: "beginner",
+      };
+    }
 
     try {
       const response = await quizApiRequest.post("/request/", formData);
@@ -300,6 +318,7 @@ const SetRiddle = () => {
           selectedCategory: selectedCategory,
           selectedTitle: selectedTitle,
           selectedTitleIndex: selectedTitleIndex,
+          selectedKeyword: selectedKeyword,
           quizType: quizType,
           quizCount: quizCount,
           quizDifficulty: quizDifficulty,
@@ -324,9 +343,11 @@ const SetRiddle = () => {
     setShowModal(false);
 
     try {
+
       const response = await chatApiRequest.get(
-        `/summary/?category=${selectedCategory}&title_no=${selectedTitleIndex}&user_input=${selectedTitle}`
+        `/summary/?category=${selectedCategory}&title_no=${selectedTitleIndex}&keyword=${selectedKeyword}`
       );
+
 
       setSelectedSummary(response.data.result);
       setShowModal(true);
@@ -355,49 +376,62 @@ const SetRiddle = () => {
         <>
           <HomeContainer>
           <DropDownParentContainer>
-            <TitleContainer>
-              
-            <div
-              style={{
-                display: 'flex', 
-                flexDirection: 'column', 
-                alignItems: 'center', 
-                textAlign: 'center',
-                width: '100%', 
-              }}
-            >
-              <img
-                className="phoneImage"
-                alt="title"
-                src={book}
+          <TitleContainer>
+              <div
                 style={{
-                  width: '10%', 
-                  height: 'auto',
-                  marginTop: '0%',
-                }}
-              />
-              <p
-                style={{
-                  fontSize: '1em', 
-                  marginTop: '10px', 
+                  display: 'flex', 
+                  flexDirection: 'row',
+                  alignItems: 'center', 
+                  textAlign: 'center',
+                  marginLeft: '25%',
+                  transform: 'scale(0.8)', 
+                  transformOrigin: 'left',
                 }}
               >
-                Let's Start Riddle
-              </p>
-            </div>
+                <img
+                  className="phoneImage"
+                  alt="title"
+                  src={book}
+                  style={{
+                    width: '20%',
+                    height: 'auto'
+                  }}
+                />
+                <p
+                  style={{
+                    fontSize: '1em', 
+                    margin: 0, 
+                  }}
+                >
+                  Let's Start Riddle
+                </p>
 
-              
-              </TitleContainer>
+                <img
+                  className="phoneImage"
+                  alt="title"
+                  src={book}
+                  style={{
+                    width: '20%',
+                    height: 'auto'
+                  }}
+                />
+              </div>
+            </TitleContainer>
+
             <DivContainer>
               <DropdownContainer>
               <DropdownButton onClick={toggle1Dropdown} style={{ position: 'relative',
-              height: '50px', 
-              marginLeft: '50px',
+              height: '70px', 
+              marginLeft: '-35%',
               paddingRight: '30px',
-             width: 'auto',
+              borderTopLeftRadius: '30px',
+              borderBottomLeftRadius: '30px',
+              width: '130px',
               alignItems: 'center', 
-                  justifyContent: 'center', 
-                  textAlign: 'center', 
+              justifyContent: 'center', 
+              textAlign: 'center', 
+              whiteSpace: 'normal',
+              wordBreak: 'break-word', 
                }}>
                   {selectedCategory || "Category"}
                   <ArrowIcon isOpen={isDropdownOpen1}
@@ -411,7 +445,14 @@ const SetRiddle = () => {
                     <AiOutlineDown/>
                   </ArrowIcon>
                 </DropdownButton>
-              <DropdownMenu isOpen={isDropdownOpen1}>
+              <DropdownMenu isOpen={isDropdownOpen1}
+              style={{ 
+                top: 'calc(100% + -100px)',     
+                left: 'calc(-20% + -200px)',     
+                width: "150px",   
+              }}
+              
+              >
                   {categoryOptions.map((category) => (
                     <DropdownItem
                     key={category}
@@ -425,13 +466,22 @@ const SetRiddle = () => {
 
               <DropdownContainer >
               <DropdownButton
-                onClick={toggle2Dropdown}
+                  onClick={() => {
+                    if (!selectedCategory) {
+                      alert("카데고리를 먼저 선택해주세요");
+                      return;
+                    }
+                    toggle2Dropdown();
+                  }}
                 style={{
                   position: 'relative',
-                  height: '50px', 
+                  height: '70px', 
                   display: 'flex', 
                   alignItems: 'center', 
                   justifyContent: 'center',
+                  borderTopRightRadius: '30px',
+                  borderBottomRightRadius: '30px',
+                  marginLeft: '-10%',
                   paddingRight: '50px',
                   textAlign: 'center', 
                   padding: '0 10px',
@@ -451,7 +501,15 @@ const SetRiddle = () => {
                     <AiOutlineDown/>
                   </ArrowIcon>
                 </DropdownButton>
-                <DropdownMenu isOpen={isDropdownOpen2}>
+                <DropdownMenu isOpen={isDropdownOpen2}
+                style={{ 
+                  
+                  width: '200px',
+                  top: 'calc(100% + -100px)',  
+                  left: '100%',              
+                }}
+                
+                >
                   {selectedCategory &&
                     titleOptions[selectedCategory]?.map(({ id, text }) => (
                       <DropdownItem
@@ -463,6 +521,43 @@ const SetRiddle = () => {
                     ))}
                 </DropdownMenu>
               </DropdownContainer>
+            </DivContainer>
+
+            <DivContainer style={{ marginLeft: '30%'}}>
+            {selectedCategory === "OFFICIAL_DOCS" && selectedTitle && (
+                  <div
+                    style={{
+                      display: 'flex',
+                      marginTop: '-15%',
+                      paddingTop: '2%',
+                      padding: '3%',
+                      bottom: '-30px',
+                      borderRadius: '10px',
+                      textAlign: 'center',
+                      backgroundColor: 'rgba(246, 39, 24, 0.5)'
+                    }}
+                  >
+                    <h3 style={{ marginTop: '10px'}}> Keyword </h3>
+                    <input
+                      type="text"
+                      placeholder="Keyword of the document"
+                      value={selectedKeyword} 
+                      onChange={(e) => setSelectedKeyword(e.target.value)} 
+                      style={{
+                        fontSize: '1.1em',
+                        marginLeft: '40px',
+                        width: '240px',
+                        height: '40px',
+                        borderRadius: '5px',
+                        color: "black",
+                        backgroundColor: "rgba(255, 255, 255, 0.5)",
+                        border: '3px solid #ffffff',
+                        padding: '0 10px',
+                        boxSizing: 'border-box',
+                      }}
+                    />
+                  </div>
+                )}
             </DivContainer>
             
             <Div2Container>
@@ -641,3 +736,4 @@ const SetRiddle = () => {
 };
 
 export default SetRiddle;
+

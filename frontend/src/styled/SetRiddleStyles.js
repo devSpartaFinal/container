@@ -32,8 +32,8 @@ export const DropDownParentContainer = styled.div`
 
 export const TitleContainer = styled.div`
   text-align: flex-start;
-  margin-top: 2%;
-  margin-left: -2%;
+  margin-top: -2%;
+  margin-left: 0%;
   left: 50%;
   right: 50%;
   font-size: 2em; 
@@ -56,7 +56,7 @@ export const Div2Container = styled.div`
   grid-template-columns: repeat(3, 0.2fr); /* 3열 */
   gap: 5px; /* 간격을 5px로 설정 */
   margin-top: 7%;
-  margin-left: 20%;
+  margin-left: 15%;
   margin-right: 0%;
  justify-items: center; /* 자식 요소를 수평 중앙 정렬 */
   align-items: center; /* 자식 요소를 수직 중앙 정렬 */
@@ -66,7 +66,7 @@ export const Div2Container = styled.div`
 export const DropdownContainer = styled.div`
   position: relative;
   display: inline-block;
-  top: -10%;
+  top: -60%;
   min-width: 20%;
   margin-left: 90%;
 `;
