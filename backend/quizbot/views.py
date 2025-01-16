@@ -132,7 +132,7 @@ class QuizRequestView(APIView):
             title_no = request.data["title_no"]
             keyword = request.data["keyword"]
 
-            if category == "Official-Docs":
+            if category == "OFFICIAL_DOCS":
                 documents = Documents.objects.filter(title_no=title_no).first()
                 title = documents.title
                 retriever = get_retriever(title)

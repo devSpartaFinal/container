@@ -68,7 +68,7 @@ class RagChatbotView(APIView):
             category = chat_history.content_info["category"]
             user_input = request.data["user_input"]
 
-            if category == "Official-Docs":
+            if category == "OFFICIAL_DOCS":
                 title = chat_history.content_info["title"]
                 response = rag.officail_rag(title, user_input, memory)
             else:
@@ -83,7 +83,7 @@ class RagChatbotView(APIView):
             title_no = request.data["title_no"]
             user_input = request.data["user_input"]
 
-            if category == "Official-Docs":
+            if category == "OFFICIAL_DOCS":
                 memory = [{"SYSTEM": "init conversation"}]
                 documents = Documents.objects.filter(title_no=title_no).first()
                 title = documents.title
@@ -176,7 +176,7 @@ class SummaryView(APIView):
         title_no = request.query_params.get("title_no")
         keyword = request.query_params.get("keyword")
 
-        if category == "Official-Docs":
+        if category == "OFFICIAL_DOCS":
             documents = Documents.objects.filter(title_no=title_no).first()
             title = documents.title
             retriever = test.get_retriever(title)
