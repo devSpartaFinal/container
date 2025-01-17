@@ -600,4 +600,5 @@ const HomeContainer = styled.div`
   // color: #ffffff;
   font-family: "Arial", sans-serif;
   text-align: center;
+  overflow: hidden;
 `;
