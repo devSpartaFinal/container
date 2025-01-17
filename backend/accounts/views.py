@@ -220,7 +220,7 @@ class AuthAPIView(APIView):
     def post(self, request):
         # 유저 인증
         user = User.objects.get(username=request.data.get("username"))
-        if user.is_social == False:
+        if user.social_login == False:
             user = authenticate(
                 username=request.data.get("username"),
                 password=request.data.get("password"),
@@ -228,8 +228,10 @@ class AuthAPIView(APIView):
         # 이미 회원가입 된 유저일 때
         if user is not None:
             if not user.is_active:
-                return Response({"message": "User is inactive"}, status=status.HTTP_400_BAD_REQUEST)
-            
+                return Response(
+                    {"message": "User is inactive"}, status=status.HTTP_400_BAD_REQUEST
+                )
+
             login(request, user)
             update_last_login(None, user)
             serializer = UserSerializer(user)
@@ -241,16 +243,19 @@ class AuthAPIView(APIView):
                 {
                     "user": serializer.data,
                     "message": "login success",
-                    "token": {"access": access_token,"refresh": refresh_token,},
+                    "token": {
+                        "access": access_token,
+                        "refresh": refresh_token,
+                    },
                 },
                 status=status.HTTP_200_OK,
             )
             # jwt 토큰 => 쿠키에 저장
             res.set_cookie("username", user.username, httponly=False)
             res.set_cookie("access", access_token, httponly=False)
-            
+
             user.refresh_token = refresh_token
-            user.is_social = False
+            user.social_login = False
             user.save()
             return res
         else:
@@ -268,6 +273,7 @@ class AuthAPIView(APIView):
         response.delete_cookie("access")
         # response.delete_cookie("refresh")
         user.refresh_token = ""
+        user.social_login = False
         user.save()
         return response
 
@@ -284,7 +290,7 @@ class PasswordAPIView(APIView):
                 {"detail": "현재 비밀번호가 일치하지 않습니다."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-            
+
         # 새 비밀번호와 확인 비밀번호가 일치하는지 확인
         if request.data["new_password"] != request.data["confirm_password"]:
             return Response(
@@ -348,9 +354,7 @@ class TokenRefresh(APIView):
                 serializer = UserSerializer(instance=user)
 
                 # 새로운 access와 refresh 토큰으로 응답 생성
-                res = Response(
-                    {"access": access}, status=status.HTTP_200_OK
-                )
+                res = Response({"access": access}, status=status.HTTP_200_OK)
                 res.set_cookie("username", user.username, httponly=False)
                 res.set_cookie("access", access, httponly=False)
                 # res.set_cookie("refresh", refresh)
@@ -360,9 +364,15 @@ class TokenRefresh(APIView):
             print("JWT decoding error:", str(e))
             return Response({"detail": str(e)}, status=status.HTTP_401_UNAUTHORIZED)
         except KeyError:
-            return Response({"detail": "토큰을 확인할 수 없습니다."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"detail": "토큰을 확인할 수 없습니다."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         except Exception as e:
-            return Response({"detail": "오류가 발생하였습니다. : " + str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                {"detail": "오류가 발생하였습니다. : " + str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
 
 import requests
@@ -441,10 +451,11 @@ class GoogleLoginCallback(APIView):
                     first_name=username,
                     nickname=username,
                     is_active=True,
+                    is_social=True,
                 )
                 user.save()
 
-            user.is_social = True
+            user.social_login = True
             user.save()
             username = user.username
 
@@ -526,10 +537,11 @@ class GitHubLoginCallback(APIView):
                     first_name=username,
                     nickname=username,
                     is_active=True,
+                    is_social=True
                 )
                 user.save()
 
-            user.is_social = True
+            user.social_login = True
             user.save()
             username = user.username
 
