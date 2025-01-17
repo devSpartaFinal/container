@@ -219,9 +219,12 @@ class AuthAPIView(APIView):
     # 로그인
     def post(self, request):
         # 유저 인증
-        user = authenticate(
-            username=request.data.get("username"), password=request.data.get("password")
-        )
+        user = User.objects.get(username=request.data.get("username"))
+        if user.is_social == False:
+            user = authenticate(
+                username=request.data.get("username"),
+                password=request.data.get("password"),
+            )
         # 이미 회원가입 된 유저일 때
         if user is not None:
             if not user.is_active:
@@ -247,6 +250,7 @@ class AuthAPIView(APIView):
             res.set_cookie("access", access_token, httponly=False)
             
             user.refresh_token = refresh_token
+            user.is_social = False
             user.save()
             return res
         else:
@@ -359,3 +363,184 @@ class TokenRefresh(APIView):
             return Response({"detail": "토큰을 확인할 수 없습니다."}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({"detail": "오류가 발생하였습니다. : " + str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+import requests
+from urllib.parse import urlencode
+from django.shortcuts import redirect
+from coding_helper.settings import (
+    GOOGLE_OAUTH_CLIENT_ID,
+    GOOGLE_OAUTH_CALLBACK_URL,
+    GOOGLE_OAUTH_CLIENT_SECRET,
+    GITHUB_CLIENT_ID,
+    GITHUB_REDIRECT_URI,
+    GITHUB_CLIENT_SECRET,
+)
+from datetime import datetime
+
+
+def google_login(request):
+    google_oauth_url = "https://accounts.google.com/o/oauth2/v2/auth"
+    params = {
+        "response_type": "code",
+        "client_id": GOOGLE_OAUTH_CLIENT_ID,
+        "redirect_uri": GOOGLE_OAUTH_CALLBACK_URL,
+        "scope": "profile email",
+        "state": "state_parameter",
+    }
+
+    auth_url = f"{google_oauth_url}?{urlencode(params)}"
+    return redirect(auth_url)
+
+
+class GoogleLoginCallback(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, *args, **kwargs):
+        code = request.GET.get("code")
+
+        # 인증 코드가 없으면 400 오류 반환
+        if code is None:
+            return Response({"error": "Authorization code not provided"}, status=400)
+
+        # Google OAuth2 토큰 엔드포인트
+        token_endpoint_url = "https://oauth2.googleapis.com/token"
+
+        # POST 요청을 Google의 토큰 엔드포인트로 보냄
+        response = requests.post(
+            url=token_endpoint_url,
+            data={
+                "code": code,
+                "client_id": GOOGLE_OAUTH_CLIENT_ID,  # 실제 client_id로 교체
+                "client_secret": GOOGLE_OAUTH_CLIENT_SECRET,  # 실제 client_secret로 교체
+                "redirect_uri": GOOGLE_OAUTH_CALLBACK_URL,  # 실제 redirect_uri로 교체
+                "grant_type": "authorization_code",
+            },
+        )
+
+        # 응답이 JSON 형식인지 확인하고 처리
+        try:
+            response_dict = response.json()
+            access_token = response_dict["access_token"]
+            url = "https://www.googleapis.com/oauth2/v3/userinfo"
+            headers = {"Authorization": f"Bearer {access_token}"}
+            response = requests.get(url, headers=headers)
+            response_data = response.json()
+            email = response_data["email"]
+            id = email.split("@")[0]
+            username = f"05#{id}"
+            try:
+                user = User.objects.get(username=username)
+                print("가입된 사용자")
+            except User.DoesNotExist:
+                print("미가입된 사용자")
+
+                user = User.objects.create(
+                    username=username,
+                    email=f"{id}@social.com",
+                    first_name=username,
+                    nickname=username,
+                    is_active=True,
+                )
+                user.save()
+
+            user.is_social = True
+            user.save()
+            username = user.username
+
+            return Response({"username": username})
+
+        except requests.exceptions.RequestException as e:
+            return Response({"error": f"Request error: {str(e)}"}, status=400)
+
+        except ValueError:
+            return Response({"error": "Invalid response from Google"}, status=400)
+
+
+def github_login(request):
+    github_oauth_url = "https://github.com/login/oauth/authorize"
+    params = {
+        "client_id": GITHUB_CLIENT_ID,
+        "redirect_uri": GITHUB_REDIRECT_URI,
+        "scope": "read:user",
+        "user:email" "state": "state_parameter",  # CSRF 방지용 state 값
+    }
+
+    # GitHub로 리디렉션
+    auth_url = f"{github_oauth_url}?{urlencode(params)}"
+    return redirect(auth_url)
+
+
+class GitHubLoginCallback(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, *args, **kwargs):
+        # GitHub에서 받은 인증 코드
+        code = request.GET.get("code")
+
+        # 인증 코드가 없으면 에러 반환
+        if not code:
+            return Response({"error": "Authorization code not provided"}, status=400)
+
+        # GitHub 토큰 엔드포인트
+        token_endpoint_url = "https://github.com/login/oauth/access_token"
+
+        # POST 요청으로 액세스 토큰 요청
+        response = requests.post(
+            url=token_endpoint_url,
+            headers={"Accept": "application/json"},
+            data={
+                "client_id": GITHUB_CLIENT_ID,
+                "client_secret": GITHUB_CLIENT_SECRET,
+                "code": code,
+                "redirect_uri": GITHUB_REDIRECT_URI,
+            },
+        )
+
+        # 응답을 JSON 형식으로 파싱
+        try:
+            token_data = response.json()
+            access_token = token_data.get("access_token")
+
+            if not access_token:
+                return Response({"error": "Access token not received"}, status=400)
+
+            # GitHub 사용자 정보 가져오기
+            user_info_url = "https://api.github.com/user"
+            headers = {"Authorization": f"Bearer {access_token}"}
+            response = requests.get(user_info_url, headers=headers)
+            response_data = response.json()
+            email = response_data["email"]
+            address = email.split("@")
+            id = address[0] + address[1][0] + address[1][1]
+            username = f"07#{id}"
+            try:
+                user = User.objects.get(username=username)
+                print("가입된 사용자")
+            except User.DoesNotExist:
+                print("미가입된 사용자")
+
+                user = User.objects.create(
+                    username=username,
+                    email=f"{id}@social.com",
+                    first_name=username,
+                    nickname=username,
+                    is_active=True,
+                )
+                user.save()
+
+            user.is_social = True
+            user.save()
+            username = user.username
+
+            return Response({"username": username})
+
+        except requests.exceptions.RequestException as e:
+            return Response({"error": f"Request error: {str(e)}"}, status=400)
+
+        except ValueError:
+            return Response({"error": "Invalid response from Google"}, status=400)
+
+
+def google_login_page(request):
+    return render(request, "google_login.html")
