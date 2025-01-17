@@ -448,8 +448,8 @@ class GoogleLoginCallback(APIView):
                 user = User.objects.create(
                     username=username,
                     email=f"{id}@social.com",
-                    first_name=username,
-                    nickname=username,
+                    first_name="Anonymous",
+                    nickname=id,
                     is_active=True,
                     is_social=True,
                 )
@@ -534,8 +534,8 @@ class GitHubLoginCallback(APIView):
                 user = User.objects.create(
                     username=username,
                     email=f"{id}@social.com",
-                    first_name=username,
-                    nickname=username,
+                    first_name="Anonymous",
+                    nickname=id,
                     is_active=True,
                     is_social=True
                 )
