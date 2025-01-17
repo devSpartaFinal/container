@@ -163,9 +163,10 @@ class EmailVerificationView(APIView):
                 res = HttpResponseRedirect("http://dfv45bcsr8xn9.cloudfront.net")
 
                 # JWT 토큰을 쿠키에 저장
-                res.set_cookie("username", user.username, httponly=False)
-                res.set_cookie("access", access_token, httponly=False)
-                res.set_cookie("refresh", refresh_token, httponly=True)
+                res.set_cookie("username", user.username, httponly=False, domain="dfv45bcsr8xn9.cloudfront.net")
+                res.set_cookie("access", access_token, httponly=False, domain="dfv45bcsr8xn9.cloudfront.net")
+                res.set_cookie("refresh", refresh_token, httponly=True, domain="dfv45bcsr8xn9.cloudfront.net")
+
 
                 # refresh_token을 데이터베이스에 저장
                 user.refresh_token = refresh_token
