@@ -28,7 +28,7 @@ SECRET_KEY = DRF_SECRET_KEY
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["52.79.231.143"]
+ALLOWED_HOSTS = ["3.80.132.172"]
 
 # React 프론트 관련 / # 모든 출처 허용
 CORS_ALLOW_ALL_ORIGINS = True  

@@ -66,7 +66,7 @@ class SignInOutAPIView(APIView):
             # 이메일 인증 링크 생성
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             token = default_token_generator.make_token(user)
-            verification_link = f"http://52.79.231.143:8000/verify-email/{uid}/{token}/"
+            verification_link = f"http://3.80.132.172:8000/verify-email/{uid}/{token}/"
 
             # 이메일 전송
             send_mail(
@@ -160,7 +160,7 @@ class EmailVerificationView(APIView):
                     status=status.HTTP_200_OK,
                 )
 
-                res = HttpResponseRedirect("http://dfv45bcsr8xn9.cloudfront.net")
+                res = HttpResponseRedirect("http://d2nh1umrpovsoz.cloudfront.net")
 
                 # JWT 토큰을 쿠키에 저장
                 res.set_cookie("username", user.username, httponly=False, domain="dfv45bcsr8xn9.cloudfront.net")
