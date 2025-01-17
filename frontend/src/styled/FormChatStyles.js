@@ -156,6 +156,8 @@ export const QuizContentContainer = styled.div`
   font-size: 1.2em; 
   font-weight: bold;
   color: #63b5da;
+  height: 100%;
+  overflow-y: auto;
 `;
 
 export const OptionButton = styled.button`
@@ -328,29 +330,11 @@ export const FeedbackContent = styled.div`
   padding: 15px;
   border-radius: 10px;
   position: relative; 
-  margin-top: 25%;
+  margin-top: 3%;
+  margin-left: 3%;
   margin-right: 3%;
   color: #3c3c3c;
   line-height: 1.7;
-
-  @media (max-width: 1400px) {
-  margin-top: 33%;
-  }
-
-  @media (max-width: 1300px) {
-  margin-top: 39%;
-  }
-  
-  @media (max-width: 1200px) {
-  margin-top: 45%;
-  }
-
-  @media (max-width: 1100px) {
-  margin-top: 49%;
-  }
-
-  @media (max-width: 1000px) {
-  margin-top: 58%;
 `;
 
 export const ContentButton = styled.button`

@@ -31,10 +31,9 @@ export const SessionHeaderContainer = styled.div`
 export const SessionParentContainer = styled.div`
   display: flex;
   flex-direction: column; 
-  gap: 1000px;
-  width: 17.05em;
+  width: 15%;
   height: 100%; /* 부모 컨테이너 높이를 기반으로 설정 */
-  padding: 6vh 5px;
+  padding: 2% 0.2% 1% 0.2%;
   background: rgb(18, 32, 86);
   position: fixed; /* 화면 오른쪽에 고정 */
   top: 0;
@@ -42,14 +41,9 @@ export const SessionParentContainer = styled.div`
   // border-radius: 0px 15px 15px 0px;
   z-index: 1000; /* 다른 요소 위에 표시되도록 설정 */
   overflow-x: hidden;
+  overflow-y: hidden;
 
   box-sizing: border-box;
-  @media (max-width: 1800px) {
-      width: 19%;   
-    }
-
-  @media (max-width: 1200px) {
-    display: none; 
   }
 `;
 
@@ -58,16 +52,12 @@ export const SessionContainer = styled.div`
   display: flex;
   flex-direction: column; 
   gap: 1000px;
-  width: 16em;
+  width: 97%;
   color:rgb(0, 0, 0);
-  height: 85vh;
+  height: 110%;
   padding: 1vh 5px;
-  margin-right: 2px;
   background:rgb(255, 255, 255);
   
-  position: fixed; /* 화면 오른쪽에 고정 */
-  top: 100px;
-  right: 0;
   border-radius: 15px 15px 15px 15px;
   z-index: 1000;
   overflow-y: auto;
@@ -91,14 +81,6 @@ export const SessionContainer = styled.div`
   }
   &::-webkit-scrollbar-track {
     background: transparent; 
-  }
-
-  @media (max-width: 1800px) {
-      width: 18%;   
-    }
-
-  @media (max-width: 1200px) {
-    display: none; 
   }
 `;
 
@@ -136,8 +118,8 @@ export const BoxContainer = styled.div`
 
 export const HeaderTitle = styled.h4`
   font-size: 1.5rem;
-  margin-top: -10px;
-  margin-left: 20px;
+  margin-top: -3%;
+  margin-left: 5%;
   color:rgb(255, 255, 255);
 `;
 

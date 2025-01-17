@@ -318,4 +318,3 @@ export const PlusButton = styled(FontAwesomeIcon)`
     color: ${(props) => (props.disabled ? "#ccc" : "#63b5da")}; /* No hover effect when disabled */
   }
 `;
-

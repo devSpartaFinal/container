@@ -115,3 +115,50 @@ margin-top: 10%;
   margin: 10px;
   margin-bottom:10px;
 }
+
+.image {
+  width: 80%;
+  height: auto;
+  margin-left: 7%;
+  margin-bottom: 5%;
+}
+
+@media (max-width: 1200px) {
+  .image {
+    margin-left: 1.5%;
+  }
+}
+
+.image2 {
+  width: 40%;
+  height: auto;
+  margin-bottom: -18%;
+  margin-top: -30%;
+}
+
+.image3 {
+  width: 40%;
+  height: auto;
+  margin-bottom: -18%;
+  margin-top: -30%;
+}
+
+@media (max-width: 1600px) {
+  .image2 {
+    margin-top: -15%;
+  }
+  .image3 {
+    margin-top: -7%;
+  }
+}
+
+@media (max-width: 1400px) {
+  .image2 {
+    margin-top: -3%;
+  }
+  .image3 {
+    margin-top: -3.5%;
+  }
+}
+
+
