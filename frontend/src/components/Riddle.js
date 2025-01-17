@@ -610,6 +610,13 @@ const Riddle = () => {
                           {choice.content}
                         </Option2Button>
                       ))}
+                      <div>
+                    {isFeedbackShown && feedbackDetails[quiz.number] && (
+                      <FeedbackContent  style={{ textAlign: "left" }}>
+                        {feedbackDetails[quiz.number]}
+                      </FeedbackContent>
+                    )}
+                  </div>
                     </Option2Container>
                   ) : (
                     <OptionContainer>
@@ -644,15 +651,16 @@ const Riddle = () => {
                           {choice.content}
                         </OptionButton>
                       ))}
-                    </OptionContainer>
-                  )}
-                  <div>
+                      <div>
                     {isFeedbackShown && feedbackDetails[quiz.number] && (
                       <FeedbackContent  style={{ textAlign: "left" }}>
                         {feedbackDetails[quiz.number]}
                       </FeedbackContent>
                     )}
                   </div>
+                    </OptionContainer>
+                  )}
+                  
                 </QuizContentContainer>
               </FormQuizCardContainer>
             ))}

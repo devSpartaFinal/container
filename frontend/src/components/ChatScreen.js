@@ -1,15 +1,12 @@
 import React, { useState, useEffect, useCallback } from "react";
 import styled from "styled-components";
-import {
+import { useNavigate, useLocation } from "react-router-dom";
+import { 
   DropdownButton,
   DropdownItem,
   ArrowIcon,
   GenerateButtonContainer,
   GenerateQuizButton,
-} from "../styled/IntroStyles";
-
-import { useNavigate, useLocation } from "react-router-dom";
-import {
   ChatScreenContainer,
   ChatHeaderContainer,
   ChatHeaderDescription,
@@ -21,8 +18,8 @@ import {
   DropdownRightRowMenu,
   ToggleButton,
   PlusButton,
-} from "../styled/ChatScreenStyles";
-import { Chat } from "../styled/ConversationStyles";
+  Chat,
+ } from "../styled/ChattingScreenStyles";
 import ChatForm from "./ChatForm";
 import Conversation from "./Conversation";
 import { chatApiRequest } from "../apiRequest";
@@ -402,7 +399,7 @@ const ChatScreen = () => {
           disabled={loading}
         />
         <DropdownRowContainer>
-          <DropdownButton onClick={toggle1Dropdown} style={{ position: "relative", height: "50px" }}>
+          <DropdownButton onClick={toggle1Dropdown} style={{ position: "relative", height: "50px" }} disabled={loading}>
             {selectedCategory || "Category"}
             <ArrowIcon
               isOpen={isDropdownOpen1}
@@ -424,7 +421,7 @@ const ChatScreen = () => {
           </DropdownLeftRowMenu>
   
           <DropdownButton 
-          
+          disabled={loading}
           onClick={() => {
             if (!selectedCategory) {
               alert("카데고리를 먼저 선택해주세요");
@@ -458,7 +455,7 @@ const ChatScreen = () => {
           (
           <input
                       type="text"
-                      placeholder="요약만을 위한 키워드를 작성해주세요"
+                      placeholder="요약을 위한 키워드를 작성해주세요"
                       value={selectedKeyword} 
                       onChange={(e) => setSelectedKeyword(e.target.value)} 
                       style={{
@@ -600,5 +597,4 @@ const HomeContainer = styled.div`
   // color: #ffffff;
   font-family: "Arial", sans-serif;
   text-align: center;
-  overflow: hidden;
 `;

@@ -1,27 +1,30 @@
 import styled from "styled-components";
 
-export const Container = styled.div`
+export const OutContainer = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: hidden;
+`;
+
+export const Container = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     padding: 20px;
-    width: 30vw;
-    max-height: 62px;
-    margin: 0 auto;
+    width: 40%;
+    left: 33%;
     background: #ffffff;
-    top: 50%;  /* 화면의 세로 중앙 */
-    left: 50%; /* 화면의 가로 중앙 */
-    transform: translate(-50%, -50%); /* 정확히 중앙에 맞추기 위해서 */
-    position: absolute;
-    // max-height: 900px;
-    // overflow-y: auto;
+    overflow-x: hidden;
 `;
 
 export const Title = styled.h1`
     font-size: 1.5rem;
     color: #333;
-    margin-bottom: 5px;
 `;
 
 export const Form = styled.form`

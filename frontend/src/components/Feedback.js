@@ -7,6 +7,7 @@ import {
   FeedbackTitle,
   FeedbackDetails,
   SpinnerContainer,
+  Notice,
 } from "../styled/FeedbackStyles";
 import "./app.css";
 
@@ -122,21 +123,14 @@ const Feedback = () => {
             ))}
           </FeedbackDetails>
         ) : (
-          <p style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            marginLeft: "25%",
-            fontSize: "3em",
-            textAlign: "center"
-            }}>
+          <Notice style={{ fontSize: '3em' }}>
             {error ? error : (
               <>
                 Quiz List에서 퀴즈를 선택하여<br />
                 피드백을 확인하세요.
               </>
             )}
-          </p>
+          </Notice>
         )}
       </FeedbackPanel>
 

@@ -5,7 +5,9 @@ import {
   TitleContainer,
   DivContainer,
   Div2Container,
+  DivContainer3,
   DropdownContainer,
+  DropdownContainer2,
   DropdownButton,
   DropdownMenu,
   DropdownItem,
@@ -411,45 +413,32 @@ const SetRiddle = () => {
                   alt="title"
                   src={book}
                   style={{
-                    width: '20%',
+                    width: '25%',
                     height: 'auto'
                   }}
                 />
               </div>
             </TitleContainer>
 
-            <DivContainer>
+            <DivContainer3>
               <DropdownContainer>
-              <DropdownButton onClick={toggle1Dropdown} style={{ position: 'relative',
-              height: '70px', 
-              marginLeft: '-35%',
-              paddingRight: '30px',
+              <DropdownButton onClick={toggle1Dropdown} style={{
               borderTopLeftRadius: '30px',
               borderBottomLeftRadius: '30px',
-              width: '130px',
-              alignItems: 'center', 
-              justifyContent: 'center', 
-              textAlign: 'center', 
-              whiteSpace: 'normal',
-              wordBreak: 'break-word', 
+              justifyContent: 'center',
+              width: '95%',
+              maxHeight: '70px',
+              overflow: 'auto',
                }}>
                   {selectedCategory || "Category"}
                   <ArrowIcon isOpen={isDropdownOpen1}
-                  
-                  style={{
-                    position: 'absolute',
-                    top: '30%',
-                    right: '5%',
-                  }}
-                  >
+                  style={{ marginLeft: '2%'}}>
                     <AiOutlineDown/>
                   </ArrowIcon>
                 </DropdownButton>
               <DropdownMenu isOpen={isDropdownOpen1}
               style={{ 
-                top: 'calc(100% + -100px)',     
-                left: 'calc(-20% + -200px)',     
-                width: "150px",   
+                width: '25%',
               }}
               
               >
@@ -464,7 +453,7 @@ const SetRiddle = () => {
                 </DropdownMenu>
               </DropdownContainer>
 
-              <DropdownContainer >
+              <DropdownContainer2 >
               <DropdownButton
                   onClick={() => {
                     if (!selectedCategory) {
@@ -474,39 +463,23 @@ const SetRiddle = () => {
                     toggle2Dropdown();
                   }}
                 style={{
-                  position: 'relative',
-                  height: '70px', 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  justifyContent: 'center',
+                  justifyContent: 'center', 
                   borderTopRightRadius: '30px',
                   borderBottomRightRadius: '30px',
-                  marginLeft: '-10%',
-                  paddingRight: '50px',
-                  textAlign: 'center', 
-                  padding: '0 10px',
-                  boxSizing: 'border-box', 
+                  width: '95%',
+                  maxHeight: '70px',
+                  overflow: 'auto',
                 }}
               >
                   {selectedTitle || "Title"}
                   <ArrowIcon isOpen={isDropdownOpen2}
-                  
-                  style={{
-                    position: 'absolute',
-                    top: '30%',
-                    right: '5%',
-                    marginRight: '-0%',
-                  }}
-                  >
+                  style={{ marginLeft: '2%'}}>
                     <AiOutlineDown/>
                   </ArrowIcon>
                 </DropdownButton>
                 <DropdownMenu isOpen={isDropdownOpen2}
                 style={{ 
-                  
-                  width: '200px',
-                  top: 'calc(100% + -100px)',  
-                  left: '100%',              
+                  width: '50%',
                 }}
                 
                 >
@@ -520,24 +493,25 @@ const SetRiddle = () => {
                       </DropdownItem>
                     ))}
                 </DropdownMenu>
-              </DropdownContainer>
-            </DivContainer>
+              </DropdownContainer2>
+            </DivContainer3>
 
-            <DivContainer style={{ marginLeft: '30%'}}>
+            <DivContainer>
             {selectedCategory === "OFFICIAL_DOCS" && selectedTitle && (
                   <div
                     style={{
                       display: 'flex',
-                      marginTop: '-15%',
-                      paddingTop: '2%',
-                      padding: '3%',
-                      bottom: '-30px',
+                      padding: '2%',
                       borderRadius: '10px',
+                      backgroundColor: 'rgba(246, 39, 24, 0.5)',
+                      marginLeft: '8%',
                       textAlign: 'center',
-                      backgroundColor: 'rgba(246, 39, 24, 0.5)'
+                      alignItems: 'center',
+                      alignContent: 'center',
+                      width: '37%',
                     }}
                   >
-                    <h3 style={{ marginTop: '10px'}}> Keyword </h3>
+                    <h3> Keyword </h3>
                     <input
                       type="text"
                       placeholder="Keyword of the document"
@@ -545,14 +519,14 @@ const SetRiddle = () => {
                       onChange={(e) => setSelectedKeyword(e.target.value)} 
                       style={{
                         fontSize: '1.1em',
-                        marginLeft: '40px',
-                        width: '240px',
-                        height: '40px',
+                        marginLeft: '5%',
+                        width: '70%',
+                        height: '100%',
                         borderRadius: '5px',
                         color: "black",
                         backgroundColor: "rgba(255, 255, 255, 0.5)",
                         border: '3px solid #ffffff',
-                        padding: '0 10px',
+                        padding: '3%',
                         boxSizing: 'border-box',
                       }}
                     />
@@ -565,7 +539,7 @@ const SetRiddle = () => {
               <InformationButton>
               <label
                     htmlFor="quizCount"
-                    style={{ flexGrow: 1, textAlign: "left", paddingLeft: "5px", color: "white", fontSize: 25}}
+                    style={{ textAlign: "left", color: "white" }}
                     >
                     Count
                   </label>
@@ -584,13 +558,12 @@ const SetRiddle = () => {
                       setQuizCount(value);
                     }}
                     style={{
-                      flexGrow: 1,
-                      padding: "4px",
+                      padding: "5%",
                       border: "1px solid #ddd",
                       borderRadius: "5px",
                       textAlign: "center",
-                      fontSize: 20,
-                      width: "100px"
+                      width: "70%",
+                      fontSize: "1em",
                     }}
                     />
                 </InformationButton>
@@ -600,7 +573,7 @@ const SetRiddle = () => {
                 <InformationButton>
                   <label
                     htmlFor="quizDifficulty"
-                    style={{ flexGrow: 1, textAlign: "left", paddingLeft: "5px", color: "white", fontSize: 25 }}
+                    style={{ textAlign: "left", color: "white" }}
                     >
                     Difficulty
                   </label>
@@ -609,13 +582,12 @@ const SetRiddle = () => {
                     value={quizDifficulty}
                     onChange={(e) => setQuizDifficulty(e.target.value)}
                     style={{
-                      flexGrow: 1,
-                      maxWidth: "100px",
-                      padding: "4px",
+                      maxWidth: "75%",
+                      padding: "5%",
                       border: "1px solid #ddd",
                       borderRadius: "10px",
                       textAlign: "center",
-                      fontSize: 20,
+                      fontSize: "1em",
                     }}
                     >
                     <option value="easy">Easy</option>
@@ -629,7 +601,7 @@ const SetRiddle = () => {
                 <InformationButton>
                   <label
                     htmlFor="type"
-                    style={{ flexGrow: 1, textAlign: "left", paddingLeft: "5px", color: "white", fontSize: 25 }}
+                    style={{ textAlign: "left", color: "white" }}
                     >
                     Type
                   </label>
@@ -638,13 +610,12 @@ const SetRiddle = () => {
                     value={quizType}
                     onChange={(e) => setQuizType(e.target.value)}
                     style={{
-                      flexGrow: 1,
-                      maxWidth: "100px",
-                      padding: "4px",
+                      maxWidth: "75%",
+                      padding: "5%",
                       border: "1px solid #ddd",
                       borderRadius: "5px",
                       textAlign: "center",
-                      fontSize: 20,
+                      fontSize: "1em",
                     }}
                     >
                     <option value="4_multiple_choice">4지선다</option>
@@ -659,11 +630,11 @@ const SetRiddle = () => {
               {/* 항상 보이는 Read Summary 버튼 */}
 
                           <img className="phoneImage" alt="title" src={readLogo} 
-                                      style={{ width: '100%', height: '100%', marginLeft: '24%', margin: '0 auto', marginTop: '35%', objectFit: 'contain'}}
+                                      style={{ height: '150%', marginTop: '15%', objectFit: 'contain'}}
                                       />
                 
                           <img className="phoneImage" alt="title" src={riddleLogo} 
-                                      style={{ width: '100%', height: '100%', marginLeft: '24%', margin: '0 auto', marginTop: '35%', objectFit: 'contain'}}
+                                      style={{ height: '150%', marginTop: '15%', objectFit: 'contain'}}
                                       />
               {/* <img className="image-size" src="img/summary.png" title="Summary" alt="Summary~"></img>
               <img className="riddle-size" src="img/ReadRiddle.png" alt="Start Riddle"></img> */}

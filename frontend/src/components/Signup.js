@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import {
+  OutContainer,
   Container,
   Title,
   Form,
@@ -112,184 +113,187 @@ const Signup = () => {
   };
 
   return (
-    <Container>
-      <Title>회원가입</Title>
-      <Form onSubmit={handleSubmit}>
-        {/* ID */}
-        <FieldContainer>
-          <Label htmlFor="username">ID</Label>
-          <Input
-            type="text"
-            id="username"
-            name="username"
-            value={formData.username}
-            onChange={handleChange}
-            placeholder="Enter your ID"
-            required
-          />
-        </FieldContainer>
-
-        {/* Password */}
-        <FieldContainer>
-          <Label htmlFor="password">Password</Label>
-          <Input
-            type="password"
-            id="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            placeholder="Enter your password"
-            required
-            />
-          <Input
-            type="password"
-            id="confirm_password"
-            name="confirm_password"
-            value={formData.confirm_password || ""} // 초기값이 없을 경우 처리
-            onChange={handleChange}
-            placeholder="Confirm your password"
-            required
-            />
-          <div>
-            {error && error.length > 0 && (
-              <p style={{ color: "red" }}>
-                {error.map((err, index) => (
-                  <span key={index}>
-                    {err}
-                    <br />
-                  </span>
-                ))}
-              </p>
-            )}
-          </div>
-        </FieldContainer>
-
-        {/* Nickname */}
-        <FieldContainer>
-          <Label htmlFor="nickname">Nickname</Label>
-          <Input
-            type="text"
-            id="nickname"
-            name="nickname"
-            value={formData.nickname}
-            onChange={handleChange}
-            placeholder="Enter your nickname"
-          />
-        </FieldContainer>
-
-        {/* Birth Date */}
-        <FieldContainer>
-          <Label htmlFor="birth_date">Birth Date</Label>
-          <Input
-            type="date"
-            id="birth_date"
-            name="birth_date"
-            value={formData.birth_date}
-            onChange={handleChange}
-            required
-          />
-        </FieldContainer>
-
-        {/* Email */}
-        <FieldContainer>
-          <Label htmlFor="email">Email</Label>
-          <Input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="Enter your email"
-            required
-          />
-        </FieldContainer>
-
-        {/* First Name & Last Name */}
-        <FieldContainerRow>
-          {/* First Name */}
-          <FieldContainerCol>
-            <Label htmlFor="first_name">First Name</Label>
+    <OutContainer>
+      <Container>
+        <Title>회원가입</Title>
+        <Form onSubmit={handleSubmit}>
+          {/* ID */}
+          <FieldContainer>
+            <Label htmlFor="username">ID</Label>
             <Input
               type="text"
-              id="first_name"
-              name="first_name"
-              value={formData.first_name}
+              id="username"
+              name="username"
+              value={formData.username}
               onChange={handleChange}
-              placeholder="Enter your first name"
+              placeholder="Enter your ID"
               required
             />
-          </FieldContainerCol>
+          </FieldContainer>
 
-          {/* Last Name */}
-          <FieldContainerCol>
-            <Label htmlFor="last_name">Last Name</Label>
+          {/* Password */}
+          <FieldContainer>
+            <Label htmlFor="password">Password</Label>
             <Input
-              type="text"
-              id="last_name"
-              name="last_name"
-              value={formData.last_name}
+              type="password"
+              id="password"
+              name="password"
+              value={formData.password}
               onChange={handleChange}
-              placeholder="Enter your last name"
+              placeholder="Enter your password"
               required
-            />
-          </FieldContainerCol>
-        </FieldContainerRow>
-
-        {/* Gender */}
-        <FieldContainer>
-          <Label htmlFor="gender">Gender</Label>
-          <Select
-            id="gender"
-            name="gender"
-            value={formData.gender}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Select your gender</option>
-            <option value="M">Male</option>
-            <option value="F">Female</option>
-            <option value="O">Other</option>
-          </Select>
-        </FieldContainer>
-
-        {/* Intro */}
-        <FieldContainer>
-          <Label htmlFor="intro">Introduction</Label>
-          <TextArea
-            id="intro"
-            name="intro"
-            value={formData.intro}
-            onChange={handleChange}
-            placeholder=""
-            rows="4"
-          />
-        </FieldContainer>
-
-        {/* Submit Button */}
-        
-        <Button type="submit">
-          이메일 인증하기
-        </Button>
-
-        {/* 이메일 인증 후 확인 모달 */}
-        {showModal && (
-          <div style={modalStyles}>
-            <div style={modalContentStyles}>
-              <h2>이메일 인증</h2>
-              <p>이메일을 확인해주세요!</p>
-              <button onClick={() => setShowModal(false)} style={closeButtonStyles}>
-                닫기
-              </button>
+              />
+            <Input
+              type="password"
+              id="confirm_password"
+              name="confirm_password"
+              value={formData.confirm_password || ""} // 초기값이 없을 경우 처리
+              onChange={handleChange}
+              placeholder="Confirm your password"
+              required
+              />
+            <div>
+              {error && error.length > 0 && (
+                <p style={{ color: "red" }}>
+                  {error.map((err, index) => (
+                    <span key={index}>
+                      {err}
+                      <br />
+                    </span>
+                  ))}
+                </p>
+              )}
             </div>
-          </div>
-        )}
-      
+          </FieldContainer>
 
-      </Form>
+          {/* Nickname */}
+          <FieldContainer>
+            <Label htmlFor="nickname">Nickname</Label>
+            <Input
+              type="text"
+              id="nickname"
+              name="nickname"
+              value={formData.nickname}
+              onChange={handleChange}
+              placeholder="Enter your nickname"
+            />
+          </FieldContainer>
 
-      {/* Success or Error Message */}
-      {success && <p>회원가입이 성공적으로 완료되었습니다!</p>}
-    </Container>
+          {/* Birth Date */}
+          <FieldContainer>
+            <Label htmlFor="birth_date">Birth Date</Label>
+            <Input
+              type="date"
+              id="birth_date"
+              name="birth_date"
+              value={formData.birth_date}
+              onChange={handleChange}
+              required
+            />
+          </FieldContainer>
+
+          {/* Email */}
+          <FieldContainer>
+            <Label htmlFor="email">Email</Label>
+            <Input
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="Enter your email"
+              required
+            />
+          </FieldContainer>
+
+          {/* First Name & Last Name */}
+          <FieldContainerRow>
+            {/* First Name */}
+            <FieldContainerCol>
+              <Label htmlFor="first_name">First Name</Label>
+              <Input
+                type="text"
+                id="first_name"
+                name="first_name"
+                value={formData.first_name}
+                onChange={handleChange}
+                placeholder="Enter your first name"
+                required
+              />
+            </FieldContainerCol>
+
+            {/* Last Name */}
+            <FieldContainerCol>
+              <Label htmlFor="last_name">Last Name</Label>
+              <Input
+                type="text"
+                id="last_name"
+                name="last_name"
+                value={formData.last_name}
+                onChange={handleChange}
+                placeholder="Enter your last name"
+                required
+              />
+            </FieldContainerCol>
+          </FieldContainerRow>
+
+          {/* Gender */}
+          <FieldContainer>
+            <Label htmlFor="gender">Gender</Label>
+            <Select
+              id="gender"
+              name="gender"
+              value={formData.gender}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select your gender</option>
+              <option value="M">Male</option>
+              <option value="F">Female</option>
+              <option value="O">Other</option>
+            </Select>
+          </FieldContainer>
+
+          {/* Intro */}
+          <FieldContainer>
+            <Label htmlFor="intro">Introduction</Label>
+            <TextArea
+              id="intro"
+              name="intro"
+              value={formData.intro}
+              onChange={handleChange}
+              placeholder=""
+              rows="4"
+            />
+          </FieldContainer>
+
+          {/* Submit Button */}
+          
+          <Button type="submit">
+            이메일 인증하기
+          </Button>
+
+          {/* 이메일 인증 후 확인 모달 */}
+          {showModal && (
+            <div style={modalStyles}>
+              <div style={modalContentStyles}>
+                <h2>이메일 인증</h2>
+                <p>이메일을 확인해주세요!</p>
+                <button onClick={() => setShowModal(false)} style={closeButtonStyles}>
+                  닫기
+                </button>
+              </div>
+            </div>
+          )}
+        
+
+        </Form>
+
+        {/* Success or Error Message */}
+        {success && <p>회원가입이 성공적으로 완료되었습니다!</p>}
+      </Container>
+    </OutContainer>
+    
   );
 };
 

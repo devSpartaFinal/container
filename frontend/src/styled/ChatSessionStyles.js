@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import styled from "styled-components";
 
 export const SessionListContainer = styled.div`
-  flex: 1;
-  padding: 5px;
   background: #eeeeee;
   display: flex;
   flex-direction: column;
@@ -12,23 +10,20 @@ export const SessionListContainer = styled.div`
 
 export const SessionList = styled.div`
   list-style: none;
-  padding: 0;
-  margin: 0;
-  flex: 1;
-  
 `;
 
 export const SessionItem = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px;
-  margin-bottom: 10px;
+  padding: 3%;
+  margin-bottom: 3%;
   background: ${({ isSelected }) => (isSelected ? "rgba(85, 162, 240, 0.8)" : "#fff")};
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   border-radius: 10px;
   cursor: pointer;
   position: relative;
+  max-height: 10%;
 
   &:hover {
     background: rgba(102, 138, 169, 0.57);

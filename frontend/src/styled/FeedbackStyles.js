@@ -19,11 +19,11 @@ export const FeedbackPanel = styled.div`
   margin-left: 7%;
   width: 67.5%;
   border-radius: 10px 0 0 10px;
+  justify-content: center;
 
-  @media (max-width: 1600px) {
-  margin-leftt: 50%;
-  width: 60%;
-
+  @media (max-width: 1200px) {
+  margin-left: 2%;
+  width: 72%;
 `;
 
 export const QuizListPanel = styled.div`
@@ -68,3 +68,8 @@ export const SpinnerContainer = styled.div`
   align-items: center;
   height: 100vh; /* 화면 중앙에 배치하려면 높이를 설정 */
 `;
+
+export const Notice = styled.div`
+  text-align: center;
+  margin-top: 25%;
+`

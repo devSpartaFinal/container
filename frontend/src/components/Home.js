@@ -40,18 +40,12 @@ const Home = () => {
   return (
     <HomeContainer>
       {/* <Header> */}
-      <div>
-      <img className="phoneImage" alt="title" src={logo} 
-      style={{ width: '90%', minWidth: '900px', height: '90%', margin: '0 auto', marginLeft: '12%', marginTop: "3%"}}
-      />
-      </div>
+      <img className="image" alt="title" src={logo}/>
       <Content>
         <ButtonGroup>
           <ButtonHalf onClick={() => handleButtonClick("/read")}>
-            <div style={{ marginBottom: '-20%'}}>
-            <img className="phoneImage" alt="title" src={readLogo} 
-            style={{ width: '70%', height: '80%', marginLeft: '-40%', margin: '0 auto', marginTop: '5%', objectFit: 'contain'}}
-            />
+            <div>
+              <img className="image2" alt="read" src={readLogo} style={{marginLeft: '1%'}} />
             </div>
             <ButtonDescription style={{ color: "#D7567F"}}>
             <hr style={{ borderColor: "#D7567F", borderWidth: "2px", borderStyle: "solid"}} />
@@ -63,14 +57,11 @@ const Home = () => {
             </ButtonDescription>
           </ButtonHalf>
           <ButtonHalf onClick={() => handleButtonClick("/riddle")}>
-          <div style={{ marginBottom: '-20%'}}>
-            <img className="phoneImage" alt="title" src={riddleLogo} 
-           style={{ width: '70%', height: '80%', marginLeft: '-45%', margin: '0 auto', marginTop: '5%', objectFit: 'contain'}}
-           />
+            <div>
+              <img className="image3" alt="riddle" src={riddleLogo} style={{marginLeft: '5%'}} />
             </div>
             <ButtonDescription>
             <hr style={{ borderColor: "#008C8C", borderWidth: "2px", borderStyle: "solid" }} />
-
               - 주어진 카테고리를 바탕으로 AI가 여러개의 Riddle을 생성합니다. <br></br>
               - Read Summary 로 교재에 대한 요약내용을 확인할 수 있습니다. <br></br>
               - Riddle을 시작하기 전에 난이도와 문항 개수, 형식 등을 설정할 수 있습니다. <br></br>
@@ -99,7 +90,7 @@ const HomeContainer = styled.div`
   color: #ffffff;
   font-family: "Arial", sans-serif;
   text-align: center;
-  overflow: hidden;
+  overflow-x: hidden;
 `;
 
 const Header = styled.header`
@@ -130,11 +121,10 @@ const Subtitle = styled.h2`
 
 const Content = styled.div`
   width: 100%;
-  height: 65%;
-  margin-top: 3%;
-  padding: 20px;
+  height: 60%;
+  padding-top: 2%;
+  margin-top: -3%;
   background: linear-gradient(135deg, #f6d365, #fda085);
-  border-radius: 15px;
   font-weight: bold;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
 `;
@@ -149,38 +139,28 @@ const Description = styled.p`
 const ButtonGroup = styled.div`
   display: flex;
   justify-content: space-between;
-  margin-top: 3%;
   margin-left: 7.8%;
-  gap: 20px;
   width: 90%;
-  padding-top: 20px;
-  padding-bottom: 20px;
-
-  @media (max-width: 1600px) {
-  margin-left: 8.5%;
-  margin-top: 0%;
+  height: 93%;
 
   @media (max-width: 1200px) {
   margin-left: 4%;
 `;
 
 const ButtonHalf = styled.div`
-  width: 47%; /* 각 버튼 영역을 절반으로 나눔 */
-  height: 400px;
+  width: 48.5%; /* 각 버튼 영역을 절반으로 나눔 */
+  height: 100%;
   background-color: #eeeeee;
-  // background-color: rgba(255, 255, 255, 0.2);
-  color: #000000;
   border-radius: 15px;
-  padding: 20px;
   cursor: pointer;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
   text-align: left;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
-  margin-top: -1.5%;
+  padding: 0.5%;
+  overflow: hidden;
 
   &:hover {
     transform: scale(1.05);
@@ -208,14 +188,12 @@ const ButtonDescription = styled.p`
   font-size: 1.2em;
   // color: #ffffff;
   font-weight: 300;
-  margin: -30px;
-  margin-bottom: 20%;
   text-align: left;
   font-weight: bold;
-  font-size: 1em;
   color: #008C8C;
-  padding-left: 6%;
-  padding-right: 20px;
-  line-height: 1.5;
-  // text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+  padding-left: 5%;
+  padding-right: 5%;
+  line-height: 1.8;
+  overflow-x: hidden;
+  overflow-y: auto;
 `;

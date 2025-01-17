@@ -183,7 +183,7 @@ const Nav = styled.nav`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 6em;
+  width: 5%;
   height: 88%;
   padding: 6vh 5px;
   background: #fb4759;
