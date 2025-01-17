@@ -1,17 +1,4 @@
 services:
-  frontend:
-    build:
-      context: ./frontend
-    volumes:
-      - ./frontend:/app/frontend
-      - /app/frontend/node_modules
-    ports:
-      - "3000:3000"
-    env_file:
-      - .env
-    environment:
-      REACT_APP_API_URL: http://localhost:8000
-
   backend:
     build:
       context: ./backend

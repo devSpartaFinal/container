@@ -28,7 +28,7 @@ SECRET_KEY = DRF_SECRET_KEY
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["13.209.76.189"]
 
 # React 프론트 관련 / # 모든 출처 허용
 CORS_ALLOW_ALL_ORIGINS = True  
@@ -60,7 +60,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
+            "hosts": [("13.209.76.189", 6379)],
         },
     },
 }
