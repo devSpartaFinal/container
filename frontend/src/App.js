@@ -47,9 +47,7 @@ function App() {
             <Route
               path="/home"
               element={
-                <AuthProvider>
                   <Home />
-                </AuthProvider>
               }
             />
             <Route

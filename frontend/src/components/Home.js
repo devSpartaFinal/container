@@ -26,7 +26,7 @@ const Home = () => {
 };
 
   const handleButtonClick = (url) => {
-    const accessToken = getCookie("access");
+    const accessToken = getCookie("access") || getCookie("accessToken");
     document.cookie = `accessToken=${accessToken}; path=/; max-age=86400; SameSite=Lax`;
 
     if (!accessToken) {
