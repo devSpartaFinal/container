@@ -41,6 +41,7 @@ export const SessionParentContainer = styled.div`
   right: 0; /* 화면에 딱 맞게 고정 */
   // border-radius: 0px 15px 15px 0px;
   z-index: 1000; /* 다른 요소 위에 표시되도록 설정 */
+  overflow-x: hidden;
 
   box-sizing: border-box;
   @media (max-width: 1800px) {

@@ -564,7 +564,7 @@ const Riddle = () => {
 
       <FormQuizContainer>
         <div className="line"></div>
-        <h1 style={{ color: "#3c3c3c", marginLeft: 30 }}>
+        <h1 style={{ color: "#3c3c3c", marginLeft: 30, textAlign: "left" }}>
           "{selectedCategory || "Category"}" 에 대한 문제를 풀어봅시다!
         </h1>
         <div className="line"></div>
@@ -572,7 +572,7 @@ const Riddle = () => {
           {Array.isArray(selectedQuestions) &&
             selectedQuestions.map((quiz) => (
               <FormQuizCardContainer key={quiz.number}>
-                <TitleContainer>
+                <TitleContainer style={{ textAlign: "left" }}>
                   Q{quiz.number}. {quiz.content}
                 </TitleContainer>
 
@@ -648,7 +648,7 @@ const Riddle = () => {
                   )}
                   <div>
                     {isFeedbackShown && feedbackDetails[quiz.number] && (
-                      <FeedbackContent>
+                      <FeedbackContent  style={{ textAlign: "left" }}>
                         {feedbackDetails[quiz.number]}
                       </FeedbackContent>
                     )}

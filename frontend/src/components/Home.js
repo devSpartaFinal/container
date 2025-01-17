@@ -42,7 +42,7 @@ const Home = () => {
       {/* <Header> */}
       <div>
       <img className="phoneImage" alt="title" src={logo} 
-      style={{ width: '90%', minWidth: '900px', height: '90%', margin: '0 auto', marginLeft: '12%'}}
+      style={{ width: '90%', minWidth: '900px', height: '90%', margin: '0 auto', marginLeft: '12%', marginTop: "3%"}}
       />
       </div>
       <Content>
@@ -180,6 +180,7 @@ const ButtonHalf = styled.div`
   text-align: left;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
+  margin-top: -1.5%;
 
   &:hover {
     transform: scale(1.05);
