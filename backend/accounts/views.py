@@ -389,18 +389,23 @@ from coding_helper.settings import (
 from datetime import datetime
 
 
-def google_login(request):
-    google_oauth_url = "https://accounts.google.com/o/oauth2/v2/auth"
-    params = {
-        "response_type": "code",
-        "client_id": GOOGLE_OAUTH_CLIENT_ID,
-        "redirect_uri": GOOGLE_OAUTH_CALLBACK_URL,
-        "scope": "profile email",
-        "state": "state_parameter",
-    }
 
-    auth_url = f"{google_oauth_url}?{urlencode(params)}"
-    return redirect(auth_url)
+class GoogleLogin(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        google_oauth_url = "https://accounts.google.com/o/oauth2/v2/auth"
+        params = {
+            "response_type": "code",
+            "client_id": GOOGLE_OAUTH_CLIENT_ID,
+            "redirect_uri": GOOGLE_OAUTH_CALLBACK_URL,
+            "scope": "https://www.googleapis.com/auth/userinfo.email",
+            "state": "state_parameter",
+        }
+
+        auth_url = f"{google_oauth_url}?{urlencode(params)}"
+        return Response({"auth_url": auth_url})
+    
 
 
 class GoogleLoginCallback(APIView):
@@ -419,26 +424,28 @@ class GoogleLoginCallback(APIView):
         # POST 요청을 Google의 토큰 엔드포인트로 보냄
         response = requests.post(
             url=token_endpoint_url,
-            data={
+            params={
+                "client_id": GOOGLE_OAUTH_CLIENT_ID, 
+                "client_secret": GOOGLE_OAUTH_CLIENT_SECRET,
                 "code": code,
-                "client_id": GOOGLE_OAUTH_CLIENT_ID,  # 실제 client_id로 교체
-                "client_secret": GOOGLE_OAUTH_CLIENT_SECRET,  # 실제 client_secret로 교체
-                "redirect_uri": GOOGLE_OAUTH_CALLBACK_URL,  # 실제 redirect_uri로 교체
                 "grant_type": "authorization_code",
+                "redirect_uri": GOOGLE_OAUTH_CALLBACK_URL, 
             },
         )
 
         # 응답이 JSON 형식인지 확인하고 처리
         try:
             response_dict = response.json()
-            access_token = response_dict["access_token"]
+            access_token = response_dict.get('access_token')
             url = "https://www.googleapis.com/oauth2/v3/userinfo"
             headers = {"Authorization": f"Bearer {access_token}"}
             response = requests.get(url, headers=headers)
             response_data = response.json()
-            email = response_data["email"]
+            
+            email = response_data.get('email')
+
             id = email.split("@")[0]
-            username = f"05#{id}"
+            username = f"05_{id}"
             try:
                 user = User.objects.get(username=username)
                 print("가입된 사용자")
@@ -455,11 +462,24 @@ class GoogleLoginCallback(APIView):
                 )
                 user.save()
 
-            user.social_login = True
+            login(request, user)
+            update_last_login(None, user)
+            token = TokenObtainPairSerializer.get_token(user)
+            refresh_token = str(token)
+            access = str(token.access_token)
+            res = Response(
+                {
+                    "access": access,
+                    "username": username,
+                },
+                status=status.HTTP_200_OK,
+            )
+            
+            # jwt 토큰 => 쿠키에 저장
+            user.refresh_token = refresh_token
             user.save()
-            username = user.username
-
-            return Response({"username": username})
+            print(res.data)
+            return res
 
         except requests.exceptions.RequestException as e:
             return Response({"error": f"Request error: {str(e)}"}, status=400)

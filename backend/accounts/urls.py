@@ -13,7 +13,7 @@ urlpatterns = [
 
 # Google 로그인 관련 URL
 urlpatterns += [
-    path("google/", google_login, name="google_login"),
+    path("google/", GoogleLogin.as_view(), name="google_login"),
     path("google/callback/", GoogleLoginCallback.as_view(), name="google_login_callback"),
 ]
 

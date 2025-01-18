@@ -17,6 +17,7 @@ import { AuthProvider } from "./context/AuthContext";
 import AfterEmail from "./components/AfterEmail";
 import Feedback from "./components/Feedback";
 import MultiChatRoom from "./components/MultiChatting";
+import GoogleLogin from "./components/GoogleLogin";
 
 function App() {
 
@@ -92,6 +93,11 @@ function App() {
             />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} /> 
+            
+            <Route path="/google/login" element={
+              <GoogleLogin setIsLoggedIn={setIsLoggedIn} />
+              } /> 
+            
             <Route
               path="/update"
               element={

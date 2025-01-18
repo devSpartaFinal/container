@@ -14,7 +14,6 @@ import {
 import { IoExtensionPuzzle } from "react-icons/io5";
 import { MdOutlineGrading } from "react-icons/md";
 import styled from "styled-components";
-import { apiRequest } from "../apiRequest";
 
 const Navigation = ({ isLoggedIn }) => {
   const location = useLocation();
