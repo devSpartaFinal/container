@@ -3,6 +3,9 @@ import { Container, Title, Form, Input, Button, Label, FieldContainer } from "..
 import { apiRequest }  from "../apiRequest"; 
 import { useNavigate } from "react-router-dom"; 
 import Cookies from "js-cookie";
+import { FaGoogle } from "react-icons/fa";
+import logo from '../assets/logo.png'
+
 
 const Login = ({ setIsLoggedIn, isLoggedIn }) => {
   const [formData, setFormData] = useState({
@@ -44,9 +47,23 @@ const Login = ({ setIsLoggedIn, isLoggedIn }) => {
       navigate("/profile");
 
     } catch (err) {
-      console.error("Login Error:", err);
+      console.error("Login Error:", err.message);
       setError("로그인에 실패했습니다. 아이디와 비밀번호를 다시 확인해주세요.");
     }
+  };
+
+  const handleGoogleLogin = async(e) => {
+
+    try{
+      const response = await apiRequest.get("/google/");
+      const {auth_url} = response.data;
+      window.location.href = auth_url;
+    }
+    catch (err)
+    {
+      alert("구글 로그인 요청을 실패했습니다");
+    }
+    
   };
 
   useEffect(() => {
@@ -110,7 +127,24 @@ const Login = ({ setIsLoggedIn, isLoggedIn }) => {
 
   return (
     <Container>
-      <Title>로그인</Title>
+
+      <img className="image" alt="title" src={logo}/>
+
+      <Button
+        onClick={handleGoogleLogin}
+        style={{
+          width: "100%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "#4285F4",
+          color: "white",
+        }}
+      >
+        <FaGoogle style={{ marginRight: "8px" }} />
+        Google로 로그인
+      </Button>
+
       <Form onSubmit={handleSubmit}>
         {/* ID */}
         <FieldContainer>
@@ -142,6 +176,7 @@ const Login = ({ setIsLoggedIn, isLoggedIn }) => {
 
         {/* Submit Button */}
         <Button type="submit">로그인</Button>
+
         {/* 회원가입 버튼 */}
         <Button
           type="button"
@@ -152,8 +187,11 @@ const Login = ({ setIsLoggedIn, isLoggedIn }) => {
         </Button>
       </Form>
 
+      
+
       {/* Success Message */}
       {error && <p style={{ color: "red" }}>{error}</p>}
+
       {success && <p>로그인에 성공했습니다!</p>}
     </Container>
   );

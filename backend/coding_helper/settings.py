@@ -15,6 +15,13 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 HOSTUSER_EMAIL = os.getenv("HOSTUSER_EMAIL")
 HOSTUSER_EMAIL_PASSWORD = os.getenv("HOSTUSER_EMAIL_PASSWORD")
 
+GOOGLE_OAUTH_CLIENT_ID = os.getenv("GOOGLE_OAUTH_CLIENT_ID")
+GOOGLE_OAUTH_CLIENT_SECRET = os.getenv("GOOGLE_OAUTH_CLIENT_SECRET")
+GOOGLE_OAUTH_CALLBACK_URL = os.getenv("GOOGLE_OAUTH_CALLBACK_URL")
+GITHUB_CLIENT_ID = os.getenv("GITHUB_CLIENT_ID")
+GITHUB_CLIENT_SECRET = os.getenv("GITHUB_CLIENT_SECRET")
+GITHUB_REDIRECT_URI = os.getenv("GITHUB_REDIRECT_URI")
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -43,6 +50,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    # site 섹션 추가
+    'django.contrib.sites',
     # Third party
     'corsheaders',
     "django_seed",
@@ -51,6 +60,13 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",
     "channels",
+    'rest_framework.authtoken',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    "allauth.socialaccount.providers.github",
+    'dj_rest_auth.registration',
     # Custom Apps
     "accounts",
     "chatbot",
@@ -87,7 +103,32 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     # Third party
     'corsheaders.middleware.CorsMiddleware',
+    "allauth.account.middleware.AccountMiddleware",
 ]
+
+ACCOUNT_AUTHENTICATION_METHOD = "email"  # 이메일 인증 방식
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = "none"  # 이메일 확인을 요구하지 않음
+
+SITE_ID = 1
+
+SOCIALACCOUNT_PROVIDERS = {
+    "google": {
+        "SCOPE": ["profile", "email"],
+        "AUTH_PARAMS": {
+            "access_type": "online",
+        },
+    },
+    "github": {
+        "SCOPE": [
+            "read:user", "user:email"
+        ],
+        "AUTH_PARAMS": {
+            "allow_signup": "true",  # 회원가입 허용
+        },
+    }
+}
 
 ROOT_URLCONF = "coding_helper.urls"
 
