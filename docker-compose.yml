@@ -27,16 +27,20 @@ services:
       DJANGO_SUPERUSER_USERNAME: admin
       DJANGO_SUPERUSER_EMAIL: admin@example.com
       DJANGO_SUPERUSER_PASSWORD: password
+      REDIS_HOST: redis
     depends_on:
       - db
+      - redis
     command: >
       sh -c "
       dockerize -wait tcp://db:5432 -timeout 30s &&
       python manage.py makemigrations &&
       python manage.py migrate &&
       python manage.py createsuperuser --noinput || true &&
-      exec python manage.py runserver 0.0.0.0:8000
+      exec python manage.py runserver 0.0.0.0:8000 &&
+      exec daphne coding_helper.asgi:application --port 8000
       "
+# daphne 또는 python manage.py runserver 0.0.0.0:8000 && 둘 중 하나만 실행
       
   db:
     image: postgres:15
@@ -64,5 +68,11 @@ services:
     # 볼륨 설정
     volumes:
       - ./db/pgadmin/:/var/lib/pgadmin
+
+  redis:
+    image: redis
+    container_name: redis
+    ports:
+      - "6379:6379"
 
 # volumes: {}

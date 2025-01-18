@@ -633,3 +633,24 @@ project/
 ```
   </details>
 
+## 트러블 슈팅
+
+[박성진] - 웹소켓 구현 시 FE에서 송신한 정보에 대해 경로를 찾지 못하는 현상
+(에러 로그)
+```bash
+2025-01-17 17:24:54 Not Found: /ws/chat/test_room/
+2025-01-17 17:24:54 [17/Jan/2025 17:24:54] "GET /ws/chat/test_room/ HTTP/1.1" 404 2655
+```
+(원인) Django의 runserver에서는 ASGI Websocket 을 완전히 지원하지 않기 때문
+(수정) daphne을 통해서 ASGI Websocket 환경 구축
+```bash
+1. daphne 설치 및 등록(requirements.txt)
+2. settings.py 의 INSTALLED_APPS 의 맨 윗부분에 추가
+ - 다른 "django.contrib."로 구성된 APPS 이전에 실행되어야 하므로 순서가 선행되어야 한다
+3. docker-compose 파일의 backend 커맨드라인 변경
+<기존>
+exec python manage.py runserver 0.0.0.0:8000 (마지막 라인)
+<변경>
+exec python manage.py runserver 0.0.0.0:8000 &&
+exec daphne coding_helper.asgi:application --port 8000
+```

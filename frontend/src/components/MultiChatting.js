@@ -1,75 +1,90 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
-const MultiChatRoom = ({ roomName }) => {
+// 쿠키 값을 가져오는 함수
+const getCookie = (name) => {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(";").shift();
+    return null;
+};
+
+const MultiChatRoom = () => {
     const [messages, setMessages] = useState([]);
     const [message, setMessage] = useState("");
-    const [timeRemaining, setTimeRemaining] = useState(""); // 남은 시간
-    const wsUrl = `ws://localhost:8000/ws/chat/${roomName}/`;
+    const [username, setUsername] = useState(""); // username 상태 추가
+    const socket = useRef(null);
+    
+    const wsUrl = "ws://localhost:8000/ws/chat/global_room/"; // 고정된 room_name
 
-    // 남은 시간 계산 함수
-    const calculateTimeRemaining = () => {
-        const deadline = new Date("2025-01-20T23:59:59"); // 마감 시간
-        const now = new Date();
-        const diff = deadline - now;
-
-        if (diff <= 0) {
-            setTimeRemaining("마감!");
-            return;
+    // 컴포넌트 로드 시 쿠키에서 username 가져오기
+    useEffect(() => {
+        const savedUsername = getCookie("username");
+        if (savedUsername) {
+            setUsername(savedUsername);
+        } else {
+            console.warn("쿠키에서 username을 찾을 수 없습니다.");
         }
-
-        const hours = Math.floor((diff / (1000 * 60 * 60)) + (diff / (1000 * 60 * 60)) % 24);
-        const minutes = Math.floor((diff / (1000 * 60)) % 60);
-        const seconds = Math.floor((diff / 1000) % 60);
-
-        setTimeRemaining(`${hours}시간 ${minutes}분 ${seconds}초`);
-    };
+    }, []);
 
     // WebSocket 연결
     useEffect(() => {
-        const socket = new WebSocket(wsUrl);
+        socket.current = new WebSocket(wsUrl);
 
-        socket.onmessage = (event) => {
+        socket.current.onopen = () => {
+            console.log("WebSocket is connected to global_room");
+        };
+
+        socket.current.onmessage = (event) => {
             const data = JSON.parse(event.data);
             setMessages((prevMessages) => [...prevMessages, data]);
         };
 
-        socket.onclose = () => {
+        socket.current.onclose = () => {
             console.log("WebSocket connection closed");
         };
 
-        return () => socket.close();
-    }, [wsUrl]);
-
-    // 기간 업데이트
-    useEffect(() => {
-        calculateTimeRemaining(); // 컴포넌트가 렌더링될 때 초기 계산
-        const interval = setInterval(calculateTimeRemaining, 1000); // 매초마다 업데이트
-
-        return () => clearInterval(interval); // 컴포넌트가 언마운트될 때 정리
+        return () => {
+            if (socket.current) {
+                socket.current.close();
+            }
+        };
     }, []);
 
     const sendMessage = () => {
-        const socket = new WebSocket(wsUrl);
-        socket.send(JSON.stringify({ message }));
-        setMessage("");
+        if (socket.current && socket.current.readyState === WebSocket.OPEN) {
+            const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+            socket.current.send(
+                JSON.stringify({ message, username, timestamp })
+            );
+            setMessage("");
+        } else {
+            console.log("WebSocket is not connected yet.");
+        }
     };
 
     return (
-        <div>
-            <div>
+        <div className="chat-container">
+            <h1 className="header">Riddle Riddle 채팅방</h1>
+            <div className="chat-box">
                 {messages.map((msg, index) => (
-                    <p key={index}>
-                        <strong>{msg.username}: </strong> {msg.message}
-                    </p>
+                    <div key={index} className="chat-message">
+                        <p>
+                            <strong>{msg.username}: </strong>
+                            {msg.message} <small>{msg.timestamp}</small>
+                        </p>
+                    </div>
                 ))}
             </div>
-            <h1>🔧 프로젝트 마감까지 {timeRemaining} 남았습니다! 🔧</h1>
-            <input
-                type="text"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                onKeyPress={(e) => e.key === "Enter" && sendMessage()}
-            />
+            <div className="input-container">
+                <input
+                    type="text"
+                    value={message}
+                    placeholder="메시지를 입력하세요..."
+                    onChange={(e) => setMessage(e.target.value)}
+                    onKeyPress={(e) => e.key === "Enter" && sendMessage()}
+                />
+                <button onClick={sendMessage}>전송</button>
+            </div>
         </div>
     );
 };
