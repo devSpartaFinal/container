@@ -635,7 +635,9 @@ project/
 
 ## 트러블 슈팅
 
-[박성진] - 웹소켓 구현 시 FE에서 송신한 정보에 대해 경로를 찾지 못하는 현상
+[박성진]
+
+1. 웹소켓 구현 시 FE에서 송신한 정보에 대해 경로를 찾지 못하는 현상
 (에러 로그)
 ```bash
 2025-01-17 17:24:54 Not Found: /ws/chat/test_room/
@@ -653,4 +655,30 @@ exec python manage.py runserver 0.0.0.0:8000 (마지막 라인)
 <변경>
 exec python manage.py runserver 0.0.0.0:8000 &&
 exec daphne coding_helper.asgi:application --port 8000
+```
+
+2. 사용자가 다른 페이지로 이동하거나 로그아웃해서 채팅방 연결을 종료했을 때, 채팅 참여목록이 갱신되지 않는 현상
+(원인) useEffect의 return에 선언한 아래 구문이 이미 소켓 연결이 종료된 시점에 호출되어서 메세지가 송신되지 않음
+```js
+if (socket.current.readyState === WebSocket.OPEN) {
+    socket.current.send(JSON.stringify({ type: "leave", username }));
+}
+```
+
+(수정) WebSocket 연결이 DISCONNECT 되기 전에 beforeunload 이벤트를 추가하여 페이지를 떠날 때 leave 메시지를 전송해서 참여목록 갱신
+```js
+const handleBeforeUnload = () => {
+    if (socket.current && socket.current.readyState === WebSocket.OPEN) {
+        socket.current.send(JSON.stringify({ type: "leave", username }));
+    }
+};
+window.addEventListener("beforeunload", handleBeforeUnload);
+return () => {
+  // beforeunload 이벤트 제거
+  window.removeEventListener("beforeunload", handleBeforeUnload);
+
+  if (socket.current) {
+      socket.current.close(); // disconnect 메서드 호출
+  }
+};
 ```
