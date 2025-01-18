@@ -126,8 +126,25 @@ const Login = ({ setIsLoggedIn, isLoggedIn }) => {
 
   return (
     <Container>
-      <Title>로그인</Title>
+
+      <Title>ReadRiddle 로그인</Title>
       <Form onSubmit={handleSubmit}>
+
+      <Button
+        onClick={handleGoogleLogin}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "#4285F4",
+          color: "white",
+        }}
+      >
+        <FaGoogle style={{ marginRight: "8px" }} />
+        Google로 로그인
+      </Button>
+
+      
         {/* ID */}
         <FieldContainer>
           <Label htmlFor="username">ID</Label>
@@ -169,19 +186,7 @@ const Login = ({ setIsLoggedIn, isLoggedIn }) => {
         </Button>
       </Form>
 
-      <Button
-        onClick={handleGoogleLogin}
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "#4285F4",
-          color: "white",
-        }}
-      >
-        <FaGoogle style={{ marginRight: "8px" }} />
-        Google로 로그인
-      </Button>
+      
 
       {/* Success Message */}
       {error && <p style={{ color: "red" }}>{error}</p>}

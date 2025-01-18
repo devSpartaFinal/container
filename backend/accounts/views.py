@@ -454,7 +454,7 @@ class GoogleLoginCallback(APIView):
 
                 user = User.objects.create(
                     username=username,
-                    email=f"{id}@social.com",
+                    email=email,
                     first_name="Anonymous",
                     nickname=id,
                     is_active=True,

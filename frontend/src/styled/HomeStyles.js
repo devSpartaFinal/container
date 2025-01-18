@@ -9,8 +9,7 @@ export const StyledOuterContainer = styled.div`
     width: 100%;  
     height: 100%;  
     margin: 0 auto;
-    background: #ffffff;  
-    border-radius: 15px;
+    background: linear-gradient(135deg, #f6d365, #fda085);
     top: 50%;  
     left: 50%; 
     transform: translate(-50%, -50%);
