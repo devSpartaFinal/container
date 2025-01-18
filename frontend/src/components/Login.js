@@ -4,6 +4,7 @@ import { apiRequest }  from "../apiRequest";
 import { useNavigate } from "react-router-dom"; 
 import Cookies from "js-cookie";
 import { FaGoogle } from "react-icons/fa";
+import logo from '../assets/logo.png'
 
 
 const Login = ({ setIsLoggedIn, isLoggedIn }) => {
@@ -127,12 +128,12 @@ const Login = ({ setIsLoggedIn, isLoggedIn }) => {
   return (
     <Container>
 
-      <Title>ReadRiddle 로그인</Title>
-      <Form onSubmit={handleSubmit}>
+      <img className="image" alt="title" src={logo}/>
 
       <Button
         onClick={handleGoogleLogin}
         style={{
+          width: "100%",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -144,7 +145,7 @@ const Login = ({ setIsLoggedIn, isLoggedIn }) => {
         Google로 로그인
       </Button>
 
-      
+      <Form onSubmit={handleSubmit}>
         {/* ID */}
         <FieldContainer>
           <Label htmlFor="username">ID</Label>

@@ -5,12 +5,13 @@ export const ProfileContainer = styled.div`
   justify-content: center;
   align-items: center;
   width: 40vw;
-  background-color: #ffffff;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 15px;
   padding: 2rem;
 `;
 
 export const ProfileCard = styled.div`
-  background: #ffffff;
+  background:transparent;
   border-radius: 15px;
   width: 100%;
   max-width: 400px;

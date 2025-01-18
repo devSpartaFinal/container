@@ -18,7 +18,7 @@ export const Container = styled.div`
     padding: 20px;
     width: 40%;
     left: 33%;
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 0.2);
     border-radius: 10px;
     overflow-x: hidden;
 `;
