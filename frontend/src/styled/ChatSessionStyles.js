@@ -14,7 +14,6 @@ export const SessionList = styled.div`
 
 export const SessionItem = styled.div`
   display: flex;
-  justify-content: space-between;
   align-items: center;
   padding: 3%;
   margin-bottom: 3%;
@@ -22,8 +21,6 @@ export const SessionItem = styled.div`
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   border-radius: 10px;
   cursor: pointer;
-  position: relative;
-  max-height: 10%;
 
   &:hover {
     background: rgba(102, 138, 169, 0.57);

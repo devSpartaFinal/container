@@ -169,16 +169,15 @@ export const OptionButton = styled.button`
   width: 95%;
   cursor: pointer;
   font-size: 1em;
+  border-radius: 7px;
 
   &:hover {
     background-color: #6e6e6e;
     color: white;
-    border-radius: 3px;
   }
 
   &.selected {
     background-color: #6e6e6e;
-    border-radius: 3px;
     color: white;
     font-weight: bold;
   }
@@ -246,7 +245,7 @@ export const Option2Button = styled.button`
   color: #63b5da;
   border: 2px solid #63b5da;
   padding: 10px 10px;
-  border-radius: 4px;
+  border-radius: 7px;
   cursor: pointer;
   font-size: 1em;
   min-width: 90%;

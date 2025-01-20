@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import "./MultiChatRoom.css";
+import {
+    HomeContainer,
+  } from "../styled/MultiChattingStyles";
 
 
 // 쿠키 값을 가져오는 함수
@@ -91,39 +94,66 @@ const MultiChatRoom = () => {
     };
 
     return (
-        <div className="chat-container">
-            <h1 className="header">Riddle Riddle 채팅방</h1>
-            <div className="chat-room">
+            <div className="chat-container">
+                <h1 className="header">Riddle Riddle 채팅방</h1>
+                <div className="chat-room">
                 <div className="chat-box">
                     {messages.map((msg, index) => (
-                        <div key={index} className="chat-message">
+                        <div
+                            key={index}
+                            className={`chat-message ${
+                                msg.username === username ? "chat-own" : "chat-other"
+                            }`}
+                        >
                             <p>
-                                <strong>{msg.username}: </strong>
-                                {msg.message} <small>{msg.timestamp}</small>
+                                {msg.username === username ? (
+                                    <>
+                                        {/* msg.timestamp은 메시지 왼쪽에 표시 */}
+                                        <small style={{ marginRight: '10px', fontSize: '0.8em', color: 'gray', display: 'inline-block' }}>{msg.timestamp}</small>
+                                        <div
+                                            className={`chatting-message own-message`}
+                                            style={{ display: 'inline-block'}}
+                                        >
+                                            {msg.message}
+                                        </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        {/* msg.username과 msg.message가 함께 표시되고, msg.timestamp은 메시지 오른쪽에 표시 */}
+                                        <strong>{msg.username}</strong><br/>
+                                        <div
+                                            className={`chatting-message other-message`}
+                                        >
+                                            {msg.message}
+                                        </div>
+                                        <small style={{ marginLeft: '10px', fontSize: '0.8em', color: 'gray', display: 'inline-block' }}>{msg.timestamp}</small>
+                                    </>
+                                )}
                             </p>
                         </div>
                     ))}
                 </div>
-                <div className="participants-box">
-                    <h2>참여자 목록</h2>
-                    <ul>
-                        {participants.map((participant, index) => (
-                            <li key={index}>{participant}</li>
-                        ))}
-                    </ul>
+
+                    <div className="participants-box">
+                        <h2>참여자 목록</h2>
+                        <ul>
+                            {participants.map((participant, index) => (
+                                <li key={index}>{participant}</li>
+                            ))}
+                        </ul>
+                    </div>
+                </div>
+                <div className="input-container">
+                    <input
+                        type="text"
+                        value={message}
+                        placeholder="메시지를 입력하세요..."
+                        onChange={(e) => setMessage(e.target.value)}
+                        onKeyPress={(e) => e.key === "Enter" && sendMessage()}
+                    />
+                    <button onClick={sendMessage}>전송</button>
                 </div>
             </div>
-            <div className="input-container">
-                <input
-                    type="text"
-                    value={message}
-                    placeholder="메시지를 입력하세요..."
-                    onChange={(e) => setMessage(e.target.value)}
-                    onKeyPress={(e) => e.key === "Enter" && sendMessage()}
-                />
-                <button onClick={sendMessage}>전송</button>
-            </div>
-        </div>
     );
 };
 
