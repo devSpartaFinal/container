@@ -22,7 +22,8 @@ services:
       python manage.py makemigrations &&
       python manage.py migrate &&
       python manage.py createsuperuser --noinput || true &&
-      exec python manage.py runserver 0.0.0.0:80
+      exec python manage.py runserver 0.0.0.0:80 &&
+      exec daphne coding_helper.asgi:application --port 80
       "
       
   db:
