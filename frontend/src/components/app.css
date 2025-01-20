@@ -161,4 +161,20 @@ margin-top: 10%;
   }
 }
 
+.submit-button:disabled {
+  position: relative;
+}
 
+.submit-button:disabled::after {
+  content: '모든 답을 선택한 후 답안을 제출할 수 있습니다.';
+  position: absolute;
+  top: 150%;
+  left: 50%;
+  transform: translateX(-50%);
+  color: red;
+  font-size: 1em;
+  opacity: 1;
+  pointer-events: none;
+  padding-bottom: 3%;
+  width: 100%;
+}
