@@ -429,6 +429,11 @@ const Riddle = () => {
     }
   };
 
+  const isAllOptionsSelected = selectedQuestions.every((quiz) =>
+  selectedOptions.hasOwnProperty(quiz.number) && selectedOptions[quiz.number] !== undefined
+);
+
+
   return (
     <>
       {isLoading && (
@@ -622,19 +627,21 @@ const Riddle = () => {
                         <Option2Button
                           key={choice.number}
                           style={{
-                            backgroundColor: isCorrected(
-                              quiz.number,
-                              choice.number
-                            )
-                              ? "#43b738" // 정답이고 이전에 선택된 경우 초록색
+                            backgroundColor: isCorrected(quiz.number, choice.number)
+                              ? "#43b738" // 정답인 경우 초록색
+                              : selectedOptions[quiz.number] === choice.number
+                              ? "#007bff" // 사용자가 선택한 경우 푸른색
                               : isHighlighted(quiz.number, choice.number)
-                              ? "#e57f7b" // 정답인 경우 빨간색
+                              ? "#e57f7b" // 오답이고 하이라이트된 경우 빨간색
                               : isPreviousAnswer(quiz.number, choice.number)
                               ? "#cccccc" // 이전에 선택된 경우 회색
-                              : "#c8c8c8", // 기본값은 없음
+                              : "transparent", // 기본값은 없음
                             color: isHighlighted(quiz.number, choice.number)
                               ? "#000000"
                               : "",
+                            fontWeight: isHighlighted(quiz.number, choice.number)
+                              ? "bold" // 하이라이트된 경우 글자 굵게
+                              : "normal", // 기본은 normal
                           }}
                           className={
                             selectedOptions[quiz.number] === choice.number
@@ -661,22 +668,24 @@ const Riddle = () => {
                     <OptionContainer>
                       {quiz.choices.map((choice) => (
                         <OptionButton
-                          key={choice.number}
-                          style={{
-                            backgroundColor: isCorrected(
-                              quiz.number,
-                              choice.number
-                            )
-                              ? "#43b738" // 정답이고 이전에 선택된 경우 초록색
-                              : isHighlighted(quiz.number, choice.number)
-                              ? "#e57f7b" // 정답인 경우 빨간색
-                              : isPreviousAnswer(quiz.number, choice.number)
-                              ? "#cccccc" // 이전에 선택된 경우 회색
-                              : "#c8c8c8", // 기본값은 없음
-                            color: isHighlighted(quiz.number, choice.number)
-                              ? "#000000"
-                              : "",
-                          }}
+                        key={choice.number}
+                        style={{
+                          backgroundColor: isCorrected(quiz.number, choice.number)
+                            ? "#43b738" // 정답인 경우 초록색
+                            : selectedOptions[quiz.number] === choice.number
+                            ? "#007bff" // 사용자가 선택한 경우 푸른색
+                            : isHighlighted(quiz.number, choice.number)
+                            ? "#e57f7b" // 오답이고 하이라이트된 경우 빨간색
+                            : isPreviousAnswer(quiz.number, choice.number)
+                            ? "#cccccc" // 이전에 선택된 경우 회색
+                            : "transparent", // 기본값은 없음
+                          color: isHighlighted(quiz.number, choice.number)
+                            ? "#000000"
+                            : "",
+                          fontWeight: isHighlighted(quiz.number, choice.number)
+                            ? "bold" // 하이라이트된 경우 글자 굵게
+                            : "normal", // 기본은 normal
+                        }}
                           className={
                             selectedOptions[quiz.number] === choice.number
                               ? "selected"
@@ -705,7 +714,12 @@ const Riddle = () => {
             ))}
         </FormQuizTestContainer>
         <SubmitContainer>
-          <SubmitButton onClick={handleSubmit}>Submit</SubmitButton>
+          <SubmitButton
+            onClick={handleSubmit}
+            disabled={!isAllOptionsSelected}
+            className="submit-button"
+            style={{cursor: isAllOptionsSelected ? 'pointer' : 'not-allowed'}}
+          >Submit</SubmitButton>
         </SubmitContainer>
       </FormQuizContainer>
 
@@ -725,7 +739,7 @@ const Riddle = () => {
             >
               {feedbackContent}
             </p>
-            <DetailButton onClick={feedbackDetail}>Detail</DetailButton>
+            <DetailButton onClick={feedbackDetail}>Save & Check Detail</DetailButton>
             <CloseButton onClick={closeModal}>
               {" "}
               <AiOutlineClose />{" "}

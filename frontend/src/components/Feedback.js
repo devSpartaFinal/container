@@ -24,6 +24,7 @@ const Feedback = () => {
     const loadQuizList = async () => {
       try {
         const data = await fetchQuizRequest();
+        data.sort((a, b) => a.id -b.id);
         setQuizList(data);
         setError(null); // 에러 초기화
       } catch (error) {
@@ -138,7 +139,7 @@ const Feedback = () => {
             ))}
           </FeedbackDetails>
         ) : (
-          <Notice style={{ fontSize: '3em' }}>
+          <Notice style={{ fontSize: '3em', overflow:'hidden' }}>
             {error ? error : (
               <>
                 Quiz List에서 퀴즈를 선택하여<br />
@@ -183,16 +184,14 @@ const Feedback = () => {
                     handleDeleteQuiz(quiz.title);
                   }}
                   style={{
-                    marginLeft: "10px",
-                    padding: "5px 10px",
-                    borderRadius: "5px",
+                    padding: "1px",
                     backgroundColor: "transparent",
                     color: "#f44336",
                     border: "none",
                     cursor: "pointer",
                   }}
                 >
-                  <AiOutlineClose size={20} />
+                  <AiOutlineClose size={15} style={{marginBottom: '-2px', marginLeft: '3px'}} />
                 </button>
               </div>
               
