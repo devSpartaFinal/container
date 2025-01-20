@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { fetchQuizRequest, fetchfeedbackDetails } from "../apiFeedbackRequest";
+import { fetchQuizRequest, fetchfeedbackDetails, deleteQuizRequest } from "../apiFeedbackRequest";
 import {
   FeedbackContainer,
   FeedbackPanel,
@@ -10,6 +10,7 @@ import {
   Notice,
 } from "../styled/FeedbackStyles";
 import "./app.css";
+import { AiOutlineClose } from "react-icons/ai";
 
 const Feedback = () => {
   const [quizList, setQuizList] = useState([]);
@@ -46,6 +47,19 @@ const Feedback = () => {
       console.error(error);
     } finally {
       setLoading(false); // 로딩 상태 종료
+    }
+  };
+
+  const handleDeleteQuiz = async (quizTitle) => {
+    try {
+      await deleteQuizRequest(quizTitle); // 삭제 API 호출
+      // 삭제 후 퀴즈 목록 다시 불러오기
+      const updatedQuizList = quizList.filter((quiz) => quiz.title !== quizTitle);
+      setQuizList(updatedQuizList);
+      setError(null); // 에러 초기화
+    } catch (error) {
+      setError("Failed to delete quiz.");
+      console.error(error);
     }
   };
 
@@ -99,7 +113,7 @@ const Feedback = () => {
                       borderRadius: "5px",
                     }}
                   >
-                    {feedbackItem.user_answer?.selected_choice?.content || "응답 없음"}
+                    {feedbackItem.user_answer?.selected_choice?.content || "선택한 답이 없습니다."}
                   </p>
                   <div className="divider2"></div>
                 </div>
@@ -163,7 +177,25 @@ const Feedback = () => {
                 }
               >
                 {quiz.title}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation(); // 클릭 시 퀴즈 선택을 방지
+                    handleDeleteQuiz(quiz.title);
+                  }}
+                  style={{
+                    marginLeft: "10px",
+                    padding: "5px 10px",
+                    borderRadius: "5px",
+                    backgroundColor: "transparent",
+                    color: "#f44336",
+                    border: "none",
+                    cursor: "pointer",
+                  }}
+                >
+                  <AiOutlineClose size={20} />
+                </button>
               </div>
+              
             ))}
           </div>
         ) : (
