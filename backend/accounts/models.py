@@ -49,9 +49,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         },
     )
     first_name = models.CharField(
-        max_length=50, null=False, blank=False, default="first"
+        max_length=50, null=True, blank=True, default="first"
     )
-    last_name = models.CharField(max_length=50, null=False, blank=False, default="last")
+    last_name = models.CharField(max_length=50, null=True, blank=True, default="last")
     nickname = models.CharField(
         max_length=30,
         unique=True,

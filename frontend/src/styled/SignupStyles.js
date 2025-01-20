@@ -90,7 +90,7 @@ export const Select = styled.select`
 `;
 
 export const TextArea = styled.textarea`
-    width: 100%;
+    width: 95%;
     padding: 10px;
     margin-top: 5px;
     border: 1px solid #ccc;
