@@ -429,6 +429,8 @@ const Riddle = () => {
     }
   };
 
+  const isAnyOptionSelected = Object.values(selectedOptions).some((option) => option != undefined);
+
   return (
     <>
       {isLoading && (
@@ -705,7 +707,11 @@ const Riddle = () => {
             ))}
         </FormQuizTestContainer>
         <SubmitContainer>
-          <SubmitButton onClick={handleSubmit}>Submit</SubmitButton>
+          <SubmitButton
+            onClick={handleSubmit}
+            disabled={!isAnyOptionSelected}
+            style={{cursor: isAnyOptionSelected ? 'pointer' : 'not-allowed'}}
+          >Submit</SubmitButton>
         </SubmitContainer>
       </FormQuizContainer>
 
@@ -725,7 +731,7 @@ const Riddle = () => {
             >
               {feedbackContent}
             </p>
-            <DetailButton onClick={feedbackDetail}>Detail</DetailButton>
+            <DetailButton onClick={feedbackDetail}>Save & Check Detail</DetailButton>
             <CloseButton onClick={closeModal}>
               {" "}
               <AiOutlineClose />{" "}
