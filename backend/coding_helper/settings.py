@@ -28,7 +28,8 @@ SECRET_KEY = DRF_SECRET_KEY
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["44.222.253.186", "www.letsreadriddle.com", "letsreadriddle.com"]
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "44.222.253.186,www.letsreadriddle.com").split(",")
+
 
 # React 프론트 관련 / # 모든 출처 허용
 CORS_ALLOW_ALL_ORIGINS = True  
