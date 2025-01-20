@@ -1,9 +1,13 @@
 import json
+import asyncio
 from pprint import pprint
 from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import async_to_sync
+from datetime import datetime, timedelta
 
 class ChatConsumer(AsyncWebsocketConsumer):
+    pop_quiz_active = False  # POP QUIZ 활성화 상태
+    
     async def connect(self):
         self.room_name = "global_room"
         self.room_group_name = f"chat_{self.room_name}"
@@ -23,10 +27,45 @@ class ChatConsumer(AsyncWebsocketConsumer):
         
         pprint(f"Teddy : Received message: {data}")
         
+        if data["type"] == "pop_quiz_active":
+        # 클라이언트에서 POP QUIZ 활성화 메시지 수신
+            self.pop_quiz_active = data["active"]
+            print(f"POP QUIZ active state updated: {self.pop_quiz_active}")
+            return
+    
         if data['type'] == 'user_message':
             message = data['message']
             username = data.get('username', '익명')  # 유저 이름이 없으면 '익명' 처리
             timestamp = data['timestamp']
+            print(f"Teddy : 팝퀴즈 관련정보: {self.pop_quiz_active} and {message.lower()}")
+            # POP QUIZ 정답 처리
+            if self.pop_quiz_active and message.lower() == "a":
+                print("\nTeddy : 정답!\n")
+                self.pop_quiz_active = False  # POP QUIZ 비활성화
+                
+                # 정답 입력
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        'type': 'chat_message',
+                        'message': message,
+                        'username': username,
+                        'timestamp': timestamp,
+                    }
+                )
+                
+                # 정답 알림 브로드캐스트
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        "type": "pop_quiz_result",
+                        "message": f"{username}님이 정답을 맞췄습니다!",
+                        "username": "ReadRiddle",
+                        "timestamp": timestamp,
+                    },
+                )
+                return
+            
             # 메시지를 방 그룹에 브로드캐스트 (이 때 chat_message 가 발동)
             await self.channel_layer.group_send(
                 self.room_group_name,
@@ -92,7 +131,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         # WebSocket으로 메시지 전송
         await self.send(text_data=json.dumps({
-            'type': 'message',
+            'type': 'user_message',
             'message': message,
             'username': username,
             'timestamp': timestamp,
@@ -105,4 +144,17 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'type': 'participants',
             'participants': participants,
+        }))
+
+    async def pop_quiz_result(self, event):
+        message = event["message"]
+        username = event["username"]
+        timestamp = event["timestamp"]
+
+        # 클라이언트로 메시지 전송
+        await self.send(text_data=json.dumps({
+            "type": "pop_quiz_result",  # 클라이언트가 인식할 메시지 타입
+            "message": message,
+            "username": username,
+            "timestamp": timestamp,
         }))

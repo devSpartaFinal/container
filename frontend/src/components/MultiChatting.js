@@ -1,32 +1,23 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import "./MultiChatRoom.css";
-import {
-    HomeContainer,
-  } from "../styled/MultiChattingStyles";
-
-
-// 쿠키 값을 가져오는 함수
-const getCookie = (name) => {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(";").shift();
-    return null;
-};
 
 const MultiChatRoom = () => {
-    const username = localStorage.getItem("username")
+    const username = localStorage.getItem("username");
     const location = useLocation();
     const [messages, setMessages] = useState([]);
     const [message, setMessage] = useState("");
     const [participants, setParticipants] = useState([]);
+    const [popQuizMessage, setPopQuizMessage] = useState("");
+    const [popQuizTimeLeft, setPopQuizTimeLeft] = useState(null);
+    const [popQuizActive, setPopQuizActive] = useState(false);
+    const [isAnswer, setisAnswer] = useState(0);
     const socket = useRef(null);
     
     const wsUrl = "ws://localhost:8000/ws/chat/global_room/"; // 고정된 room_name
 
     // WebSocket 연결
     useEffect(() => {
-        
         if (socket.current) {
             socket.current.close(); // disconnect 메서드 호출
         }
@@ -43,20 +34,23 @@ const MultiChatRoom = () => {
         socket.current.onmessage = (event) => {
             const data = JSON.parse(event.data);
             // 일반 메시지 수신
-            if (data.type === "message") {
+            if (data.type === "user_message") {
                 setMessages((prevMessages) => [...prevMessages, data]);
             }
             // 참여자 목록 수신
             else if (data.type === "participants") {
                 setParticipants(data.participants);
             }
+            // POP QUIZ 결과 처리
+            else if (data.type === "pop_quiz_result") {
+                setMessages((prevMessages) => [...prevMessages, data]);
+                setPopQuizActive(false); // POP QUIZ 비활성화
+                setisAnswer(1); // 정답 입력으로 변경
+            }
         };
 
         socket.current.onclose = () => {
             console.log("WebSocket connection closed");
-            // if (socket.current.readyState === WebSocket.OPEN) {
-            //     socket.current.send(JSON.stringify({ type: "leave", username }));
-            // }
         };
 
         // beforeunload 이벤트를 추가하여 페이지를 떠날 때 leave 메시지 전송
@@ -72,14 +66,73 @@ const MultiChatRoom = () => {
             window.removeEventListener("beforeunload", handleBeforeUnload);
 
             if (socket.current) {
-                // 서버에 현재 사용자의 나가기 알림 전송
-                // if (socket.current.readyState === WebSocket.OPEN) {
-                //     socket.current.send(JSON.stringify({ type: "leave", username }));
-                // }
                 socket.current.close(); // disconnect 메서드 호출
             }
         };
-    }, [username], location);
+    }, [username, location]);
+
+    // POP QUIZ 타이머 관리
+    useEffect(() => {
+        const updatePopQuizStatus = () => {
+            if (isAnswer === 0 && popQuizActive) return; // POP QUIZ 활성화 중에는 타이머 업데이트 중단
+    
+            const now = new Date();
+            const minutes = now.getMinutes();
+            const nextQuizMinutes = Math.ceil(minutes / 5) * 5;
+            const nextQuizTime = new Date(now.getTime());
+            nextQuizTime.setMinutes(nextQuizMinutes);
+            nextQuizTime.setSeconds(0);
+    
+            const timeToNextQuiz = Math.max(0, nextQuizTime - now);
+    
+            if (timeToNextQuiz <= 0 && popQuizActive === false) { // POP QUIZ 활성화 조건
+                setPopQuizMessage("POP QUIZ");
+                setPopQuizActive(true);
+                setPopQuizTimeLeft(null);
+                // 서버에 POP QUIZ 활성화 알림 전송
+                if (socket.current && socket.current.readyState === WebSocket.OPEN) {
+                    socket.current.send(
+                        JSON.stringify({
+                            type: "pop_quiz_active", // 새로운 메시지 타입
+                            active: true, // POP QUIZ 활성화 상태
+                        })
+                    );
+                }
+            } else {
+                setPopQuizMessage("다음 POP QUIZ 까지");
+                setPopQuizTimeLeft(Math.ceil(timeToNextQuiz / 1000));
+                setPopQuizActive(false);
+            }
+        };
+    
+        // 사용자가 정답을 맞춘 경우 타이머 리셋
+        if (isAnswer === 1) {
+            const now = new Date();
+            const minutes = now.getMinutes();
+            const nextQuizMinutes = Math.ceil(minutes / 5) * 5;
+            const nextQuizTime = new Date(now.getTime());
+            nextQuizTime.setMinutes(nextQuizMinutes);
+            nextQuizTime.setSeconds(0);
+            
+            const timeToNextQuiz = Math.max(0, nextQuizTime - now);
+            setPopQuizTimeLeft(Math.ceil(timeToNextQuiz / 1000));
+            setisAnswer(0); // 정답 입력 상태 초기화
+        }
+    
+        updatePopQuizStatus(); // 초기 실행
+        const interval = setInterval(updatePopQuizStatus, 1000); // 1초 간격으로 상태 업데이트
+    
+        return () => clearInterval(interval); // 컴포넌트 언마운트 시 정리
+    }, [popQuizActive, isAnswer]);
+    
+
+
+    const formatTime = (seconds) => {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${String(mins).padStart(2, "0")}분 ${String(secs).padStart(2, "0")}초`;
+    };
+
 
     const sendMessage = () => {
         if (socket.current && socket.current.readyState === WebSocket.OPEN) {
@@ -96,6 +149,18 @@ const MultiChatRoom = () => {
     return (
             <div className="chat-container">
                 <h1 className="header">Riddle Riddle 채팅방</h1>
+                <div className="pop-quiz-display">
+                    {popQuizMessage === "POP QUIZ" ? (
+                    <div>
+                        <h2>{popQuizMessage}</h2>
+                    </div>
+                    ) : (
+                    <div>
+                        <h2>{popQuizMessage}</h2>
+                        <p>{popQuizTimeLeft !== null ? formatTime(popQuizTimeLeft) : ""} 남았습니다.</p>
+                    </div>
+                    )}
+                </div>
                 <div className="chat-room">
                 <div className="chat-box">
                     {messages.map((msg, index) => (
