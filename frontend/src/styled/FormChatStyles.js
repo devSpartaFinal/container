@@ -158,11 +158,12 @@ export const QuizContentContainer = styled.div`
   color: #63b5da;
   height: 100%;
   overflow-y: auto;
+  margin-left: -3%;
 `;
 
 export const OptionButton = styled.button`
   text-align: left;
-  margin-left: 2%;
+  margin-left: 1%;
   margin-top: 1.5%;
   color: #464646;
   border: 2px solid transparent;
@@ -172,8 +173,7 @@ export const OptionButton = styled.button`
   border-radius: 7px;
 
   &:hover {
-    background-color: #6e6e6e;
-    color: white;
+    color: black;
   }
 
   &.selected {
@@ -241,24 +241,22 @@ export const Option2Container = styled.div`
 `;
 
 export const Option2Button = styled.button`
+  margin-left: 1%;
+  margin-top: 1.5%;
+  color: #464646;
+  border: 2px solid #464646;
   background-color: transparent;
-  color: #63b5da;
-  border: 2px solid #63b5da;
-  padding: 10px 10px;
-  border-radius: 7px;
+  width: 95%;
   cursor: pointer;
   font-size: 1em;
-  min-width: 90%;
-  margin-top: 1.5%;
-  margin-left: 4%;
+  border-radius: 7px;
 
   &:hover {
-    background-color: #63b5da;
-    color: white;
+    color: black;
   }
 
   &.selected {
-    background-color: #63b5da;
+    background-color: #6e6e6e;
     color: white;
     font-weight: bold;
   }
@@ -266,7 +264,6 @@ export const Option2Button = styled.button`
   &:focus {
     outline: none;
   }
-
 `;
 
 

@@ -33,7 +33,6 @@ export const QuizListPanel = styled.div`
   background-color: rgb(18, 32, 86);
   width: 16%;
   margin-top: 2.2%;
-
   border-radius: 0 10px 10px 0;
 `;
 

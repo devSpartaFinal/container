@@ -182,6 +182,23 @@ class QuizRequestView(APIView):
             return Response(
                 {"error": "Reference not found"}, status=status.HTTP_404_NOT_FOUND
             )
+
+    def delete(self, request):
+        try:
+            title = request.data.get("title")
+            quiz = Quiz.objects.filter(title=title).first()
+            if quiz:
+                quiz.delete()
+                return Response(
+                    {"detail": f"'{title}' 퀴즈를 삭제했습니다."},
+                    status=status.HTTP_200_OK,
+                )
+            return Response(
+                {"error": "Quiz not found."}, status=status.HTTP_404_NOT_FOUND
+            )
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 class QuizResultView(APIView):
     def get(self, request, quiz_id):
         try:
