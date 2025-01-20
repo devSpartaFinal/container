@@ -1,14 +1,16 @@
+import json
+from . import llm
+from .models import *
+from chatbot.llm import *
 from .serializers import *
 from django.conf import settings
+from rest_framework import status
+from django.core.cache import cache
+from chatbot.models import Documents
 from rest_framework.views import APIView
 from rest_framework.response import Response
-import json
-from . import llm, test
-from .models import *
-from rest_framework import status
-from chatbot.models import Documents
-from chatbot.test import *
-from django.core.cache import cache
+
+
 class QuizAPIView(APIView):
     def get(self, request, quiz_id):
         try:
@@ -19,7 +21,7 @@ class QuizAPIView(APIView):
                 {
                     "number": question.number,
                     "content": question.content,
-                    "code_snippets" : question.code_snippets,
+                    "code_snippets": question.code_snippets,
                     "answer_type": question.answer_type,
                     "choices": [
                         {"number": choice.number, "content": choice.content}
@@ -40,18 +42,8 @@ class QuizAPIView(APIView):
             return Response(
                 {"error": "Quiz not found"}, status=status.HTTP_404_NOT_FOUND
             )
+
     def post(self, request, quiz_id):
-        """
-        {
-            "answers": [
-                {"q_number": 1, "c_number": 1},
-                {"q_number": 2, "c_number": 1},
-                {"q_number": 3, "c_number": 1},
-                {"q_number": 4, "c_number": 1},
-                {"q_number": 5, "c_number": 1}
-            ]
-        }
-        """
         try:
             quiz = Quiz.objects.get(id=quiz_id, user=request.user)
             answers = request.data.get("answers", [])
@@ -103,6 +95,8 @@ class QuizAPIView(APIView):
             return Response(
                 {"error": "Invalid data provided"}, status=status.HTTP_400_BAD_REQUEST
             )
+
+
 class QuizRequestView(APIView):
     def get(self, request):
         """products_list = Products.objects.filter(
@@ -115,6 +109,7 @@ class QuizRequestView(APIView):
         queryset = Quiz.objects.all()
         serializer = QuizSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
     def post(self, request):
         try:
             category = request.data["category"]
@@ -146,9 +141,7 @@ class QuizRequestView(APIView):
                         category=category, title_no=title_no
                     ).first()
                 content = reference.content
-            # chain = llm.quizz_chain(content)
-            # response = chain.invoke(request.data)
-            response = test.quizz_chain(content, request.data)
+            response = llm.quizz_chain(content, request.data)
             response_dict = json.loads(response)
             quiz = Quiz.objects.create(
                 user=request.user,
@@ -160,7 +153,7 @@ class QuizRequestView(APIView):
                     quiz=quiz,
                     number=question_data["id"],
                     content=question_data["content"],
-                    code_snippets=question_data['code_snippets'],
+                    code_snippets=question_data["code_snippets"],
                     answer_type=question_data["answer_type"],
                 )
                 for choice_data in question_data["choices"]:
@@ -182,6 +175,7 @@ class QuizRequestView(APIView):
             return Response(
                 {"error": "Reference not found"}, status=status.HTTP_404_NOT_FOUND
             )
+
 
     def delete(self, request):
         try:
@@ -243,6 +237,8 @@ class QuizResultView(APIView):
             return Response(
                 {"error": "Quiz not found"}, status=status.HTTP_404_NOT_FOUND
             )
+
+
 class TotalFeedbackView(APIView):
     def get(self, request, quiz_id):
         try:

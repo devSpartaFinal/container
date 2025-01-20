@@ -1,7 +1,9 @@
 import os
 import time
-import openai
 import json
+import openai
+import random
+from pydantic import BaseModel
 from openai import OpenAI
 from operator import itemgetter
 from langchain_openai import ChatOpenAI
@@ -11,78 +13,105 @@ from langchain_core.prompts import PromptTemplate
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
-# openai.api_key = os.environ.get("MY_OPENAI_API_KEY")
 openai.api_key = os.getenv("OPENAI_API_KEY")
-def quizz_chain(content):
-    prompt = PromptTemplate.from_template(
+
+
+def quizz_chain(content, input):
+    type = input.get("type", "ox")
+    count = input.get("count", 5)
+    difficulty = input.get("difficulty", "easy")
+    correct_answer_distribution = []
+    if type == "4_multiple_choice":
+        for _ in range(1, int(count) + 1):
+            correct_index = random.randint(1, 4)
+            suffle = f"""
+                qustions_id : {_},
+                choices_id : {correct_index},
+                is_correct : true
+                """
+            correct_answer_distribution.append(suffle)
+        description = f"create {count}, {difficulty} quiz with 4_multiple_choice. and follow answer_sheet : {correct_answer_distribution}"
+    elif type == "ox":
+        for _ in range(1, int(count) + 1):
+            correct_index = random.randint(1, 2)
+            correct_answer_distribution.append(correct_index)
+        description = f"create {count}, {difficulty} quiz with true or false (O/X). and follow answer_sheet : {correct_answer_distribution}"
+        # Pydantic 모델 정의
+
+    class QuestionChoice(BaseModel):
+        id: int
+        content: str
+        is_correct: bool
+
+    # if difficulty == "hard" :
+
+    # else :
+    #     class Question(BaseModel):
+    #         id: int
+    #         content: str
+    #         code_snippets : None
+    #         answer_type: str
+    #         choices: list[QuestionChoice]
+
+    class Question(BaseModel):
+        id: int
+        content: str
+        code_snippets: str
+        answer_type: str
+        choices: list[QuestionChoice]
+
+    class QuizResponse(BaseModel):
+        # id: int # DB에서 자동 생성
+        title: str
+        description: str
+        questions: list[Question]
+
+    # OpenAI 클라이언트 설정
+    client = OpenAI(api_key=openai.api_key)
+    prompt = f"""
+        **Language:** only in Korean
+        **Context:** {content}
+        **Description:** {description}
+        **answer_type** : 4_multiple_choice or ox
+        Generate quizzes based on the given context and ensure they align with the following difficulty levels:
+        - **Easy**: Problems focusing on basic concepts, fundamental principles, or straightforward information from the context. Require minimal reasoning and should be solvable by beginners.
+        - **Medium**: Problems that involve slightly complex ideas, require critical thinking, or include detailed information. May include tricky concepts or require interpreting context more deeply.
+        - **Hard**: Create advanced Python coding challenges focusing on machine learning (ML), deep learning (DL), large language models (LLMs), Docker, Django, or Django REST framework (DRF). Challenges should require deep analytical thinking, manual coding, and an in-depth understanding of complex ML/DL frameworks and principles.
+        **For Hard:** Each challenge must include at least one of the following elements:
+        - Manually implement a custom neural network model without using pre-built layers.
+        - Develop a loss function or optimization algorithm (e.g., gradient descent) from scratch.
+        - Process and analyze a given dataset, incorporating visualization and preprocessing techniques.
+        Challenges should be designed to push problem-solving skills and require writing efficient, scalable code.
+        <code_snippets>
+        You should include code snippets broadly from the provided context, ensuring a comprehensive coverage of the topic.
+        Context: {content} difficulty
+        Important: Do not include direct explanatory hints or clues about the correct answer outside of the quizzes itself. Ensure that the code presented provides enough information for problem-solving without explicitly revealing the answer.
+        Questions should challenge the reader to think critically by analyzing, interpreting, or applying the given code in realistic scenarios.
+        **Note:** Use Markdown syntax to format the code snippets properly for better readability.  
+        do not include annotation and text without code.
+        do not include '#'
+        </code_snippets>
+        **Types of problems:**
+        1. Select the expected output based on the given code.
+        2. Choose the appropriate code that matches the given output.
+        3. Fill in the blanks in the code with correct options.
+        Include detailed examples and explanations for all questions. Ensure that answer options are full sentences, not just short answers. Mark the correct answer explicitly.
+        **Language:** only in Korean
         """
-    must use **korean**
-    Create a quiz about context.
-
-    If {type} is '4_multiple_choice', create a multiple-choice question with 4 options.
-    If {type} is 'ox', create a true or false (O/X) choices. 
-
-    Include {count} {type} questions and mark the correct answer for each question.
-    quiz must be {difficulty}.
-
-    if 'easy': Problems related to core concepts or key information.
-    if 'medium': Problems that could be confusing, involving detailed information.
-    if 'hard': Application problems, including coding challenges.
-
-    coding challenge is includes three types of problems:
-
-    Select the expected output based on the given code.
-    Choose the appropriate code that matches the given output.
-    Fill in the blanks in the code with the correct options.
-
-    make sure that the options include full sentences, not just short answers
-
-    **return only json**
-    **do not include```json```**
-
-    <cotext>
-    {content}
-    </context>
-
-    <example>
-    "id": <int : quizz id>,
-    "title": <str: quizz title>,
-    "description": <str: quizz description>,
-    "questions": [
-    <dict : quizz list>
-        <dict : quizz>
-        "id": 1,
-            "content": "",
-            "answer_type": "",
-            "choices": [
-            <dict : choice>
-                "id": 1,
-                "content": "str",
-                "is_correct": true
-            </dict : choice>
-                ]
-        </dict : quizz>
-    </dict : quizz list>
-    ]
-    </example>
-    """
+    # 퀴즈 데이터를 구조화하여 응답 받기
+    completion = client.beta.chat.completions.parse(
+        model="gpt-4o",
+        messages=[
+            {"role": "system", "content": prompt},
+        ],
+        temperature=0.5,
+        response_format=QuizResponse,  # 여기에서 QuizResponse 모델을 설정
     )
-
-    llm = ChatOpenAI(model="gpt-4o-mini", api_key=openai.api_key, temperature=0.5)
-    chain = (
-        RunnableMap(
-            {
-                "content": lambda inputs: content,
-                "type": itemgetter("type"),
-                "count": itemgetter("count"),
-                "difficulty": itemgetter("difficulty"),
-            }
-        )
-        | prompt
-        | llm
-        | StrOutputParser()
-    )
-    return chain
+    # 응답 데이터
+    quiz = completion.choices[0].message.parsed
+    # JSON 형태로 추출
+    quiz_json = json.dumps(quiz.model_dump(), indent=2)
+    return quiz_json
 
 
 def total_feedback_chain():
