@@ -11,9 +11,11 @@ const MultiChatRoom = () => {
     const [popQuizMessage, setPopQuizMessage] = useState("");
     const [popQuizTimeLeft, setPopQuizTimeLeft] = useState(null);
     const [popQuizActive, setPopQuizActive] = useState(false);
+    const [timeToSolveQuiz, setTimeToSolveQuiz] = useState(null); // 퀴즈 풀이 남은 시간
     const [isAnswer, setisAnswer] = useState(0);
+    const [correctAnswerUser, setCorrectAnswerUser] = useState(null); // 정답 유저
+
     const socket = useRef(null);
-    
     const wsUrl = "ws://localhost:8000/ws/chat/global_room/"; // 고정된 room_name
 
     // WebSocket 연결
@@ -46,6 +48,10 @@ const MultiChatRoom = () => {
                 setMessages((prevMessages) => [...prevMessages, data]);
                 setPopQuizActive(false); // POP QUIZ 비활성화
                 setisAnswer(1); // 정답 입력으로 변경
+                setCorrectAnswerUser(data.username);
+            }
+            else if (data.type === "quiz_active_check") {
+                setPopQuizActive(data.quiz_status);  // 서버에서 받은 pop_quiz_active 값을 상태로 설정
             }
         };
 
@@ -71,61 +77,123 @@ const MultiChatRoom = () => {
         };
     }, [username, location]);
 
+    const updatePopQuizStatus = () => {
+        if (isAnswer === 0 && popQuizActive) return; // POP QUIZ 활성화 중에는 타이머 업데이트 중단
+        
+        const now = new Date();
+        const minutes = now.getMinutes();
+        let nextQuizMinutes = Math.ceil((minutes + 0.1) / 5) * 5; // 5의 배수를 정확히 넘기기 위해 0.1 추가
+
+        if (nextQuizMinutes === 60) { // 60분인 경우는 시간을 넘기고 분은 0으로 초기화
+            now.setHours(now.getHours() + 1);
+            nextQuizMinutes = 0;
+        }
+        const nextQuizTime = new Date(now.getTime());
+        nextQuizTime.setMinutes(nextQuizMinutes);
+        nextQuizTime.setSeconds(0);
+        const timeToNextQuiz = Math.max(0, nextQuizTime - now);
+        setPopQuizTimeLeft(timeToNextQuiz / 1000);
+
+        console.log("메인 도메인")
+        console.log("timeToNextQuiz : " + timeToNextQuiz)
+        console.log("popQuizTimeLeft : " + popQuizTimeLeft)
+        console.log("popQuizActive : " + popQuizActive)
+        console.log("isAnswer : " + isAnswer)
+
+        if (timeToNextQuiz <= 1000 && !popQuizActive) { // POP QUIZ 활성화 조건
+            setPopQuizMessage("POP QUIZ");
+            setPopQuizActive(true);
+            setPopQuizTimeLeft(null);
+            console.log("퀴즈 생성")
+            console.log("isAnswer : " + isAnswer)
+            setTimeToSolveQuiz(120);
+            // 서버에 POP QUIZ 활성화 알림 전송
+            if (socket.current && socket.current.readyState === WebSocket.OPEN) {
+                socket.current.send(
+                    JSON.stringify({
+                        type: "pop_quiz_active", // 새로운 메시지 타입
+                        active: true, // POP QUIZ 활성화 상태
+                    })
+                );
+            }
+        }
+        else
+        {
+            setPopQuizMessage("다음 POP QUIZ 까지");
+            setPopQuizActive(false);
+        }
+
+        if (isAnswer === 1) {
+            setisAnswer(0); // 정답 입력 상태 초기화
+            setTimeToSolveQuiz(0);
+            console.log("정답 입력1")
+            console.log("timeToNextQuiz : " + timeToNextQuiz)
+            // 서버에 POP QUIZ 비활성화 알림 전송
+            if (socket.current && socket.current.readyState === WebSocket.OPEN) {
+                socket.current.send(
+                    JSON.stringify({
+                        type: "pop_quiz_active",
+                        active: false,
+                    })
+                );
+            }
+        }
+    };
+
     // POP QUIZ 타이머 관리
     useEffect(() => {
-        const updatePopQuizStatus = () => {
-            if (isAnswer === 0 && popQuizActive) return; // POP QUIZ 활성화 중에는 타이머 업데이트 중단
-    
-            const now = new Date();
-            const minutes = now.getMinutes();
-            const nextQuizMinutes = Math.ceil(minutes / 5) * 5;
-            const nextQuizTime = new Date(now.getTime());
-            nextQuizTime.setMinutes(nextQuizMinutes);
-            nextQuizTime.setSeconds(0);
-    
-            const timeToNextQuiz = Math.max(0, nextQuizTime - now);
-    
-            if (timeToNextQuiz <= 0 && popQuizActive === false) { // POP QUIZ 활성화 조건
-                setPopQuizMessage("POP QUIZ");
-                setPopQuizActive(true);
-                setPopQuizTimeLeft(null);
-                // 서버에 POP QUIZ 활성화 알림 전송
-                if (socket.current && socket.current.readyState === WebSocket.OPEN) {
-                    socket.current.send(
-                        JSON.stringify({
-                            type: "pop_quiz_active", // 새로운 메시지 타입
-                            active: true, // POP QUIZ 활성화 상태
-                        })
-                    );
-                }
-            } else {
-                setPopQuizMessage("다음 POP QUIZ 까지");
-                setPopQuizTimeLeft(Math.ceil(timeToNextQuiz / 1000));
-                setPopQuizActive(false);
-            }
-        };
-    
-        // 사용자가 정답을 맞춘 경우 타이머 리셋
-        if (isAnswer === 1) {
-            const now = new Date();
-            const minutes = now.getMinutes();
-            const nextQuizMinutes = Math.ceil(minutes / 5) * 5;
-            const nextQuizTime = new Date(now.getTime());
-            nextQuizTime.setMinutes(nextQuizMinutes);
-            nextQuizTime.setSeconds(0);
-            
-            const timeToNextQuiz = Math.max(0, nextQuizTime - now);
-            setPopQuizTimeLeft(Math.ceil(timeToNextQuiz / 1000));
-            setisAnswer(0); // 정답 입력 상태 초기화
-        }
-    
         updatePopQuizStatus(); // 초기 실행
         const interval = setInterval(updatePopQuizStatus, 1000); // 1초 간격으로 상태 업데이트
     
         return () => clearInterval(interval); // 컴포넌트 언마운트 시 정리
-    }, [popQuizActive, isAnswer]);
+    }, [popQuizActive, popQuizTimeLeft, isAnswer, timeToSolveQuiz, correctAnswerUser]);
     
+    // 제한시간 관리
+    useEffect(() => {
+        if (!popQuizActive || timeToSolveQuiz === null || timeToSolveQuiz <= 0) return;
 
+        const interval = setInterval(() => {
+            setTimeToSolveQuiz((prev) => {
+                if (prev > 0) {
+                    console.log("퀴즈시간 감소")
+                    console.log("timeToSolveQuiz : " + timeToSolveQuiz)
+                    if (prev === 1) {
+                        console.log("제한시간 종료")
+                        console.log("timeToSolveQuiz : " + timeToSolveQuiz)
+                        setPopQuizActive(false);
+                        // 서버에 POP QUIZ 비활성화 알림 전송
+                        if (socket.current && socket.current.readyState === WebSocket.OPEN) {
+                            socket.current.send(
+                                JSON.stringify({
+                                    type: "pop_quiz_active",
+                                    active: false,
+                                })
+                            );
+                        }
+                        updatePopQuizStatus();
+                    }
+                    return prev - 1; // 매 초마다 1초 감소
+                }
+            });
+        }, 1000);
+        
+        if (timeToSolveQuiz <= 0) {
+            console.log("제한시간 종료")
+            console.log("timeToSolveQuiz : " + timeToSolveQuiz)
+            setPopQuizActive(false); // 제한시간 종료 후 POP QUIZ 비활성화
+            // 서버에 POP QUIZ 비활성화 알림 전송
+            if (socket.current && socket.current.readyState === WebSocket.OPEN) {
+                socket.current.send(
+                    JSON.stringify({
+                        type: "pop_quiz_active",
+                        active: false,
+                    })
+                );
+            }
+            updatePopQuizStatus();
+        }
+        return () => clearInterval(interval); // 컴포넌트 언마운트 시 정리
+    }, [popQuizActive, timeToSolveQuiz]);
 
     const formatTime = (seconds) => {
         const mins = Math.floor(seconds / 60);
@@ -145,7 +213,7 @@ const MultiChatRoom = () => {
             console.log("WebSocket is not connected yet.");
         }
     };
-
+    
     return (
             <div className="chat-container">
                 <h1 className="header">Riddle Riddle 채팅방</h1>
@@ -153,11 +221,12 @@ const MultiChatRoom = () => {
                     {popQuizMessage === "POP QUIZ" ? (
                     <div>
                         <h2>{popQuizMessage}</h2>
+                        <p>제한 시간 : {timeToSolveQuiz !== null ? formatTime(timeToSolveQuiz) : "시간 종료"} </p>
                     </div>
                     ) : (
                     <div>
                         <h2>{popQuizMessage}</h2>
-                        <p>{popQuizTimeLeft !== null ? formatTime(popQuizTimeLeft) : ""} 남았습니다.</p>
+                        <p>{popQuizTimeLeft !== null ? formatTime(popQuizTimeLeft-1) : ""} 남았습니다.</p>
                     </div>
                     )}
                 </div>

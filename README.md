@@ -746,3 +746,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
           "timestamp": timestamp,
       }))
 ```
+
+4. 동일한 값을 나타내는 두 변수에 대해 조건문 처리 과정이 상이한 현상
+(문제 코드)
+```js
+if (popQuizTimeLeft <= 1 && !popQuizActive) { 
+```
+(원인) setPopQuizTimeLeft(timeToNextQuiz / 1000); 로 업데이트된 상태 업데이트는 즉시 적용되지 않고 React의 렌더링 사이클에 따라 다음 렌더링에서 업데이트된 값이 적용되는 비동기 변수이기 떄문에 발생.
+(수정) 비동기 변수가 아닌 실제 변수를 사용하여 해결
+```js
+if (timeToNextQuiz <= 1 && !popQuizActive) { 
+```

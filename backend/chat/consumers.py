@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 
 class ChatConsumer(AsyncWebsocketConsumer):
     pop_quiz_active = False  # POP QUIZ 활성화 상태
+    correct_answer_user = None  # 정답을 맞춘 유저
     
     async def connect(self):
         self.room_name = "global_room"
@@ -101,7 +102,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     'participants': list(self.channel_layer.participants),
                 }
             )
-        
+            # 참여자 목록을 모든 클라이언트에 전송
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'quiz_active_check',
+                    'quiz_status': self.pop_quiz_active,
+                }
+            )
+            
         elif data["type"] == "leave":
             # 클라이언트가 보낸 leave 메시지 처리
             username = data["username"]
@@ -146,15 +155,32 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'participants': participants,
         }))
 
+    async def quiz_active_check(self, event):
+
+        # 연결된 클라이언트에게 pop_quiz_active 상태를 전달
+        await self.send(text_data=json.dumps({
+            "type": "quiz_active_check",  # 클라이언트가 수신할 타입
+            "quiz_status": event["quiz_status"],  # 현재 pop_quiz_active 상태 전송
+        }))
+        
     async def pop_quiz_result(self, event):
         message = event["message"]
         username = event["username"]
         timestamp = event["timestamp"]
 
-        # 클라이언트로 메시지 전송
-        await self.send(text_data=json.dumps({
-            "type": "pop_quiz_result",  # 클라이언트가 인식할 메시지 타입
-            "message": message,
-            "username": username,
-            "timestamp": timestamp,
-        }))
+        # 정답을 맞춘 유저 전달
+        if self.correct_answer_user:
+            await self.send(text_data=json.dumps({
+                "type": "pop_quiz_result",  # 클라이언트가 인식할 메시지 타입
+                "message": message,
+                "username": username,
+                "timestamp": timestamp,
+                "correct_answer_user": self.correct_answer_user,  # 정답을 맞춘 유저 추가
+            }))
+        else:
+            await self.send(text_data=json.dumps({
+                "type": "pop_quiz_result",  # 클라이언트가 인식할 메시지 타입
+                "message": message,
+                "username": username,
+                "timestamp": timestamp,
+            }))
