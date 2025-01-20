@@ -682,3 +682,67 @@ return () => {
   }
 };
 ```
+
+3. 특정 타입에 대한 group_send 를 보냈을 때, 프론트에서 해당 타입에 대한 처리를 선언해도 처리가 되지 않는현상
+(에러코드) : No handler for message type pop_quiz_result
+```javascript
+# BE
+if self.pop_quiz_active and message.lower() == "a":
+  print("\nTeddy : 정답!\n")
+  self.pop_quiz_active = False  # POP QUIZ 비활성화
+  # 정답 알림 브로드캐스트
+  await self.channel_layer.group_send(
+      self.room_group_name,
+      {
+          "type": "pop_quiz_result",
+          "message": f"{username}님이 정답을 맞췄습니다!",
+          "username": username,
+          "timestamp": timestamp,
+      },
+  )
+  return
+
+# FE
+socket.current.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+    // 일반 메시지 수신
+    if (data.type === "user_message") {
+        setMessages((prevMessages) => [...prevMessages, data]);
+    }
+    // 참여자 목록 수신
+    else if (data.type === "participants") {
+        setParticipants(data.participants);
+    }
+    // POP QUIZ 결과 처리
+    else if (data.type === "pop_quiz_result") {
+        setMessages((prevMessages) => [...prevMessages, data]);
+        setPopQuizActive(false); // POP QUIZ 비활성화
+    }
+};
+```
+
+(원인) 
+1. self.channel_layer.group_send로 전송된 메시지는 type 필드의 값을 기준으로 ChatConsumer 클래스의 메서드를 호출 (예: type: "pop_quiz_result"는 pop_quiz_result 메서드를 찾음.)
+2. pop_quiz_result 메서드가 정의되지 않았다면 에러가 발생.
+
+(수정)
+서버 코드에 pop_quiz_result 메서드를 추가하여 처리
+```py
+class ChatConsumer(AsyncWebsocketConsumer):
+  # 기존 메서드 생략...
+  async def pop_quiz_result(self, event):
+      """
+      Handles 'pop_quiz_result' messages sent to the group.
+      """
+      message = event["message"]
+      username = event["username"]
+      timestamp = event["timestamp"]
+
+      # 클라이언트로 메시지 전송
+      await self.send(text_data=json.dumps({
+          "type": "pop_quiz_result",  # 클라이언트가 인식할 메시지 타입
+          "message": message,
+          "username": username,
+          "timestamp": timestamp,
+      }))
+```

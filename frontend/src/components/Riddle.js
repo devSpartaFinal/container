@@ -39,6 +39,7 @@ import { chatApiRequest } from "../apiRequest";
 import { quizApiRequest } from "../apiRequest";
 import MarkdownIt from "markdown-it";
 import ClipLoader from "react-spinners/ClipLoader";
+import ReactMarkdown from "react-markdown";
 import "./app.css";
 
 const Riddle = () => {
@@ -573,10 +574,46 @@ const Riddle = () => {
             selectedQuestions
               .sort((a, b) => a.number - b.number) // quiz.number 기준으로 오름차순 정렬
               .map((quiz) => (
-                <FormQuizCardContainer key={quiz.number}>
+                <FormQuizCardContainer key={quiz.number} style={{ maxWidth: "100%" }}>
                   <TitleContainer style={{ textAlign: "left" }}>
                     Q{quiz.number}. {quiz.content}
-                  </TitleContainer>
+                <div style={{ maxWidth: "100%", overflowX: "auto" }}>
+                  <ReactMarkdown
+                    components={{
+                      p: ({ node, ...props }) => (
+                        <pre
+                          style={{
+                            fontSize: "0.65em", 
+                            backgroundColor: "black",
+                            color: "white",
+                            padding: "10px",
+                            whiteSpace: "pre-wrap",
+                            wordBreak: "break-word",
+                            overflowX: "auto",
+                          }}
+                          {...props}
+                        />
+                      ),
+                      pre: ({ node, ...props }) => (
+                        <pre
+                          style={{
+                            fontSize: "0.65em", 
+                            backgroundColor: "black",
+                            color: "white",
+                            padding: "10px",
+                            whiteSpace: "pre-wrap",
+                            wordBreak: "break-word",
+                            overflowX: "auto",
+                          }}
+                          {...props}
+                        />
+                      ),
+                    }}
+                  >
+                    {quiz.code_snippets}
+                  </ReactMarkdown>
+                </div>
+              </TitleContainer>
 
                 <QuizContentContainer>
                   {quiz.answer_type === "ox" ? (
