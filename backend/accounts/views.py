@@ -23,6 +23,12 @@ from django.core.mail import send_mail
 from django.http import HttpResponseRedirect
 
 
+# 캐시 초기화
+from chatbot.models import ChatHistory, Documents
+from quizbot.models import Reference
+from django.core.cache import cache
+
+
 # Create your views here.
 class SignInOutAPIView(APIView):
 
@@ -257,6 +263,30 @@ class AuthAPIView(APIView):
             user.refresh_token = refresh_token
             user.social_login = False
             user.save()
+            # 사용자 캐시 초기화
+            chats = ChatHistory.objects.filter(user=request.user)
+            if chats:
+                chathistory_key = f"{user.id}:chathistory_keys"
+                keys = []
+                for chat in chats:
+                    cache_key = f"{user.id}:{chat.id}:chathistory"
+                    cache.set(cache_key, chat, timeout=60*60)
+                    keys.append(chat.id)
+                cache.set(chathistory_key, keys, timeout=60*60)
+                print('대화내역 캐시 등록')
+            
+            # 레퍼런스 초기화
+            documents=cache.get('documents')
+            if not documents:
+                documents = Documents.objects.all()
+                cache.set('documents', documents, timeout=60*60*24)
+                print('공식문서 캐시 등록')
+            reference=cache.get('reference')
+            if not reference:
+                reference = Reference.objects.all()
+                cache.set('reference', reference, timeout=60*60*24)
+                print('레퍼런스 캐시 등록')
+
             return res
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -454,7 +484,7 @@ class GoogleLoginCallback(APIView):
 
                 user = User.objects.create(
                     username=username,
-                    email=email,
+                    email=f"{id}@social.com",
                     first_name="Anonymous",
                     nickname=id,
                     is_active=True,

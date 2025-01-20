@@ -12,6 +12,7 @@ class Question(models.Model):
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name="questions")
     number = models.PositiveIntegerField()  # 문제 번호
     content = models.TextField()  # 문제
+    code_snippets = models.TextField(blank=True, null=True)
     answer_type = models.CharField(max_length=100)  # 문제 형태(객관식, 단답형, ox)
     user_answer = models.JSONField(default=dict) # 사용자 답변
     feedback = models.TextField(blank=True, null=True)   # 문제별 피드백
