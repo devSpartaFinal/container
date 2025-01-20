@@ -66,14 +66,24 @@
     border-radius: 8px;
     padding: 1%;
     background-color: #fff;
-
     overflow-y: auto;
     overflow-x: hidden;
+    position: relative;
 }
 
 .chat-message {
     margin-bottom: 1%;
     font-size: 1em;
+}
+
+.chat-own {
+    text-align: right;
+    margin-left: auto;
+}
+
+.chat-other {
+    text-align: left;
+    margin-right: auto;
 }
 
 .input-container {
@@ -104,4 +114,39 @@ button {
 
 button:hover {
     background-color: #0056b3;
+}
+
+
+.chatting-message {
+    display: flex;
+    background-color: rgba(0,0,0,0.05);
+    border-radius: 10px;
+    padding: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    word-wrap: break-word;
+    white-space: normal;
+    max-width: calc(100% - 20px);
+    width: fit-content;
+    margin-top: 0.5%;
+}
+
+.own-message {
+    display: flex;
+    /* background-color: #d0f0fd;
+    color: #004080; */
+    padding: 10px;
+    border-radius: 10px;
+    text-align: right;
+    margin-left: auto;
+}
+
+.other-message {
+    display: inline-block;
+    /* background-color: rgba(0,0,0,0.05);
+    color: black; */
+    padding: 10px;
+    border-radius: 10px;
+    text-align: left;
+    margin-right: auto;
 }

@@ -99,10 +99,17 @@ const MultiChatRoom = () => {
                 <div className="chat-room">
                     <div className="chat-box">
                         {messages.map((msg, index) => (
-                            <div key={index} className="chat-message">
+                            <div key={index} className={`chat-message ${
+                                msg.username === username ? "chat-own" : "chat-other"
+                            }`}>
                                 <p>
-                                    <strong>{msg.username}: </strong>
-                                    {msg.message} <small>{msg.timestamp}</small>
+                                    <strong>{msg.username}</strong><br />
+                                    <div
+                                        className={`chatting-message ${
+                                            msg.username === username ? "own-message" : "other-message"
+                                        }`}
+                                    >{msg.message}</div>
+                                    {/* <small>{msg.timestamp}</small> */}
                                 </p>
                             </div>
                         ))}
