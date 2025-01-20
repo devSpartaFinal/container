@@ -65,7 +65,7 @@
     border: 1px solid #ddd;
     border-radius: 8px;
     padding: 1%;
-    background-color: #fff;
+    background-color: 	#b2c7d9;
     overflow-y: auto;
     overflow-x: hidden;
     position: relative;
@@ -133,8 +133,8 @@ button:hover {
 
 .own-message {
     display: flex;
-    /* background-color: #d0f0fd;
-    color: #004080; */
+    background-color: #ffe500;
+    color: black;
     padding: 10px;
     border-radius: 10px;
     text-align: right;
@@ -143,8 +143,8 @@ button:hover {
 
 .other-message {
     display: inline-block;
-    /* background-color: rgba(0,0,0,0.05);
-    color: black; */
+    background-color: #f7f7f7;
+    color: black;
     padding: 10px;
     border-radius: 10px;
     text-align: left;

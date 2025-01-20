@@ -97,23 +97,43 @@ const MultiChatRoom = () => {
             <div className="chat-container">
                 <h1 className="header">Riddle Riddle 채팅방</h1>
                 <div className="chat-room">
-                    <div className="chat-box">
-                        {messages.map((msg, index) => (
-                            <div key={index} className={`chat-message ${
+                <div className="chat-box">
+                    {messages.map((msg, index) => (
+                        <div
+                            key={index}
+                            className={`chat-message ${
                                 msg.username === username ? "chat-own" : "chat-other"
-                            }`}>
-                                <p>
-                                    <strong>{msg.username}</strong><br />
-                                    <div
-                                        className={`chatting-message ${
-                                            msg.username === username ? "own-message" : "other-message"
-                                        }`}
-                                    >{msg.message}</div>
-                                    {/* <small>{msg.timestamp}</small> */}
-                                </p>
-                            </div>
-                        ))}
-                    </div>
+                            }`}
+                        >
+                            <p>
+                                {msg.username === username ? (
+                                    <>
+                                        {/* msg.timestamp은 메시지 왼쪽에 표시 */}
+                                        <small style={{ marginRight: '10px', fontSize: '0.8em', color: 'gray', display: 'inline-block' }}>{msg.timestamp}</small>
+                                        <div
+                                            className={`chatting-message own-message`}
+                                            style={{ display: 'inline-block'}}
+                                        >
+                                            {msg.message}
+                                        </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        {/* msg.username과 msg.message가 함께 표시되고, msg.timestamp은 메시지 오른쪽에 표시 */}
+                                        <strong>{msg.username}</strong><br/>
+                                        <div
+                                            className={`chatting-message other-message`}
+                                        >
+                                            {msg.message}
+                                        </div>
+                                        <small style={{ marginLeft: '10px', fontSize: '0.8em', color: 'gray', display: 'inline-block' }}>{msg.timestamp}</small>
+                                    </>
+                                )}
+                            </p>
+                        </div>
+                    ))}
+                </div>
+
                     <div className="participants-box">
                         <h2>참여자 목록</h2>
                         <ul>
