@@ -1,19 +1,18 @@
-from django.http import HttpResponseRedirect
 import jwt
-from rest_framework.views import APIView
 from .models import User
-from coding_helper.settings import HOSTUSER_EMAIL, SECRET_KEY
 from .serializers import *
+from rest_framework import status
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from django.contrib.auth import login, authenticate
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.models import update_last_login
+from coding_helper.settings import HOSTUSER_EMAIL, SECRET_KEY
 from rest_framework_simplejwt.serializers import (
     TokenObtainPairSerializer,
     TokenRefreshSerializer,
 )
-from rest_framework import status
-from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from django.contrib.auth import login, authenticate
-from django.contrib.auth.models import update_last_login
-from django.shortcuts import render, get_object_or_404
 
 # 이메일 인증 관련
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
@@ -28,8 +27,20 @@ from chatbot.models import ChatHistory, Documents
 from quizbot.models import Reference
 from django.core.cache import cache
 
+# 소셜 로그인
+import requests
+from urllib.parse import urlencode
+from django.shortcuts import redirect
+from coding_helper.settings import (
+    GOOGLE_OAUTH_CLIENT_ID,
+    GOOGLE_OAUTH_CALLBACK_URL,
+    GOOGLE_OAUTH_CLIENT_SECRET,
+    GITHUB_CLIENT_ID,
+    GITHUB_REDIRECT_URI,
+    GITHUB_CLIENT_SECRET,
+)
 
-# Create your views here.
+
 class SignInOutAPIView(APIView):
 
     def get_permissions(self):
@@ -43,26 +54,6 @@ class SignInOutAPIView(APIView):
         print(request.data)
         serializer = UserSerializer(data=request.data)
         value = request.data["password"]
-
-        # 비밀번호 유효성 검사
-        # if len(value) < 8:
-        #     raise serializers.ValidationError("비밀번호는 최소 8자 이상이어야 합니다.")
-        # if not re.search(r"[A-Z]", value):  # 대문자 포함
-        #     raise serializers.ValidationError(
-        #         "비밀번호는 최소한 하나의 대문자를 포함해야 합니다."
-        #     )
-        # if not re.search(r"[a-z]", value):  # 소문자 포함
-        #     raise serializers.ValidationError(
-        #         "비밀번호는 최소한 하나의 소문자를 포함해야 합니다."
-        #     )
-        # if not re.search(r"[0-9]", value):  # 숫자 포함
-        #     raise serializers.ValidationError(
-        #         "비밀번호는 최소한 하나의 숫자를 포함해야 합니다."
-        #     )
-        # if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", value):  # 특수문자 포함
-        #     raise serializers.ValidationError(
-        #         "비밀번호는 최소한 하나의 특수문자를 포함해야 합니다."
-        #     )
 
         if serializer.is_valid():
             user = serializer.save()
@@ -177,6 +168,30 @@ class EmailVerificationView(APIView):
                 user.refresh_token = refresh_token
                 user.save()
 
+                # 사용자 캐시 초기화
+                chats = ChatHistory.objects.filter(user=request.user)
+                if chats:
+                    chathistory_key = f"{user.id}:chathistory_keys"
+                    keys = []
+                    for chat in chats:
+                        cache_key = f"{user.id}:{chat.id}:chathistory"
+                        cache.set(cache_key, chat, timeout=60 * 60)
+                        keys.append(chat.id)
+                    cache.set(chathistory_key, keys, timeout=60 * 60)
+                    print("대화내역 캐시 등록")
+
+                # 레퍼런스 초기화
+                documents = cache.get("documents")
+                if not documents:
+                    documents = Documents.objects.all()
+                    cache.set("documents", documents, timeout=60 * 60 * 24)
+                    print("공식문서 캐시 등록")
+                reference = cache.get("reference")
+                if not reference:
+                    reference = Reference.objects.all()
+                    cache.set("reference", reference, timeout=60 * 60 * 24)
+                    print("레퍼런스 캐시 등록")
+
                 return res
             else:
                 return Response(
@@ -270,22 +285,22 @@ class AuthAPIView(APIView):
                 keys = []
                 for chat in chats:
                     cache_key = f"{user.id}:{chat.id}:chathistory"
-                    cache.set(cache_key, chat, timeout=60*60)
+                    cache.set(cache_key, chat, timeout=60 * 60)
                     keys.append(chat.id)
-                cache.set(chathistory_key, keys, timeout=60*60)
-                print('대화내역 캐시 등록')
-            
+                cache.set(chathistory_key, keys, timeout=60 * 60)
+                print("대화내역 캐시 등록")
+
             # 레퍼런스 초기화
-            documents=cache.get('documents')
+            documents = cache.get("documents")
             if not documents:
                 documents = Documents.objects.all()
-                cache.set('documents', documents, timeout=60*60*24)
-                print('공식문서 캐시 등록')
-            reference=cache.get('reference')
+                cache.set("documents", documents, timeout=60 * 60 * 24)
+                print("공식문서 캐시 등록")
+            reference = cache.get("reference")
             if not reference:
                 reference = Reference.objects.all()
-                cache.set('reference', reference, timeout=60*60*24)
-                print('레퍼런스 캐시 등록')
+                cache.set("reference", reference, timeout=60 * 60 * 24)
+                print("레퍼런스 캐시 등록")
 
             return res
         else:
@@ -330,26 +345,6 @@ class PasswordAPIView(APIView):
 
         # 비밀번호 유효성 검사
         value = request.data["new_password"]
-        # if len(value) < 8:
-        #     raise serializers.ValidationError("비밀번호는 최소 8자 이상이어야 합니다.")
-        # if not re.search(r"[A-Z]", value):  # 대문자 포함
-        #     raise serializers.ValidationError(
-        #         "비밀번호는 최소한 하나의 대문자를 포함해야 합니다."
-        #     )
-        # if not re.search(r"[a-z]", value):  # 소문자 포함
-        #     raise serializers.ValidationError(
-        #         "비밀번호는 최소한 하나의 소문자를 포함해야 합니다."
-        #     )
-        # if not re.search(r"[0-9]", value):  # 숫자 포함
-        #     raise serializers.ValidationError(
-        #         "비밀번호는 최소한 하나의 숫자를 포함해야 합니다."
-        #     )
-        # if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", value):  # 특수문자 포함
-        #     raise serializers.ValidationError(
-        #         "비밀번호는 최소한 하나의 특수문자를 포함해야 합니다."
-        #     )
-
-        # set_password() 메서드로 비밀번호 해싱
         user.set_password(value)
         user.save()
         return Response(
@@ -363,17 +358,10 @@ class TokenRefresh(APIView):
 
     def post(self, request):
         try:
-
-            print(">>>>>>>>> REFRESH 토큰 요청옴!!")
-            # access token을 decode 해서 유저 id 추출 => 유저 식별
-            print(request.data)
             access = request.data["access"]
             payload = jwt.decode(access, SECRET_KEY, algorithms=["HS256"])
             pk = payload.get("user_id")
-            print(payload)
-            print(pk)
             user = get_object_or_404(User, pk=pk)
-            print(user)
             refresh_token = user.refresh_token
             data = {"refresh": refresh_token}
             serializer = TokenRefreshSerializer(data=data)
@@ -405,21 +393,6 @@ class TokenRefresh(APIView):
             )
 
 
-import requests
-from urllib.parse import urlencode
-from django.shortcuts import redirect
-from coding_helper.settings import (
-    GOOGLE_OAUTH_CLIENT_ID,
-    GOOGLE_OAUTH_CALLBACK_URL,
-    GOOGLE_OAUTH_CLIENT_SECRET,
-    GITHUB_CLIENT_ID,
-    GITHUB_REDIRECT_URI,
-    GITHUB_CLIENT_SECRET,
-)
-from datetime import datetime
-
-
-
 class GoogleLogin(APIView):
     permission_classes = [AllowAny]
 
@@ -435,7 +408,6 @@ class GoogleLogin(APIView):
 
         auth_url = f"{google_oauth_url}?{urlencode(params)}"
         return Response({"auth_url": auth_url})
-    
 
 
 class GoogleLoginCallback(APIView):
@@ -455,24 +427,24 @@ class GoogleLoginCallback(APIView):
         response = requests.post(
             url=token_endpoint_url,
             params={
-                "client_id": GOOGLE_OAUTH_CLIENT_ID, 
+                "client_id": GOOGLE_OAUTH_CLIENT_ID,
                 "client_secret": GOOGLE_OAUTH_CLIENT_SECRET,
                 "code": code,
                 "grant_type": "authorization_code",
-                "redirect_uri": GOOGLE_OAUTH_CALLBACK_URL, 
+                "redirect_uri": GOOGLE_OAUTH_CALLBACK_URL,
             },
         )
 
         # 응답이 JSON 형식인지 확인하고 처리
         try:
             response_dict = response.json()
-            access_token = response_dict.get('access_token')
+            access_token = response_dict.get("access_token")
             url = "https://www.googleapis.com/oauth2/v3/userinfo"
             headers = {"Authorization": f"Bearer {access_token}"}
             response = requests.get(url, headers=headers)
             response_data = response.json()
-            
-            email = response_data.get('email')
+
+            email = response_data.get("email")
 
             id = email.split("@")[0]
             username = f"05_{id}"
@@ -491,6 +463,29 @@ class GoogleLoginCallback(APIView):
                     is_social=True,
                 )
                 user.save()
+                # 사용자 캐시 초기화
+            chats = ChatHistory.objects.filter(user=user)
+            if chats:
+                chathistory_key = f"{user.id}:chathistory_keys"
+                keys = []
+                for chat in chats:
+                    cache_key = f"{user.id}:{chat.id}:chathistory"
+                    cache.set(cache_key, chat, timeout=60 * 60)
+                    keys.append(chat.id)
+                cache.set(chathistory_key, keys, timeout=60 * 60)
+                print("대화내역 캐시 등록")
+
+            # 레퍼런스 초기화
+            documents = cache.get("documents")
+            if not documents:
+                documents = Documents.objects.all()
+                cache.set("documents", documents, timeout=60 * 60 * 24)
+                print("공식문서 캐시 등록")
+            reference = cache.get("reference")
+            if not reference:
+                reference = Reference.objects.all()
+                cache.set("reference", reference, timeout=60 * 60 * 24)
+                print("레퍼런스 캐시 등록")
 
             login(request, user)
             update_last_login(None, user)
@@ -504,7 +499,7 @@ class GoogleLoginCallback(APIView):
                 },
                 status=status.HTTP_200_OK,
             )
-            
+
             # jwt 토큰 => 쿠키에 저장
             user.refresh_token = refresh_token
             user.save()
@@ -518,18 +513,21 @@ class GoogleLoginCallback(APIView):
             return Response({"error": "Invalid response from Google"}, status=400)
 
 
-def github_login(request):
-    github_oauth_url = "https://github.com/login/oauth/authorize"
-    params = {
-        "client_id": GITHUB_CLIENT_ID,
-        "redirect_uri": GITHUB_REDIRECT_URI,
-        "scope": "read:user",
-        "user:email" "state": "state_parameter",  # CSRF 방지용 state 값
-    }
+class GithubLogin(APIView):
+    permission_classes = [AllowAny]
 
-    # GitHub로 리디렉션
-    auth_url = f"{github_oauth_url}?{urlencode(params)}"
-    return redirect(auth_url)
+    def get(self, request):
+        github_oauth_url = "https://github.com/login/oauth/authorize"
+        params = {
+            "client_id": GITHUB_CLIENT_ID,
+            "redirect_uri": GITHUB_REDIRECT_URI,
+            "scope": "read:user",
+            "user:email" "state": "state_parameter",  # CSRF 방지용 state 값
+        }
+
+        # GitHub로 리디렉션
+        auth_url = f"{github_oauth_url}?{urlencode(params)}"
+        return redirect(auth_url)
 
 
 class GitHubLoginCallback(APIView):
@@ -574,7 +572,7 @@ class GitHubLoginCallback(APIView):
             email = response_data["email"]
             address = email.split("@")
             id = address[0] + address[1][0] + address[1][1]
-            username = f"07#{id}"
+            username = f"07_{id}"
             try:
                 user = User.objects.get(username=username)
                 print("가입된 사용자")
@@ -587,7 +585,7 @@ class GitHubLoginCallback(APIView):
                     first_name="Anonymous",
                     nickname=id,
                     is_active=True,
-                    is_social=True
+                    is_social=True,
                 )
                 user.save()
 
@@ -602,7 +600,3 @@ class GitHubLoginCallback(APIView):
 
         except ValueError:
             return Response({"error": "Invalid response from Google"}, status=400)
-
-
-def google_login_page(request):
-    return render(request, "google_login.html")
