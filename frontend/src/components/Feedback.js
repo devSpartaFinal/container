@@ -64,8 +64,9 @@ const Feedback = () => {
       {loading && (
         <SpinnerContainer>
           <div className="spinner-container">
-            <div className="spinner">🤗</div>
-            피드백을 불러오는 중입니다.
+            <div className="spinner"></div>
+            🧐 피드백을 불러오는 중입니다!
+          <h4>.... 조금만 기다려주세요 ....</h4>
           </div>
         </SpinnerContainer>
         

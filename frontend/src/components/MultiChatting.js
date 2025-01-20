@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import "./MultiChatRoom.css";
+import {
+    HomeContainer,
+  } from "../styled/MultiChattingStyles";
 
 
 // 쿠키 값을 가져오는 함수
@@ -91,39 +94,39 @@ const MultiChatRoom = () => {
     };
 
     return (
-        <div className="chat-container">
-            <h1 className="header">Riddle Riddle 채팅방</h1>
-            <div className="chat-room">
-                <div className="chat-box">
-                    {messages.map((msg, index) => (
-                        <div key={index} className="chat-message">
-                            <p>
-                                <strong>{msg.username}: </strong>
-                                {msg.message} <small>{msg.timestamp}</small>
-                            </p>
-                        </div>
-                    ))}
-                </div>
-                <div className="participants-box">
-                    <h2>참여자 목록</h2>
-                    <ul>
-                        {participants.map((participant, index) => (
-                            <li key={index}>{participant}</li>
+            <div className="chat-container">
+                <h1 className="header">Riddle Riddle 채팅방</h1>
+                <div className="chat-room">
+                    <div className="chat-box">
+                        {messages.map((msg, index) => (
+                            <div key={index} className="chat-message">
+                                <p>
+                                    <strong>{msg.username}: </strong>
+                                    {msg.message} <small>{msg.timestamp}</small>
+                                </p>
+                            </div>
                         ))}
-                    </ul>
+                    </div>
+                    <div className="participants-box">
+                        <h2>참여자 목록</h2>
+                        <ul>
+                            {participants.map((participant, index) => (
+                                <li key={index}>{participant}</li>
+                            ))}
+                        </ul>
+                    </div>
+                </div>
+                <div className="input-container">
+                    <input
+                        type="text"
+                        value={message}
+                        placeholder="메시지를 입력하세요..."
+                        onChange={(e) => setMessage(e.target.value)}
+                        onKeyPress={(e) => e.key === "Enter" && sendMessage()}
+                    />
+                    <button onClick={sendMessage}>전송</button>
                 </div>
             </div>
-            <div className="input-container">
-                <input
-                    type="text"
-                    value={message}
-                    placeholder="메시지를 입력하세요..."
-                    onChange={(e) => setMessage(e.target.value)}
-                    onKeyPress={(e) => e.key === "Enter" && sendMessage()}
-                />
-                <button onClick={sendMessage}>전송</button>
-            </div>
-        </div>
     );
 };
 

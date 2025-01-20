@@ -474,7 +474,7 @@ const ChatScreen = () => {
           )}
   
           <GenerateButtonContainer>
-            <GenerateQuizButton onClick={handleSummary}>
+            <GenerateQuizButton onClick={handleSummary} disabled={loading}>
               <AiOutlineReload
                 size={24}
                 style={{

@@ -570,11 +570,13 @@ const Riddle = () => {
         <div className="line"></div>
         <FormQuizTestContainer>
           {Array.isArray(selectedQuestions) &&
-            selectedQuestions.map((quiz) => (
-              <FormQuizCardContainer key={quiz.number}>
-                <TitleContainer style={{ textAlign: "left" }}>
-                  Q{quiz.number}. {quiz.content}
-                </TitleContainer>
+            selectedQuestions
+              .sort((a, b) => a.number - b.number) // quiz.number 기준으로 오름차순 정렬
+              .map((quiz) => (
+                <FormQuizCardContainer key={quiz.number}>
+                  <TitleContainer style={{ textAlign: "left" }}>
+                    Q{quiz.number}. {quiz.content}
+                  </TitleContainer>
 
                 <QuizContentContainer>
                   {quiz.answer_type === "ox" ? (
@@ -592,7 +594,7 @@ const Riddle = () => {
                               ? "#e57f7b" // 정답인 경우 빨간색
                               : isPreviousAnswer(quiz.number, choice.number)
                               ? "#cccccc" // 이전에 선택된 경우 회색
-                              : "", // 기본값은 없음
+                              : "#c8c8c8", // 기본값은 없음
                             color: isHighlighted(quiz.number, choice.number)
                               ? "#000000"
                               : "",
@@ -633,7 +635,7 @@ const Riddle = () => {
                               ? "#e57f7b" // 정답인 경우 빨간색
                               : isPreviousAnswer(quiz.number, choice.number)
                               ? "#cccccc" // 이전에 선택된 경우 회색
-                              : "", // 기본값은 없음
+                              : "#c8c8c8", // 기본값은 없음
                             color: isHighlighted(quiz.number, choice.number)
                               ? "#000000"
                               : "",
