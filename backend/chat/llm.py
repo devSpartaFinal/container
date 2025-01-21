@@ -119,6 +119,6 @@ def chat_quiz():
     quiz = completion.choices[0].message.parsed
     quiz_json = json.dumps(quiz.model_dump(), indent=2)
     quiz_dict = json.loads(quiz_json)
-    question = f"{quiz_dict['description']} \n\n {quiz_dict['choices']}"
+    question = f"[POP RIDDLE] \n\n {quiz_dict['description']} \n\n {quiz_dict['choices']}"
     answer = str(quiz_dict['answer'])
     return question, answer
