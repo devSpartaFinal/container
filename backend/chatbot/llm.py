@@ -1,4 +1,5 @@
 import os
+import re
 import json
 import pickle
 import openai
@@ -10,8 +11,10 @@ from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain.retrievers import EnsembleRetriever
 from langchain.retrievers import MultiQueryRetriever
+from youtube_transcript_api import YouTubeTranscriptApi
 from langchain_community.retrievers import BM25Retriever
 from langchain_core.output_parsers import StrOutputParser
+
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 EMBED = OpenAIEmbeddings(model="text-embedding-ada-002", api_key=openai.api_key)
@@ -213,4 +216,90 @@ def RAG_chain(summary, context, history, question):
     query_json = json.dumps(query.model_dump(), indent=2)
     query_dict = json.loads(query_json)
 
+    return query_dict
+
+
+def get_video_id(url):
+    # ?:v= 기본 구조
+    # \/ 축소형
+    # {11} 11자 구조
+    video_id_pattern = r"(?:v=|\/)([0-9A-Za-z_-]{11})"
+    match = re.search(video_id_pattern, url)
+    if match:
+        return match.group(1)
+    return None
+
+
+def get_script(video_id):
+    # 텍스트, 시작 시점, 자막 지속시간 딕셔너리 구조
+    subtitle = ""
+    transcription = YouTubeTranscriptApi.get_transcript(
+        video_id, languages=["ko", "en", "en-US"]
+    )
+    for content in transcription:
+        subtitle += f"{content['text']} \n"
+    return subtitle
+
+
+def extract_script(url):
+    id = get_video_id(url)
+    subtitle = get_script(id)
+    return subtitle
+
+
+# 30분 미만 영상
+# Convert a conversation or speech into an informational document like a research paper,
+def YoutubeScript(url):
+    class YoutubeScript(BaseModel):
+        title: str
+        context: str
+        content: str
+        inappropriate: bool
+
+    script = extract_script(url)
+
+    prompt = f"""
+            only use korean
+            if english, translate to korean
+            You are an editing expert. 
+            Analyze the given script's topic and content, correcting any typos, altered expressions, or inappropriate word usage. 
+            Join broken sentences together, and correct or revise any cut-off or misspelled words or expressions based on the context.
+            remove unnecessary symbols like escape
+            Include the following fields:
+
+    
+            title: Provide a title that best represents the overall content.
+            context: itemization format, include specific figures like number, and name or keywords
+            content: preprocessed content
+            
+
+            If the content is inappropriate (e.g., obscene, overly violent, or explicitly offensive), 
+            set inappropriate to true. 
+            In that case, 
+            the title should be "Inappropriate Content," 
+            the context should explain why it is inappropriate, 
+            and the content field should contain a detailed explanation of the reasons.
+
+            <script>
+            {script}
+            </script>
+            """
+    # 퀴즈 데이터를 구조화하여 응답 받기
+    completion = client.beta.chat.completions.parse(
+        model="gpt-4o-mini-2024-07-18",
+        messages=[
+            {"role": "system", "content": prompt},
+        ],
+        temperature=0.1,
+        response_format=YoutubeScript,
+    )
+
+    # 응답 데이터
+    query = completion.choices[0].message.parsed
+
+    # JSON 형태로 추출
+    query_json = json.dumps(query.model_dump(), indent=2)
+    query_dict = json.loads(query_json)
+
+    # 결과 출력
     return query_dict

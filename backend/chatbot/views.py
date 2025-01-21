@@ -9,7 +9,6 @@ from .pre_processing import *
 from django.conf import settings
 from rest_framework import status
 from django.core.cache import cache
-from .youtube import extract_script
 from django.http import JsonResponse
 from quizbot.models import Reference
 from rest_framework.views import APIView
@@ -93,13 +92,29 @@ class RagChatbotView(APIView):
                 for query in multi_query:
                     contents.append(retriever.invoke(query))
                 result = llm.RAG_chain(summary, contents, memory, user_input)
+
+            elif category == "YOUTUBE":
+                url = request.data["URL"]
+                cache_key = url
+                script = cache.get(cache_key)
+                content = script
+                if not script:
+                    try:
+                        content = llm.YoutubeScript(url)
+                        script = cache.set(cache_key, content)
+                    except:
+                        return Response(
+                            {"error": "URL을 확인해 주세요."},
+                            status=status.HTTP_404_NOT_FOUND,
+                        )
+                result = llm.QnA_chain(content, memory, user_input)
             else:
                 content = chat_history.content
                 result = llm.QnA_chain(content, memory, user_input)
         else:
             # 새로운 ChatHistory 생성
             category = request.data["category"]
-            title_no = request.data["title_no"]
+            title_no = request.data.get("title_no", "")
             user_input = request.data["user_input"]
 
             if category == "OFFICIAL_DOCS":
@@ -127,6 +142,24 @@ class RagChatbotView(APIView):
                     "title_no": title_no,
                     "title": title,
                 }
+            elif category == "YOUTUBE":
+                url = request.data["URL"]
+                cache_key = url
+                script = cache.get(cache_key)
+                content = script
+                if not script:
+                    try:
+                        content = llm.YoutubeScript(url)
+                        script = cache.set(cache_key, content)
+                    except:
+                        return Response(
+                            {"error": "URL을 확인해 주세요."},
+                            status=status.HTTP_404_NOT_FOUND,
+                        )
+                memory = ""
+                result = llm.QnA_chain(content, memory, user_input)
+                content_info = {"category": category, "title_no": title_no}
+                memory = [{"SYSTEM": "init conversation"}]
             else:
                 reference_cache = cache.get("reference")
                 if reference_cache:
@@ -142,7 +175,7 @@ class RagChatbotView(APIView):
                     content = reference.content
                 else:
                     content = "자료 읽기에 실패하였습니다."
-                memory = ''
+                memory = ""
                 result = llm.QnA_chain(content, memory, user_input)
                 content_info = {"category": category, "title_no": title_no}
                 memory = [{"SYSTEM": "init conversation"}]
@@ -153,9 +186,9 @@ class RagChatbotView(APIView):
                 content_info=content_info,
                 content=content,
             )
-            
-        response = result['response']
-        title = result['summary_title']
+
+        response = result["response"]
+        title = result["summary_title"]
 
         # 응답 ID 생성 및 대화 기록 업데이트
         id_user, id_ai = self.generate_ids(chat_history)
@@ -242,6 +275,26 @@ class SummaryView(APIView):
                 contents.append(retriever.invoke(query))
             response = llm.summary(contents, keyword)
             cache.set(cache_key, response, timeout=60 * 60 * 24)
+            
+        elif category == "YOUTUBE":
+            url = request.data["URL"]
+            summary_key = f"{url}:summary"
+            response = cache.get(summary_key)
+            if not response:
+                cache_key = url
+                script = cache.get(cache_key)
+                content = script
+                if not script:
+                    try:
+                        content = llm.YoutubeScript(url)
+                        script = cache.set(cache_key, content)
+                    except:
+                        return Response(
+                            {"error": "URL을 확인해 주세요."},
+                            status=status.HTTP_404_NOT_FOUND,
+                        )
+                response = llm.summary(content, "")
+                cache.set(summary_key, response, timeout=60 * 60 * 24)
 
         else:
             cache_key = f"{category}:{title_no}:summary"

@@ -99,13 +99,6 @@ class QuizAPIView(APIView):
 
 class QuizRequestView(APIView):
     def get(self, request):
-        """products_list = Products.objects.filter(
-                    Q(title__icontains=searchWord)
-                    | Q(product_name__icontains=searchWord)
-                    | Q(content__icontains=searchWord)
-                ).distinct()
-        icontains는 대소문자를 구분하지 않고 해당 문자열을 포함하는지 확인하는 조건
-        """
         queryset = Quiz.objects.all()
         serializer = QuizSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -113,7 +106,7 @@ class QuizRequestView(APIView):
     def post(self, request):
         try:
             category = request.data["category"]
-            title_no = request.data["title_no"]
+            title_no = request.data.get("title_no", "")
             if category == "OFFICIAL_DOCS":
                 keyword = request.data["keyword"]
                 documents_cache = cache.get("documents")
@@ -129,6 +122,19 @@ class QuizRequestView(APIView):
                 for query in multi_query:
                     contents.append(retriever.invoke(query))
                 content = summary(contents, keyword)
+            elif category == "YOUTUBE":
+                url = request.data["URL"]
+                cache_key = url
+                script = cache.get(cache_key)
+                if not script:
+                    try:
+                        content = YoutubeScript(url)
+                        script = cache.set(cache_key, content)
+                    except:
+                        return Response(
+                            {"error": "URL을 확인해 주세요."},
+                            status=status.HTTP_404_NOT_FOUND,
+                        )
             else:
                 reference_cache = cache.get("reference")
                 if reference_cache:
@@ -176,7 +182,6 @@ class QuizRequestView(APIView):
                 {"error": "Reference not found"}, status=status.HTTP_404_NOT_FOUND
             )
 
-
     def delete(self, request):
         try:
             title = request.data.get("title")
@@ -191,7 +196,10 @@ class QuizRequestView(APIView):
                 {"error": "Quiz not found."}, status=status.HTTP_404_NOT_FOUND
             )
         except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
 
 class QuizResultView(APIView):
     def get(self, request, quiz_id):
