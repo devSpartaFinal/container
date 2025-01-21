@@ -40,6 +40,7 @@ services:
       exec python manage.py runserver 0.0.0.0:8000 &&
       exec daphne coding_helper.asgi:application --port 8000
       "
+# 로컬 세팅 : exec daphne coding_helper.asgi:application --port 8000
 # daphne 또는 python manage.py runserver 0.0.0.0:8000 && 둘 중 하나만 실행
       
   db:

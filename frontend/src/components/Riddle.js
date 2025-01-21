@@ -11,8 +11,6 @@ import {
   DropdownRowContainer,
   DropdownLeftRowMenu,
   DropdownRightRowMenu,
-  InformationRowButton,
-  InformationRowContainer,
   FormQuizContainer,
   FormQuizTestContainer,
   FormQuizCardContainer,
@@ -35,11 +33,7 @@ import {
 } from "../styled/FormChatStyles";
 import { useNavigate, useLocation } from "react-router-dom";
 import { AiOutlineDown, AiOutlineReload, AiOutlineClose } from "react-icons/ai";
-import Session from "./Session";
-import Conversation from "./Conversation";
-import { chatApiRequest } from "../apiRequest";
 import { quizApiRequest } from "../apiRequest";
-import MarkdownIt from "markdown-it";
 import ClipLoader from "react-spinners/ClipLoader";
 import ReactMarkdown from "react-markdown";
 import "./app.css";
@@ -598,23 +592,6 @@ const Riddle = () => {
                 <div style={{ maxWidth: "100%", overflowX: "auto" }}>
                 <ReactMarkdown
                   components={{
-                    h1: ({ node, ...props }) => <p {...props} style={{ fontWeight: "bold" }} />,  // h1을 일반 텍스트로 처리
-                    h2: ({ node, ...props }) => <p {...props} style={{ fontWeight: "bold" }} />,
-                    h3: ({ node, ...props }) => <p {...props} style={{ fontWeight: "bold" }} />,
-                    p: ({ node, ...props }) => (
-                      <pre
-                        style={{
-                          fontSize: "0.65em",
-                          backgroundColor: "black",
-                          color: "white",
-                          padding: "10px",
-                          whiteSpace: "pre-wrap",
-                          wordBreak: "break-word",
-                          overflowX: "auto",
-                        }}
-                        {...props}
-                      />
-                    ),
                     h1: ({ node, ...props }) => <p {...props} style={{ fontWeight: "bold" }} />,  // h1을 일반 텍스트로 처리
                     h2: ({ node, ...props }) => <p {...props} style={{ fontWeight: "bold" }} />,
                     h3: ({ node, ...props }) => <p {...props} style={{ fontWeight: "bold" }} />,

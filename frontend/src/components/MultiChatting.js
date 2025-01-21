@@ -54,6 +54,10 @@ const MultiChatRoom = () => {
             else if (data.type === "quiz_active_check") {
                 setPopQuizActive(data.quiz_status);  // 서버에서 받은 pop_quiz_active 값을 상태로 설정
             }
+            else if (data.type === "quiz_broadcast") {
+                setMessages((prevMessages) => [...prevMessages, data]);
+                setPopQuizActive(true); // POP QUIZ 비활성화
+            }
         };
 
         socket.current.onclose = () => {
@@ -83,7 +87,7 @@ const MultiChatRoom = () => {
         
         const now = new Date();
         const minutes = now.getMinutes();
-        let nextQuizMinutes = Math.ceil((minutes + 0.1) / 5) * 5; // 5의 배수를 정확히 넘기기 위해 0.1 추가
+        let nextQuizMinutes = Math.ceil((minutes + 0.1) / 3) * 3; // 5의 배수를 정확히 넘기기 위해 0.1 추가
 
         if (nextQuizMinutes === 60) { // 60분인 경우는 시간을 넘기고 분은 0으로 초기화
             now.setHours(now.getHours() + 1);
