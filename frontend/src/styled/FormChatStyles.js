@@ -137,7 +137,6 @@ export const FormQuizCardContainer = styled.div`
   width: 95%;
   height: 100%;
   background: #eeeeee;
-  box-sizing: border-box;
   border-right: 2px solid #5a5a5a;
   overflow-y: auto;
 `;
@@ -157,14 +156,14 @@ export const QuizContentContainer = styled.div`
   font-size: 1.2em; 
   font-weight: bold;
   color: #63b5da;
-  height: 100%;
+  height: 80%;
   overflow-y: auto;
   margin-left: -3%;
+  padding-right: 4%;
 `;
 
 export const OptionButton = styled.button`
   text-align: left;
-  margin-left: 1%;
   margin-top: 1.5%;
   color: #464646;
   border: 2px solid transparent;
@@ -230,26 +229,33 @@ export const SubmitContainer = styled.div`
 export const OptionContainer = styled.div`  
   position: absolute;
   display: colum;
+  width: 100%;
   height: 50%;
+  padding-left: 2%;
 `;
 
 
 export const Option2Container = styled.div`
-  position: absolute;
+  position: relative;
   width: 100%;
-  height: 80%;
+  height: 50%;
   overflow-x: hidden;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
 `;
 
 export const Option2Button = styled.button`
-  margin-left: 1%;
-  margin-top: 8%;
+  margin-left: 5%;
+  margin-top: 5%;
+  justify-content: center;
   color: #464646;
   border: 2px solid #464646;
   background-color: transparent;
   width: 95%;
+  height: 65%;
   cursor: pointer;
-  font-size: 1em;
+  font-size: 7em;
   border-radius: 7px;
 
   &:hover {
@@ -323,15 +329,17 @@ cursor: pointer;
 `;
 
 export const FeedbackContent = styled.div`
+  display: flex;
+  flex-direction: column;
   background: white;
   padding: 15px;
   border-radius: 10px;
   position: relative; 
-  margin-top: 3%;
-  margin-left: 3%;
-  margin-right: 3%;
   color: #3c3c3c;
   line-height: 1.7;
+  font-size: 1.2em;
+  margin-top: -10%;
+  margin-right: 3%;
 `;
 
 export const ContentButton = styled.button`

@@ -43,6 +43,7 @@ export const FeedbackTitle = styled.h1`
 `;
 
 export const FeedbackDetails = styled.div`
+  width: 100%;
   h3 {
     font-size: 1.5rem;
     font-weight: 900;
