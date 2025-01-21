@@ -4,10 +4,15 @@ from pprint import pprint
 from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import async_to_sync
 from datetime import datetime, timedelta
+from .llm import chat_quiz
 
 class ChatConsumer(AsyncWebsocketConsumer):
     pop_quiz_active = False  # POP QUIZ 활성화 상태
     correct_answer_user = None  # 정답을 맞춘 유저
+    question = f"""첫번째 문제입니다. 채팅창에 'ReadRiddle'을 입력해주세요"""
+    quiz_answer = "ReadRiddle"
+    
+    print(f"처음 생성된 퀴즈: {question}, 정답: {quiz_answer}")
     
     async def connect(self):
         self.room_name = "global_room"
@@ -25,22 +30,38 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         data = json.loads(text_data)
-        
         pprint(f"Teddy : Received message: {data}")
         
+        if data["type"] == "create_quiz":
+            print("퀴즈 생성요청 수신")
+            self.question, self.quiz_answer = chat_quiz()
+            print(f"생성된 퀴즈: {self.question}, 정답: {self.quiz_answer}")
+            
         if data["type"] == "pop_quiz_active":
         # 클라이언트에서 POP QUIZ 활성화 메시지 수신
             self.pop_quiz_active = data["active"]
             print(f"POP QUIZ active state updated: {self.pop_quiz_active}")
+            
+            # 퀴즈 브로드캐스트
+            if data['active'] == True:    
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        "type": "quiz_broadcast",
+                        "message": self.question,
+                        "username": "ReadRiddle",
+                        # 'timestamp': data['timestamp'],
+                    }
+                )
             return
     
         if data['type'] == 'user_message':
             message = data['message']
             username = data.get('username', '익명')  # 유저 이름이 없으면 '익명' 처리
             timestamp = data['timestamp']
-            print(f"Teddy : 팝퀴즈 관련정보: {self.pop_quiz_active} and {message.lower()}")
+            print(f"Teddy : 팝퀴즈 관련정보: {self.pop_quiz_active} and {message}")
             # POP QUIZ 정답 처리
-            if self.pop_quiz_active and message.lower() == "a":
+            if self.pop_quiz_active and message == self.quiz_answer:
                 print("\nTeddy : 정답!\n")
                 self.pop_quiz_active = False  # POP QUIZ 비활성화
                 
@@ -167,7 +188,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         message = event["message"]
         username = event["username"]
         timestamp = event["timestamp"]
-
+        
         # 정답을 맞춘 유저 전달
         if self.correct_answer_user:
             await self.send(text_data=json.dumps({
@@ -183,4 +204,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 "message": message,
                 "username": username,
                 "timestamp": timestamp,
+            }))
+        
+        
+    async def quiz_broadcast(self, event):
+        await self.send(text_data=json.dumps({
+                "type": "quiz_broadcast",
+                "message": event["message"],
+                "username": event["username"],
+                # "timestamp": event["timestamp"],
             }))

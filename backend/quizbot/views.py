@@ -99,7 +99,7 @@ class QuizAPIView(APIView):
 
 class QuizRequestView(APIView):
     def get(self, request):
-        queryset = Quiz.objects.all()
+        queryset = Quiz.objects.filter(user=request.user)
         serializer = QuizSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 

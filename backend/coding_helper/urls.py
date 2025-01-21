@@ -1,14 +1,8 @@
 from django.contrib import admin
 from django.urls import path, include
 from accounts.views import EmailVerificationView
-from django.http import HttpResponse
-
-def home(request):
-    return HttpResponse("Hello, Django!")
 
 urlpatterns = [
-
-    path('', home),
     path("admin/", admin.site.urls),
     path(
         "verify-email/<str:uidb64>/<str:token>/",
