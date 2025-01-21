@@ -123,7 +123,7 @@ export const FormQuizContainer = styled.div`
 export const FormQuizTestContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr); /* 2열 */
-  grid-auto-rows: 480px;;
+  grid-auto-rows: 700px;;
   gap: 1px;
   width: 100%;
 `;
@@ -135,6 +135,7 @@ export const FormQuizCardContainer = styled.div`
   margin-left: 2%;
   margin-top: 3%;
   width: 95%;
+  height: 100%;
   background: #eeeeee;
   box-sizing: border-box;
   border-right: 2px solid #5a5a5a;
@@ -146,7 +147,7 @@ export const TitleContainer = styled.div`
   margin-left: 1.5%;
   margin-right: 1.5%;
   margin-top: 1.5%;
-  font-size: 1.7em; 
+  font-size: 1.3em; 
   font-weight: bold;
   color: #464646;
 `;
@@ -192,7 +193,7 @@ export const SubmitButton = styled.button`
   color: #505050;
   border: 2px solid #6e6e6e;
   padding: 10px 10px;
-  margin-top: 1%;
+  margin-top: 3%;
   margin-bottom: 2%;
   margin-left: -3%;
   border-radius: 4px;
@@ -242,7 +243,7 @@ export const Option2Container = styled.div`
 
 export const Option2Button = styled.button`
   margin-left: 1%;
-  margin-top: 1.5%;
+  margin-top: 8%;
   color: #464646;
   border: 2px solid #464646;
   background-color: transparent;
