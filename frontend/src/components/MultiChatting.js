@@ -16,6 +16,7 @@ const MultiChatRoom = () => {
     const [correctAnswerUser, setCorrectAnswerUser] = useState(null); // 정답 유저
 
     const socket = useRef(null);
+    const chatContainerRef = useRef(null);
     const wsUrl = "ws://localhost:8000/ws/chat/global_room/"; // 고정된 room_name
 
     // WebSocket 연결
@@ -186,6 +187,12 @@ const MultiChatRoom = () => {
         return `${String(mins).padStart(2, "0")}분 ${String(secs).padStart(2, "0")}초`;
     };
 
+    useEffect(() => {
+        if (chatContainerRef.current) {
+            chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+        }
+    }, [messages]);
+
 
     const sendMessage = () => {
         if (socket.current && socket.current.readyState === WebSocket.OPEN) {
@@ -218,7 +225,7 @@ const MultiChatRoom = () => {
                     )}
                 </div>
                 <div className="chat-room">
-                <div className="chat-box">
+                <div className="chat-box" ref={chatContainerRef}>
                     {messages.map((msg, index) => (
                         <div
                             key={index}
