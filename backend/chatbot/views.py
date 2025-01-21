@@ -5,14 +5,12 @@ from . import llm
 import pdfplumber
 from .models import *
 from bs4 import BeautifulSoup
-from .pre_processing import *
 from django.conf import settings
 from rest_framework import status
 from django.core.cache import cache
 from django.http import JsonResponse
 from quizbot.models import Reference
 from rest_framework.views import APIView
-from .serializers import UserDocsSerializer
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
 
@@ -321,68 +319,3 @@ class SummaryView(APIView):
             {"result": response},
             status=status.HTTP_200_OK,
         )
-
-
-class UserDocsView(APIView):
-    parser_classes = [MultiPartParser, FormParser]
-
-    def post(self, request):
-        # JSON 헤더인 경우
-        if request.content_type == "application/json":
-            data = json.loads(request.body)
-            url = data.get("url")
-            title = data.get("title")
-            if url:
-                content = read_url(url)
-                content = preprocess_text(content)
-                content = llm.user_docs_chain().invoke(
-                    {"content": content, "user_input": ""}
-                )
-                UserDocs.objects.create(
-                    user=request.user, title=title, url=url, content=content
-                )  # DB 저장
-                return JsonResponse(
-                    {"status": "success", "message": "Data processed successfully"}
-                )
-            return JsonResponse(
-                {"status": "error", "message": "URL is required for JSON request"},
-                status=400,
-            )
-
-        serializer = UserDocsSerializer(data=request.data)
-
-        if serializer.is_valid():
-            file = serializer.validated_data.get("file")
-            url = serializer.validated_data.get("url")
-            if url:
-                content = read_url(url)
-                content = preprocess_text(content)  # 텍스트 전처리 추가
-            elif file and file.name.endswith(".txt"):
-                content = read_text_file(file)
-                content = preprocess_text(content)  # 텍스트 전처리 추가
-            elif file and file.name.endswith(".pdf"):
-                content = read_pdf(file)
-                content = preprocess_text(content)  # 텍스트 전처리 추가
-            else:
-                return JsonResponse(
-                    {"status": "error", "message": "Invalid file type or missing URL"},
-                    status=400,
-                )
-            content = llm.user_docs_chain().invoke(
-                {"content": content, "user_input": ""}
-            )
-            serializer.save(user_id=request.user.id)
-            serializer.save(content=content)
-            return JsonResponse(
-                {
-                    "status": "success",
-                    "message": "Data successfully saved to user_input.json",
-                }
-            )
-        return JsonResponse({"status": "error", "message": "Invalid data"}, status=400)
-
-    def get(self, request):
-        # 업로드된 모든 파일 목록을 조회
-        uploads = UserDocs.objects.all()
-        file_serializer = UserDocsSerializer(uploads, many=True)
-        return Response(file_serializer.data, status=status.HTTP_200_OK)
