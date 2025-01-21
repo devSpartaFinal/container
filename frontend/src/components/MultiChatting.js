@@ -101,7 +101,7 @@ const MultiChatRoom = () => {
         console.log("isAnswer : " + isAnswer)
 
         if (timeToNextQuiz <= 1000 && !popQuizActive) { // POP QUIZ 활성화 조건
-            setPopQuizMessage("POP QUIZ");
+            setPopQuizMessage("POP RIDDLE!");
             setPopQuizActive(true);
             setPopQuizTimeLeft(null);
             console.log("퀴즈 생성")
@@ -119,7 +119,7 @@ const MultiChatRoom = () => {
         }
         else
         {
-            setPopQuizMessage("다음 POP QUIZ 까지");
+            setPopQuizMessage("다음 Riddle까지");
             setPopQuizActive(false);
         }
 
@@ -177,21 +177,6 @@ const MultiChatRoom = () => {
             });
         }, 1000);
         
-        if (timeToSolveQuiz <= 0) {
-            console.log("제한시간 종료")
-            console.log("timeToSolveQuiz : " + timeToSolveQuiz)
-            setPopQuizActive(false); // 제한시간 종료 후 POP QUIZ 비활성화
-            // 서버에 POP QUIZ 비활성화 알림 전송
-            if (socket.current && socket.current.readyState === WebSocket.OPEN) {
-                socket.current.send(
-                    JSON.stringify({
-                        type: "pop_quiz_active",
-                        active: false,
-                    })
-                );
-            }
-            updatePopQuizStatus();
-        }
         return () => clearInterval(interval); // 컴포넌트 언마운트 시 정리
     }, [popQuizActive, timeToSolveQuiz]);
 
@@ -213,20 +198,22 @@ const MultiChatRoom = () => {
             console.log("WebSocket is not connected yet.");
         }
     };
-    
+
     return (
             <div className="chat-container">
-                <h1 className="header">Riddle Riddle 채팅방</h1>
+                {/* <h1 className="header">Challenge Riddle POP!</h1> */}
                 <div className="pop-quiz-display">
-                    {popQuizMessage === "POP QUIZ" ? (
+                    {popQuizMessage === "POP RIDDLE!" ? (
                     <div>
-                        <h2>{popQuizMessage}</h2>
-                        <p>제한 시간 : {timeToSolveQuiz !== null ? formatTime(timeToSolveQuiz) : "시간 종료"} </p>
+                        <h1 className="header">{popQuizMessage}</h1>
+                        <p>남은 시간 : {timeToSolveQuiz !== null ? formatTime(timeToSolveQuiz) : "시간 종료"} </p>
                     </div>
                     ) : (
                     <div>
-                        <h2>{popQuizMessage}</h2>
-                        <p>{popQuizTimeLeft !== null ? formatTime(popQuizTimeLeft-1) : ""} 남았습니다.</p>
+                        <h2>
+                        {popQuizMessage}{" "}
+                        <strong>{popQuizTimeLeft !== null ? formatTime(popQuizTimeLeft - 1) : "0분 0초"}</strong> 남았습니다.
+                        </h2>
                     </div>
                     )}
                 </div>
