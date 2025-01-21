@@ -10,10 +10,6 @@ urlpatterns = [
     path("summary/", SummaryView.as_view(), name="summary"),
     path("qna/", RagChatbotView.as_view(), name="new_qna"),
     path("qna/<int:chat_id>/", RagChatbotView.as_view(), name="qna"),
-    path("file/", UserDocsView.as_view(), name="file"),
-    path("load-docs/Django", DjangoView.as_view(), name="Django"),
-    path("load-docs/Django_DRF", Django_DRFView.as_view(), name="Django_DRF"),
-    path("load-docs/React", ReactView.as_view(), name="React"),
 ]
 
 

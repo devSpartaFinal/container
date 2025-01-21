@@ -18,6 +18,6 @@ urlpatterns += [
 ]
 
 urlpatterns += [
-    path("github/", github_login, name="github_login"),
+    path("github/", GithubLogin.as_view(), name="github_login"),
     path("github/callback/", GitHubLoginCallback.as_view(), name="github_login_callback"),
 ]

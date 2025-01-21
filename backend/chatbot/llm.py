@@ -1,39 +1,125 @@
 import os
-import time
-import openai
+import re
 import json
+import pickle
+import openai
 from openai import OpenAI
+from pydantic import BaseModel
 from operator import itemgetter
 from langchain_openai import ChatOpenAI
 from langchain_openai import OpenAIEmbeddings
-from langchain_core.runnables import RunnableMap
-from langchain_core.prompts import PromptTemplate
-from langchain_core.prompts import ChatPromptTemplate
+from langchain_community.vectorstores import FAISS
+from langchain.retrievers import EnsembleRetriever
+from langchain.retrievers import MultiQueryRetriever
+from youtube_transcript_api import YouTubeTranscriptApi
+from langchain_community.retrievers import BM25Retriever
 from langchain_core.output_parsers import StrOutputParser
 
-# openai.api_key = os.environ.get("MY_OPENAI_API_KEY")
-openai.api_key = os.getenv("OPENAI_API_KEY")
-CLIENT = OpenAI(api_key=openai.api_key)
 
-def summarize_title(user_message):
+openai.api_key = os.getenv("OPENAI_API_KEY")
+EMBED = OpenAIEmbeddings(model="text-embedding-ada-002", api_key=openai.api_key)
+client = OpenAI(api_key=openai.api_key)
+
+
+def get_retriever(CATEGORY):
+    BASE_DIR = "chatbot/VDB/"
+    PATH = BASE_DIR + CATEGORY
+    faiss_db = FAISS.load_local(
+        PATH + "/faiss_index", EMBED, allow_dangerous_deserialization=True
+    )
+    faiss = faiss_db.as_retriever()
+    with open(PATH + "/bm25_retriever.pkl", "rb") as f:
+        bm25 = pickle.load(f)
+    retriever = EnsembleRetriever(
+        retrievers=[faiss, bm25],
+        weights=[0.3, 0.7],  # bm25 가중치 늘리기 시도할 것 0.3 , 0.7
+    )
+    return retriever
+
+
+def multi_query_llm(question):
+
+    class MultiQuery(BaseModel):
+        concept_query: str
+        application_query: str
+        code_query: str
+
     prompt = f"""
-    answer in Korean, except for essential keywords
-    Based on the following content, summarize the session title briefly to capture the user's intent clearly.
-    {user_message}
+        **only in english**
+        You are an expert at enhancing search results by rephrasing questions in different ways.
+        Based on the question below, create 3 alternative versions of the same question. 
+        first question should be related to the concept.
+        second should be about application.
+        third should be sample code inside <code_snipet></code_snipet>
+
+        <question>
+        {question}
+        </question>
+        """
+    # 퀴즈 데이터를 구조화하여 응답 받기
+    completion = client.beta.chat.completions.parse(
+        model="gpt-4o-mini-2024-07-18",
+        messages=[
+            {"role": "system", "content": prompt},
+        ],
+        temperature=0.3,
+        response_format=MultiQuery,
+    )
+
+    # 응답 데이터
+    query = completion.choices[0].message.parsed
+
+    # JSON 형태로 추출
+    query_json = json.dumps(query.model_dump(), indent=2)
+    query_dict = json.loads(query_json)
+    query_values = list(query_dict.values())
+
+    # 결과 출력
+    return query_values
+
+
+def summary(content, query):
+
+    prompt = f"""
+    Yor are textbook maker.
+    make content in an easy-to-understand way.  
+    Format in **Markdown**.
+
+    ### Requirements  
+    1. **Reply only in Korean**
+    2. **Key Concepts**: Briefly explain the main ideas.  
+    3. **Important Terms**: Include key terms with simple definitions and detail definitions
+    4. **Practical Applications**: Provide examples of real-world use cases.
+    5. **Code Snippets**: Format all code snippets using ```code``` blocks.  
+    6. **References**: Gather all links mentioned in the text and list them at the end as references.
+    7. example must have how to set up, how to make or use, explain of compositions.
+    8. include all imformatrion about query in conetent
+
+    <user_question>
+    {query}
+    </user_question>
+
+    <context>
+    {content}
+    </context> 
     """
 
-    # OpenAI API 호출
-    completion = CLIENT.chat.completions.create(
+    completion = client.chat.completions.create(
         model="gpt-4o-mini",  # 사용 모델
         messages=[
-            {"role": "user", "content": prompt, "type": "text"},
+            {"role": "user", "content": prompt},
         ],
     )
     return completion.choices[0].message.content
 
-def QnA_chain():
-    prompt = PromptTemplate.from_template(
-        """
+
+def QnA_chain(content, history, question):
+
+    class QnA(BaseModel):
+        summary_title: str
+        response: str
+
+    prompt = f"""
     **Reply only in Korean**
     You are a Q&A chatbot.
     Maintain the context of the conversation by referencing the chat history.
@@ -42,6 +128,8 @@ def QnA_chain():
     Respond based on the provided content, and if not, issue a warning.
     Include practical examples in the answer.
     For programming-related questions, include code examples.
+
+    summarize chat history into summary_title
     
     <context>
     {content}
@@ -55,124 +143,163 @@ def QnA_chain():
     {question}
     </question>
     """
+
+    completion = client.beta.chat.completions.parse(
+        model="gpt-4o-mini-2024-07-18",
+        messages=[
+            {"role": "system", "content": prompt},
+        ],
+        temperature=0.3,
+        response_format=QnA,
     )
 
-    llm = ChatOpenAI(model="gpt-4o-mini", api_key=openai.api_key, temperature=0.1)
-    chain = (
-        RunnableMap(
-            {
-                "content": itemgetter("content"),
-                "history": itemgetter("history"),
-                "question": itemgetter("question"),
-            }
-        )
-        | prompt
-        | llm
-        | StrOutputParser()
-    )
-    return chain
+    # 응답 데이터
+    query = completion.choices[0].message.parsed
+
+    # JSON 형태로 추출
+    query_json = json.dumps(query.model_dump(), indent=2)
+    query_dict = json.loads(query_json)
+
+    # 결과 출력
+    return query_dict
 
 
-def summary_chain():
+def RAG_chain(summary, context, history, question):
 
-    prompt = PromptTemplate.from_template(
-        """
-    Yor are summary maker.
-    Summarize the following content in an easy-to-understand way.  
-    Format the summary in **Markdown**.  
+    class RAG(BaseModel):
+        summary_title: str
+        response: str
 
-    ### Requirements  
-    1. **Reply only in Korean**
-    2. **Key Concepts**: Briefly explain the main ideas.  
-    3. **Important Terms**: Include key terms with simple definitions.  
-    4. **Practical Applications**: Provide examples of real-world use cases.
-    5. **Code Snippets**: Format all code snippets using ```code``` blocks.  
-    6. **References**: Gather all links mentioned in the text and list them at the end as references.
+    prompt = f"""
+    **Reply only in Korean**
+    You are an official documentation Q&A chatbot.  
+    1. Answer questions based on the provided official documentation.  
+    2. Cite the source of the information and specify the relevant section of the documentation.  
+    3. If a question is not related to the official documentation, inform the user.  
+    4. For questions about unknown knowledge, respond with: "Sorry, I don't know."  
+    5. Include code in your answers whenever possible.  
+    6. Maintain the context of the conversation by referencing the chat history.  
+    7. If you believe the current question has been addressed, ask: "Do you have any additional questions?"  
+    8. If there are no further questions, proceed to the next step.
 
-    <example>
-    ## Summary  
-    - **Intro** : one point summary
-
-    ### 1. Key Concepts  
-    - **Concept 1**: Explanation of the main idea.  
-    - **Concept 2**: Explanation of another key point.  
-
-    ### 2. Important Terms  
-    - **Term 1**: Simple definition.  
-    - **Term 2**: Simple definition.  
-
-    ### 3. Practical Applications  
-    - **Example 1**: A description of a real-world use case.  
-    - **Example 2**: Another practical application.  
-
-    ### 4. Conclusion 
-    - **Outro** : Additional topics to learn
-
-    ### References
-    - Source 1
-    - Source 2
-    - Source 3
-    </example>
+    summarize chat history into summary_title
+    put answer in response
 
     <context>
-    {content}
-    </context> 
+    {summary}
+    
+    {context}
+    </context>
+
+    <chat history>
+    {history}
+    </chat history>
+    
+    <question>
+    {question}
+    </question>
     """
+
+    completion = client.beta.chat.completions.parse(
+        model="gpt-4o-mini-2024-07-18",
+        messages=[
+            {"role": "system", "content": prompt},
+        ],
+        temperature=0.3,
+        response_format=RAG,
     )
 
-    llm = ChatOpenAI(model="gpt-4o-mini", api_key=openai.api_key, temperature=0.1)
-    chain = (
-        RunnableMap(
-            {
-                "content": itemgetter("content"),
-            }
-        )
-        | prompt
-        | llm
-        | StrOutputParser()
+    # 응답 데이터
+    query = completion.choices[0].message.parsed
+
+    # JSON 형태로 추출
+    query_json = json.dumps(query.model_dump(), indent=2)
+    query_dict = json.loads(query_json)
+
+    return query_dict
+
+
+def get_video_id(url):
+    # ?:v= 기본 구조
+    # \/ 축소형
+    # {11} 11자 구조
+    video_id_pattern = r"(?:v=|\/)([0-9A-Za-z_-]{11})"
+    match = re.search(video_id_pattern, url)
+    if match:
+        return match.group(1)
+    return None
+
+
+def get_script(video_id):
+    # 텍스트, 시작 시점, 자막 지속시간 딕셔너리 구조
+    subtitle = ""
+    transcription = YouTubeTranscriptApi.get_transcript(
+        video_id, languages=["ko", "en", "en-US"]
     )
-    return chain
+    for content in transcription:
+        subtitle += f"{content['text']} \n"
+    return subtitle
 
 
-def user_docs_chain():
+def extract_script(url):
+    id = get_video_id(url)
+    subtitle = get_script(id)
+    return subtitle
 
-    prompt = PromptTemplate.from_template(
-        """
-    Yor are textbook maker.
-    make textbook form the following content in an easy-to-understand way.
-    Do not summarize, but restructure it as a textbook, without excessively omitting content.
-    Format the summary in **Markdown**.
 
-    ### Requirements  
-    1. **Reply only in Korean**
-    2. **Key Concepts**: Briefly explain the main ideas.  
-    3. **Important Terms**: Include key terms with simple definitions.  
-    4. **Practical Applications**: Provide examples of real-world use cases.
-    5. **Code Snippets**: Format all code snippets using ```code``` blocks.  
-    6. **References**: Gather all links mentioned in the text and list them at the end as references.
-    7. Remove any HTML tags, special characters, or symbols that are unrelated to the learning content.
-    8. **If the content contains sensitive information about individuals, violent, or inappropriate material, please review it as it may include such information.**
+# 30분 미만 영상
+# Convert a conversation or speech into an informational document like a research paper,
+def YoutubeScript(url):
+    class YoutubeScript(BaseModel):
+        title: str
+        context: str
+        content: str
+        inappropriate: bool
 
-    <user prompt>
-    {user_input}
-    </user prompt>
+    script = extract_script(url)
 
-    <context>
-    {content}
-    </context> 
-    """
+    prompt = f"""
+            only use korean
+            if english, translate to korean
+            You are an editing expert. 
+            Analyze the given script's topic and content, correcting any typos, altered expressions, or inappropriate word usage. 
+            Join broken sentences together, and correct or revise any cut-off or misspelled words or expressions based on the context.
+            remove unnecessary symbols like escape
+            Include the following fields:
+
+    
+            title: Provide a title that best represents the overall content.
+            context: itemization format, include specific figures like number, and name or keywords
+            content: preprocessed content
+            
+
+            If the content is inappropriate (e.g., obscene, overly violent, or explicitly offensive), 
+            set inappropriate to true. 
+            In that case, 
+            the title should be "Inappropriate Content," 
+            the context should explain why it is inappropriate, 
+            and the content field should contain a detailed explanation of the reasons.
+
+            <script>
+            {script}
+            </script>
+            """
+    # 퀴즈 데이터를 구조화하여 응답 받기
+    completion = client.beta.chat.completions.parse(
+        model="gpt-4o-mini-2024-07-18",
+        messages=[
+            {"role": "system", "content": prompt},
+        ],
+        temperature=0.1,
+        response_format=YoutubeScript,
     )
 
-    llm = ChatOpenAI(model="gpt-4o-mini", api_key=openai.api_key, temperature=0.1)
-    chain = (
-        RunnableMap(
-            {
-                "content": itemgetter("content"),
-                "user_input": itemgetter("user_input"),
-            }
-        )
-        | prompt
-        | llm
-        | StrOutputParser()
-    )
-    return chain
+    # 응답 데이터
+    query = completion.choices[0].message.parsed
+
+    # JSON 형태로 추출
+    query_json = json.dumps(query.model_dump(), indent=2)
+    query_dict = json.loads(query_json)
+
+    # 결과 출력
+    return query_dict

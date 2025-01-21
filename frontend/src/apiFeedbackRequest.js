@@ -6,7 +6,7 @@ export const fetchQuizRequest = async () => {
 };
 
 export const fetchfeedbackDetails = async (quizId) => {
-    const response = await quizApiRequest.get(`/feedback/detail/${quizId}/`);
+    const response = await quizApiRequest.get(`/feedback/get/${quizId}/`);
     return response.data;
 };
 

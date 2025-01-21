@@ -78,6 +78,7 @@ const Riddle = () => {
   const [feedbackDetails, setFeedbackDetails] = useState({});
   const [isFeedbackShown, setIsFeedbackShown] = useState(false);
   const [selectedKeyword, setSelectedKeyword] = useState(location.state?.selectedKeyword ||"");
+  const [isAllSelected, setIsAllSelected] = useState(false);
 
   const closeModal = () => {
     setShowModal(false);
@@ -117,8 +118,12 @@ const Riddle = () => {
     }
   };
 
-  const feedbackDetail = async (e) => {
-    e.preventDefault();
+  const feedbackDetail = async (event) => {
+    event.preventDefault();
+  
+    // Save & Check Detail 버튼을 클릭했을 때의 상태 업데이트
+    setIsChecked(true); // 예시: 체크된 상태로 변경
+    setIsAllSelected(true);
 
     setIsFeedbackShown(true);
     closeModal();
@@ -430,9 +435,14 @@ const Riddle = () => {
   };
 
   const isAllOptionsSelected = selectedQuestions.every((quiz) =>
-  selectedOptions.hasOwnProperty(quiz.number) && selectedOptions[quiz.number] !== undefined
-);
+    selectedOptions.hasOwnProperty(quiz.number) && selectedOptions[quiz.number] !== undefined
+  );
 
+  const [isChecked, setIsChecked] = useState(false);
+
+  const handleCheckDetail = () => {
+    setIsChecked(true); // Save & Check Detail 버튼을 눌렀을 때 상태 변경
+  };
 
   return (
     <>
@@ -714,12 +724,35 @@ const Riddle = () => {
             ))}
         </FormQuizTestContainer>
         <SubmitContainer>
-          <SubmitButton
-            onClick={handleSubmit}
-            disabled={!isAllOptionsSelected}
-            className="submit-button"
-            style={{cursor: isAllOptionsSelected ? 'pointer' : 'not-allowed'}}
-          >Submit</SubmitButton>
+        <SubmitButton
+          onClick={handleSubmit}
+          disabled={!isAllOptionsSelected || isChecked}
+          className="submit-button"
+          style={{
+            cursor: (!isAllOptionsSelected || isChecked) ? 'not-allowed' : 'pointer',
+            position: 'relative',
+          }}
+        >
+          Submit
+          {/* isChecked 상태에 따라 다르게 메시지 출력 */}
+          {(isChecked || !(isAllOptionsSelected)) && (
+            <div style={{
+              position: 'absolute',
+              top: '150%',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              color: 'red',
+              fontSize: '1em',
+              opacity: 1,
+              pointerEvents: 'none',
+              paddingBottom: '3%',
+              width: '100%',
+              cursor: 'not-allowed',
+            }}>
+              {isChecked ? '피드백 페이지에서 세부 피드백을 다시 확인할 수 있습니다.' : '모든 답을 선택한 후 답안을 제출할 수 있습니다.'}
+            </div>
+          )}
+        </SubmitButton>
         </SubmitContainer>
       </FormQuizContainer>
 
@@ -739,7 +772,7 @@ const Riddle = () => {
             >
               {feedbackContent}
             </p>
-            <DetailButton onClick={feedbackDetail}>Save & Check Detail</DetailButton>
+            <DetailButton onClick={(event) => feedbackDetail(event)}>Save & Check Detail</DetailButton>
             <CloseButton onClick={closeModal}>
               {" "}
               <AiOutlineClose />{" "}
