@@ -4,15 +4,12 @@ import openai
 from openai import OpenAI
 from pydantic import BaseModel
 from operator import itemgetter
-
+from django.core.cache import cache
 # from django.core.cache import cache
 
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=openai.api_key)
-
-cache = {}
-
 
 def chat_quiz():
     cache_key = "chat_quiz"
