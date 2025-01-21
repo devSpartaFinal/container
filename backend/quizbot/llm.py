@@ -96,6 +96,11 @@ def quizz_chain(content, input):
         2. Choose the appropriate code that matches the given output.
         3. Fill in the blanks in the code with correct options.
         Include detailed examples and explanations for all questions. Ensure that answer options are full sentences, not just short answers. Mark the correct answer explicitly.
+
+        **Answer Validation:**  
+        Ensure that among the provided answer choices, **only one option is the correct answer**, and the other options are plausible but incorrect. Incorrect answers should be realistic distractors that test conceptual understanding and avoid being misleading or ambiguous.  
+
+        Include detailed examples and explanations for all questions. Ensure that answer options are full sentences, not just short answers. Mark the correct answer explicitly.
         **Language:** only in Korean
         """
     # 퀴즈 데이터를 구조화하여 응답 받기

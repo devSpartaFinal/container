@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import {
   HomeContainer,
   DropDownParentContainer,
@@ -364,15 +364,33 @@ const SetRiddle = () => {
     setShowModal(false);
   };
 
+      const question_loading_messages = [
+        "🧐 문제 생성 중입니다!",
+        "⌛ AI가 열심히 문제를 분석 중입니다...",
+        "🔍 최적의 문제를 찾고 있어요!",
+        "🚀 곧 완료됩니다! 잠시만 기다려주세요...",
+        "🤖 정확한 문제를 생성 중입니다...",
+        "😅 고품질의 문제를 생성중입니다..!"
+      ];
+    
+      const [currentQLMessageIndex, setCurrentQLMessageIndex] = useState(0);
+    
+      useEffect(() => {
+        const interval = setInterval(() => {
+          setCurrentQLMessageIndex((prevIndex) => (prevIndex + 1) % question_loading_messages.length);
+        }, 10000); 
+    
+        return () => clearInterval(interval);
+      }, []);
+
   return (
     <>
       {isLoading ? (
         <div style={{ textAlign: "center", padding: "2em" }}>
-          <ClipLoader color="#3498db" size={70} />
-          <h2 style={{ color: "#3498db" }}>
-            🧐 제시해주신 조건에 맞는 문제를 생성중입니다!
-          </h2>
-          <h2 style={{ color: "#3498db" }}>.... 조금만 기다려주세요 ....</h2>
+           <ClipLoader color="#3498db" size={70} />
+                    <div style={{ color: "#fff", marginLeft: "20px" }}>
+                      <h2>{question_loading_messages[currentQLMessageIndex]}</h2>
+                    </div>
         </div>
       ) : (
         <>

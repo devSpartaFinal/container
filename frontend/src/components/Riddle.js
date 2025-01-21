@@ -69,6 +69,7 @@ const Riddle = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isGenerateLoading, setIsGenerateLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [disable, setDisable] = useState(false);
 
   const [feedbackContent, setFeedbackContent] = useState("");
   const [feedbackDetails, setFeedbackDetails] = useState({});
@@ -372,12 +373,14 @@ const Riddle = () => {
     setSelectedQuestions([]);
     setIsDropdownOpen1(false);
     setSelectedKeyword("");
+    setDisable(true);
   };
 
   const selectTitle = (titleText, titleId) => {
     setSelectedTitle(titleText);
     setSelectedTitleIndex(titleId);
     setIsDropdownOpen2(false);
+    setDisable(false);
   };
 
   const handleGenerateQuiz = async (e) => {
@@ -441,6 +444,48 @@ const Riddle = () => {
     setIsChecked(true); // Save & Check Detail 버튼을 눌렀을 때 상태 변경
   };
 
+  const preserveSpaces = (text) => {
+    return text.replace(/ /g, "\u00A0");  // 띄어쓰기를 유지한 하나의 문자열 반환
+  };
+  
+    const question_loading_messages = [
+      "🧐 문제 재생성 중입니다!",
+      "⌛ AI가 열심히 문제를 분석 중입니다...",
+      "🔍 최적의 문제를 찾고 있어요!",
+      "🚀 곧 완료됩니다! 잠시만 기다려주세요...",
+      "🤖 정확한 문제를 생성 중입니다...",
+      "😅 고품질의 문제를 생성중입니다..!"
+    ];
+  
+    const [currentQLMessageIndex, setCurrentQLMessageIndex] = useState(0);
+  
+    useEffect(() => {
+      const interval = setInterval(() => {
+        setCurrentQLMessageIndex((prevIndex) => (prevIndex + 1) % question_loading_messages.length);
+      }, 10000); 
+  
+      return () => clearInterval(interval);
+    }, []);
+
+    const grading_loading_messages = [
+      "📝 제출한 답안을 확인 중입니다!",
+      "🔍 답안을 면밀히 검토하고 있어요...",
+      "📊 채점 데이터를 분석하는 중입니다...",
+      "⏳ 정확한 채점을 위해 분석 중입니다...",
+      "💡 결과를 산출하는 중이니 조금만 기다려주세요...",
+      "🏆 최종 점수를 계산 중입니다!"
+    ];
+
+    const [currentGradingMessageIndex, setCurrentGradingMessageIndex] = useState(0);
+
+    useEffect(() => {
+      const interval = setInterval(() => {
+        setCurrentGradingMessageIndex((prevIndex) => (prevIndex + 1) % grading_loading_messages.length);
+      }, 10000);
+    
+      return () => clearInterval(interval);
+    }, []);
+
   return (
     <>
       {isLoading && (
@@ -458,12 +503,11 @@ const Riddle = () => {
             alignItems: "center",
           }}
         >
-          <ClipLoader color="#3498db" size={70} />
+          <ClipLoader color="#f39c12" size={70} />
           <div style={{ color: "#fff", marginLeft: "20px" }}>
-            <h2>🧐 채점중입니다!</h2>
-            <h2>.... 조금만 기다려주세요 ....</h2>
+            <h2>{grading_loading_messages[currentGradingMessageIndex]}</h2>
           </div>
-        </div>
+    </div>
       )}
 
       {isGenerateLoading && (
@@ -481,10 +525,9 @@ const Riddle = () => {
             alignItems: "center",
           }}
         >
-          <ClipLoader color="#3498db" size={70} display="column" />
+          <ClipLoader color="#3498db" size={70} />
           <div style={{ color: "#fff", marginLeft: "20px" }}>
-            <h2>🧐 문제 재생성 중입니다!</h2>
-            <h2>.... 조금만 기다려주세요 (최대 1분 소요)....</h2>
+            <h2>{question_loading_messages[currentQLMessageIndex]}</h2>
           </div>
         </div>
       )}
@@ -561,7 +604,7 @@ const Riddle = () => {
         </ContentButton>
 
         <GenerateButtonContainer>
-          <GenerateQuizButton onClick={handleGenerateQuiz}>
+          <GenerateQuizButton onClick={handleGenerateQuiz} disabled={disable}>
             <AiOutlineReload
               size={24}
               style={{
@@ -592,9 +635,34 @@ const Riddle = () => {
                 <div style={{ maxWidth: "100%", overflowX: "auto" }}>
                 <ReactMarkdown
                   components={{
-                    h1: ({ node, ...props }) => <p {...props} style={{ fontWeight: "bold" }} />,  // h1을 일반 텍스트로 처리
-                    h2: ({ node, ...props }) => <p {...props} style={{ fontWeight: "bold" }} />,
-                    h3: ({ node, ...props }) => <p {...props} style={{ fontWeight: "bold" }} />,
+                    h1: ({ node, children, ...props }) => (
+                      <pre
+                      style={{
+                        fontSize: "0.65em",
+                        backgroundColor: "black",
+                        color: "white",
+                        padding: "10px",
+                        margin: 0,
+                        whiteSpace: "pre-wrap",
+                        wordBreak: "break-word",
+                        overflowX: "auto" }}
+                      ># {children}</pre>
+                    ),
+                    p: ({ node, ...props }) => (
+                      <pre
+                        style={{
+                          fontSize: "0.8em",
+                          backgroundColor: "black",
+                          color: "white",
+                          padding: "10px",
+                          margin: 0,
+                          whiteSpace: "pre-wrap",
+                          wordBreak: "break-word",
+                          overflowX: "auto",
+                        }}
+                        {...props}
+                      />
+                    ),
                     pre: ({ node, ...props }) => (
                       <pre
                         style={{
@@ -602,6 +670,7 @@ const Riddle = () => {
                           backgroundColor: "black",
                           color: "white",
                           padding: "10px",
+                          margin: 0,
                           whiteSpace: "pre-wrap",
                           wordBreak: "break-word",
                           overflowX: "auto",
@@ -611,7 +680,7 @@ const Riddle = () => {
                     ),
                   }}
                 >
-                  {quiz.code_snippets}
+                  {preserveSpaces(quiz.code_snippets)}
                 </ReactMarkdown>
                 </div>
               </TitleContainer>

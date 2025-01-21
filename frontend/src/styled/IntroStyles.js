@@ -266,6 +266,13 @@ export const GenerateQuizButton = styled.button`
     transform: scale(1.05);
     background-color:rgb(254, 99, 115);  
   }
+  
+  &:disabled {
+    background-color: #d3d3d3;
+    color: #a0a0a0;
+    cursor: not-allowed; 
+    transform: none; 
+  }
 
   overflow: hidden;
   white-space: nowrap;
