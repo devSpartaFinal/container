@@ -160,20 +160,24 @@ const Session = ({
                     <span style={{ fontSize: "13px", fontWeight: "bold", textAlign: "left" }}>
                     <ReactMarkdown>
                       {session.title
-                        .replace(/"/g, "") // 큰따옴표 제거
-                        .replace("세션 제목: ", "") // "세션 제목: " 제거
-                        .replace("세션 제목 요약: ", "") // "세션 제목 요약: " 제거
-                      }
+                        ? session.title
+                            .replace(/"/g, "") // 큰따옴표 제거
+                            .replace("세션 제목: ", "") // "세션 제목: " 제거
+                            .replace("세션 제목 요약: ", "") // "세션 제목 요약: " 제거
+                        : "No Title"}
                     </ReactMarkdown>
                     </span>
                     <span
                       style={{
-                        fontSize: "10px", color: "#333", marginTop: "-10px", textAlign: "left"
+                        fontSize: "10px",
+                        color: "#333",
+                        marginTop: "-10px",
+                        textAlign: "left",
                       }}
                     >
                       {session.conversation?.length > 1
-                        ? session.conversation.slice(-1)[0]?.AI.slice(0, 60) ||
-                          session.conversation.slice(-1)[0]?.USER.slice(0, 60)
+                        ? session.conversation.slice(-1)[0]?.AI?.slice(0, 60) ||
+                          session.conversation.slice(-1)[0]?.USER?.slice(0, 60)
                         : "No conversation"}
                       ...
                     </span>

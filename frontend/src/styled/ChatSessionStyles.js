@@ -5,7 +5,6 @@ export const SessionListContainer = styled.div`
   background: #eeeeee;
   display: flex;
   flex-direction: column;
-  
 `;
 
 export const SessionList = styled.div`

@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSquarePlus } from "@fortawesome/free-solid-svg-icons";
 
 
@@ -304,17 +303,24 @@ export const DropdownLeftRowMenu = styled.ul`
 `;
 
 
-export const PlusButton = styled(FontAwesomeIcon)`
+export const PlusButton = styled.button`
   position: relative;
-  right: -3%;
-  height: 1.2em;
-  width: 1.3em;
-  top: -3.3%;
-  
-  color: ${(props) => (props.disabled ? "#ccc" : "black")}; /* Gray when disabled, blue otherwise */
-  pointer-events: ${(props) => (props.disabled ? "none" : "auto")}; /* Prevent interaction when disabled */
-  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5%;
+  background-color: transparent;
+  border: 1px solid ${(props) => (props.disabled ? "#ccc" : "#000")};
+  color: ${(props) => (props.disabled ? "#ccc" : "black")};
+  pointer-events: ${(props) => (props.disabled ? "none" : "auto")};
+  cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
+  font-size: 1rem;
+
   &:hover {
-    color: ${(props) => (props.disabled ? "#ccc" : "#63b5da")}; /* No hover effect when disabled */
+    color: ${(props) => (props.disabled ? "#ccc" : "#63b5da")};
+  }
+
+  & > svg {
+    margin-right: 5%;
   }
 `;
