@@ -252,7 +252,7 @@ const MultiChatRoom = () => {
                                 {msg.username === username ? (
                                     <>
                                         {/* msg.timestamp은 메시지 왼쪽에 표시 */}
-                                        <small style={{ marginRight: '10px', fontSize: '0.8em', color: 'gray', display: 'inline-block' }}>{msg.timestamp}</small>
+                                        <small style={{ marginRight: '10px', fontSize: '0.8em', color: 'white', display: 'inline-block' }}>{msg.timestamp}</small>
                                         <div
                                             className={`chatting-message own-message`}
                                             style={{ display: 'inline-block', whiteSpace: 'pre-wrap'}}
@@ -266,11 +266,11 @@ const MultiChatRoom = () => {
                                         <strong>{msg.username}</strong><br/>
                                         <div
                                             className={`chatting-message other-message`}
-                                            style={{ display: 'inline-block', whiteSpace: 'pre-wrap'}}
+                                            style={{ display: 'inline-block', whiteSpace: 'pre-wrap', fontWeight: 'bold'}}
                                         >
                                             <ReactMarkdown>{msg.message}</ReactMarkdown>
                                         </div>
-                                        <small style={{ marginLeft: '10px', fontSize: '0.8em', color: 'gray', display: 'inline-block' }}>{msg.timestamp}</small>
+                                        <small style={{ marginLeft: '10px', fontSize: '0.8em', color: 'white', display: 'inline-block' }}>{msg.timestamp}</small>
                                     </>
                                 )}
                             </p>

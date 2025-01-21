@@ -89,7 +89,7 @@ def chat_quiz():
         Each ChatQuiz should include:
 
         Description: The content/explanation of the question.
-        Choices: Multiple-choice options.
+        Choices: 5-Multiple-choice options.
         Answer: The correct answer, provided as a number
 
         <description>

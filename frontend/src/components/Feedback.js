@@ -202,7 +202,7 @@ const Feedback = () => {
             ))}
           </div>
         ) : (
-          <p>퀴즈 목록을 불러오는 중이거나 비어 있습니다.</p>
+          <p style={{color: 'white'}}>퀴즈 목록을 불러오는 중이거나 비어 있습니다.</p>
         )}
       </QuizListPanel>
     </FeedbackContainer>
