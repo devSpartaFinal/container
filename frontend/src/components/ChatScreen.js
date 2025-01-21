@@ -18,6 +18,7 @@ import {
   DropdownRightRowMenu,
   ToggleButton,
   PlusButton,
+  PlusButton2,
   Chat,
  } from "../styled/ChattingScreenStyles";
 import ChatForm from "./ChatForm";
@@ -33,6 +34,7 @@ import {
 
 import ReactMarkdown from "react-markdown";
 import Session from "./Session";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const ChatScreen = () => {
   const categoryOptions = [
@@ -335,12 +337,30 @@ const ChatScreen = () => {
   };
 
   const onSendMessage = (messageText) => {
+    if (!selectedCategory || !selectedTitleIndex) {
+      
+      const newMessage = {
+        id: messages.length + 1,
+        text: messageText,
+        author: "User",
+      };
+
+      const botMessage = {
+        id: messages.length + 1,
+        text: `${username}님 반갑습니다! 대화를 원하시는 카테고리와 주제를 선택해주세요.`,
+        author: "BOT",
+      };
+  
+      setMessages((prevMessages) => [...prevMessages, newMessage, botMessage]);
+      return;
+    }
+  
     const newMessage = {
       id: messages.length + 1,
       text: messageText,
       author: "User",
     };
-
+  
     setMessages((prevMessages) => [...prevMessages, newMessage]);
   };
 
@@ -557,7 +577,7 @@ const ChatScreen = () => {
           <PlusButton
             icon={faSquarePlus}
             size="2x"
-            disabled={loading}
+            disabled={loading || !selectedCategory || !selectedTitle}
             onClick={() => {
               setLoading(true);
               fetchSessionNo();
@@ -565,6 +585,7 @@ const ChatScreen = () => {
               setMessages([]);
               setSessionNo(null);
             }}
+            style={{cursor: (loading || !selectedCategory || !selectedTitle) ? 'not-allowed' : 'pointer'}}
           />
         </ChatScreenContainer>
       </HomeContainer>
@@ -578,6 +599,24 @@ const ChatScreen = () => {
           }
         `}
       </style>
+
+      <PlusButton2
+        data-tooltip="새 대화를 시작할 수 있습니다."
+        disabled={loading || !selectedCategory || !selectedTitle}
+        onClick={() => {
+          setLoading(true);
+          fetchSessionNo();
+          setHaveToReset(true);
+          setMessages([]);
+          setSessionNo(null);
+        }}
+        style={{
+          cursor: (loading || !selectedCategory || !selectedTitle) ? 'not-allowed' : 'pointer',
+          opacity: (loading || !selectedCategory || !selectedTitle) ? 0.5 : 1,
+        }}
+      >
+        <FontAwesomeIcon icon={faSquarePlus} size="3x" />
+      </PlusButton2>
     </>
   );
   

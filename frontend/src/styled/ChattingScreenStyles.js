@@ -274,12 +274,53 @@ export const PlusButton = styled(FontAwesomeIcon)`
   top: -3.3%;
   
   color: ${(props) => (props.disabled ? "#ccc" : "black")}; /* Gray when disabled, blue otherwise */
-  pointer-events: ${(props) => (props.disabled ? "none" : "auto")}; /* Prevent interaction when disabled */
   
   &:hover {
     color: ${(props) => (props.disabled ? "#ccc" : "#63b5da")}; /* No hover effect when disabled */
   }
 `;
+
+export const PlusButton2 = styled.button`
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  color: ${(props) => (props.disabled ? "#1E3269" : "white")};
+  cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")} !important;
+  opacity: ${(props) => (props.disabled ? 0.5 : 1)};
+  font-size: 1rem;
+  width: 3%;
+  height: 5%;
+  top: -1.5%;
+  left: 43%;
+  z-index: 1000;
+
+  &:hover {
+    background-color: transparent;
+    color: ${(props) => (props.disabled ? "inherit" : "#63b5da")};
+    border: 1px solid ${(props) => (props.disabled ? "transparent" : "transparent")};
+  }
+
+  &:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 30%;
+    top: -70%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.75);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 1em;
+    white-space: nowrap;
+  }
+
+  & > svg {
+    margin-right: 5%;
+  }
+`;
+
 
 export const Chat = styled.div`
     padding: 1vh 0.2vw; /* 좌우 패딩을 vw 단위로 줄임 */

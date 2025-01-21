@@ -87,6 +87,9 @@ const ChatForm = ({
     }
   };
 
+  // 비활성화 조건: Category와 Title이 선택되지 않았을 경우
+  const isDisabled = !currentCategory || !currentTitleNo || loading;
+
   return (
     <>
       <ChatFooterContainer>
@@ -96,18 +99,19 @@ const ChatForm = ({
       <MessageForm onSubmit={onSubmit}>
         <input
           type="text"
-          placeholder="Type a message here"
+          placeholder={isDisabled ? "대화 시작 전 Category와 Title을 먼저 선택해주세요." : "Type a message here"}
           ref={inputRef}
           style={{
             marginLeft: "4%",
             outline: "2px solid #eeeeeeee",
             borderRadius: "8px",
             paddingLeft: "15px",
+            cursor: isDisabled ? "not-allowed" : "text",
           }}
-          disabled={loading}
+          disabled={isDisabled}
         />
 
-        <button type="submit" disabled={loading}>
+        <button type="submit" disabled={isDisabled} style={{cursor: isDisabled ? "not-allowed" : "pointer"}}>
           {loading ? (
             <LoadingSpinner />
           ) : (

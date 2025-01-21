@@ -51,12 +51,12 @@ export const SessionParentContainer = styled.div`
 export const SessionContainer = styled.div`
   display: flex;
   flex-direction: column; 
-  gap: 1000px;
   width: 97%;
   color:rgb(0, 0, 0);
-  height: 110%;
+  height: 85%;
   padding: 1vh 5px;
   background:rgb(255, 255, 255);
+  margin-bottom: 20%;
   
   border-radius: 15px 15px 15px 15px;
   z-index: 1000;
