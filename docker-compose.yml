@@ -25,10 +25,10 @@ services:
       python manage.py migrate &&
       python manage.py createsuperuser --noinput || true &&
       exec python manage.py runserver 0.0.0.0:8000 &&
-      exec daphne coding_helper.asgi:application --port 8000
+      exec daphne -b 0.0.0.0 -p 8000 coding_helper.asgi:application
       "
 # daphne 또는 python manage.py runserver 0.0.0.0:8000 && 둘 중 하나만 실행
-      
+      # exec daphne coding_helper.asgi:application --port 8000
   db:
     image: postgres:15
     container_name: postgres
