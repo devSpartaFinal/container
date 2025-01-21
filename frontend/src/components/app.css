@@ -166,7 +166,6 @@ margin-top: 10%;
 }
 
 .submit-button:disabled::after {
-  content: '모든 답을 선택한 후 답안을 제출할 수 있습니다.';
   position: absolute;
   top: 150%;
   left: 50%;
@@ -177,4 +176,15 @@ margin-top: 10%;
   pointer-events: none;
   padding-bottom: 3%;
   width: 100%;
+}
+
+/* isChecked일 때 content 변경 */
+.submit-button.is-checked:disabled::after {
+  content: '피드백 페이지에서 세부 피드백을 다시 확인할 수 있습니다.';
+  cursor: not-allowed;
+}
+
+/* isAllOptionsSelected일 때 content 변경 */
+.submit-button.is-all-selected:disabled::after {
+  content: '모든 답을 선택한 후 답안을 제출할 수 있습니다.';
 }

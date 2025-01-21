@@ -132,7 +132,11 @@ const Feedback = () => {
                 </div>
                 <div>
                   <p className="small-title">피드백</p>
-                  <p className="content" style={{ marginBottom: '25px' }}>{feedbackItem.feedback?.feedback || "피드백 없음"}</p>
+                  <p className="content" style={{ marginBottom: '25px' }}>
+                    {feedbackItem.feedback 
+                      ? JSON.parse(feedbackItem.feedback.replace(/'/g, '"'))?.feedback 
+                      : "피드백 없음"}
+                  </p>
                 </div>
                 <div className="divider3"></div>
               </div>
