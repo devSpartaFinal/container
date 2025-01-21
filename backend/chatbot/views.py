@@ -102,7 +102,7 @@ class RagChatbotView(APIView):
                         script = cache.set(cache_key, content)
                     except:
                         return Response(
-                            {"error": "URL을 확인해 주세요."},
+                            {"error": "URL 또는 영상길이를 확인해 주세요."},
                             status=status.HTTP_404_NOT_FOUND,
                         )
                 result = llm.QnA_chain(content, memory, user_input)
@@ -151,7 +151,7 @@ class RagChatbotView(APIView):
                         script = cache.set(cache_key, content)
                     except:
                         return Response(
-                            {"error": "URL을 확인해 주세요."},
+                            {"error": "URL 또는 영상길이를 확인해 주세요."},
                             status=status.HTTP_404_NOT_FOUND,
                         )
                 memory = ""
@@ -255,6 +255,7 @@ class SummaryView(APIView):
     def get(self, request):
         category = request.query_params.get("category")
         title_no = request.query_params.get("title_no")
+        url = request.query_params.get("URL")
         if category == "OFFICIAL_DOCS":
             user = request.user
             cache_key = f"{user.id}:{category}:{title_no}:summary"
@@ -275,7 +276,6 @@ class SummaryView(APIView):
             cache.set(cache_key, response, timeout=60 * 60 * 24)
             
         elif category == "YOUTUBE":
-            url = request.data["URL"]
             summary_key = f"{url}:summary"
             response = cache.get(summary_key)
             if not response:

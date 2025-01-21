@@ -169,7 +169,7 @@ class EmailVerificationView(APIView):
                 user.save()
 
                 # 사용자 캐시 초기화
-                chats = ChatHistory.objects.filter(user=request.user)
+                chats = ChatHistory.objects.filter(user=user)
                 if chats:
                     chathistory_key = f"{user.id}:chathistory_keys"
                     keys = []

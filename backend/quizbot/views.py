@@ -126,13 +126,14 @@ class QuizRequestView(APIView):
                 url = request.data["URL"]
                 cache_key = url
                 script = cache.get(cache_key)
+                content = script
                 if not script:
                     try:
                         content = YoutubeScript(url)
                         script = cache.set(cache_key, content)
                     except:
                         return Response(
-                            {"error": "URL을 확인해 주세요."},
+                            {"error": "URL 또는 영상길이를 확인해 주세요."},
                             status=status.HTTP_404_NOT_FOUND,
                         )
             else:
