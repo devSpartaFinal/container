@@ -286,3 +286,43 @@ class TotalFeedbackView(APIView):
             return Response(
                 {"error": "Quiz not found"}, status=status.HTTP_404_NOT_FOUND
             )
+
+class FeedbackGetView(APIView):
+    def get(self, request, quiz_id):
+        try:
+            # 퀴즈 가져오기
+            quiz = Quiz.objects.prefetch_related("questions__choices").get(
+                id=quiz_id, user=request.user
+            )
+            feedback_output = []
+            questions_queryset = quiz.questions.all()
+
+            for question in questions_queryset:
+                user_answer = question.user_answer  # JSONField에서 사용자 답변 가져오기
+                data = {
+                    "question": {
+                        "number": question.number,
+                        "content": question.content,
+                        "answer_type": question.answer_type,
+                    },
+                    "choice": [
+                        {
+                            "number": choice.number,
+                            "content": choice.content,
+                            "is_correct": choice.is_correct,
+                        }
+                        for choice in question.choices.all()
+                    ],
+                    "user_answer": user_answer,  # 사용자 답변
+                    "feedback": question.feedback  # 저장된 피드백 가져오기
+                }
+                feedback_output.append(data)
+
+            return Response(
+                feedback_output,
+                status=status.HTTP_200_OK,
+            )
+        except Quiz.DoesNotExist:
+            return Response(
+                {"error": "Quiz not found"}, status=status.HTTP_404_NOT_FOUND
+            )
