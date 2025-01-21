@@ -7,7 +7,7 @@ services:
     volumes:
       - ./backend:/app/backend 
     ports:
-      - "80:80"
+      - "80:8000"
     env_file:
       - .env
     environment:
@@ -22,8 +22,8 @@ services:
       python manage.py makemigrations &&
       python manage.py migrate &&
       python manage.py createsuperuser --noinput || true &&
-      exec python manage.py runserver 0.0.0.0:80 &&
-      exec daphne coding_helper.asgi:application --port 80
+      exec python manage.py runserver 0.0.0.0:8000 &&
+      exec daphne coding_helper.asgi:application --port 8000
       "
       
   db:
@@ -45,7 +45,7 @@ services:
     restart: always
     container_name: pgadmin
     ports:
-      - "5050:80"
+      - "5050:5050"
     environment:
       PGADMIN_DEFAULT_EMAIL: pgadmin4@pgadmin.org
       PGADMIN_DEFAULT_PASSWORD: password
