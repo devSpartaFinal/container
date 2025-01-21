@@ -18,18 +18,6 @@ class ChatHistory(models.Model):
     content = models.TextField(null=True, blank=True)  # 간단 QnA용
     content_info = models.JSONField(null=True, blank=True)
 
-
-class UserDocs(models.Model):
-    title_no = models.AutoField(primary_key=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_docs")
-    category = models.CharField(max_length=255, default="User-Docs")
-    title = models.CharField(max_length=255, null=False, blank=False)
-    url = models.URLField(null=True, blank=True)
-    content = models.TextField(null=True, blank=True)
-    file = models.FileField(null=True, blank=True)
-    uploaded_at = models.DateTimeField(auto_now_add=True)
-
-
 class Documents(models.Model):
     category = models.CharField(max_length=255, null=True, blank=True)
     title = models.CharField(max_length=255, null=True, blank=True)

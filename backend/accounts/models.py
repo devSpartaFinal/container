@@ -49,9 +49,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         },
     )
     first_name = models.CharField(
-        max_length=50, null=False, blank=False, default="first"
+        max_length=50, null=True, blank=True, default="first"
     )
-    last_name = models.CharField(max_length=50, null=False, blank=False, default="last")
+    last_name = models.CharField(max_length=50, null=True, blank=True, default="last")
     nickname = models.CharField(
         max_length=30,
         unique=True,
@@ -76,6 +76,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     # 자동 입력
     is_superuser = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
+    is_social = models.BooleanField(default=False)
+    social_login = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -190,3 +190,11 @@ youtube-transcript-api==0.6.3
 zipp==3.21.0
 channels==4.0.0
 channels-redis==4.0.0
+daphne==4.1.2
+django-redis==5.4.0
+async-timeout==4.0.3
+dj-rest-auth==6.0.0
+django-allauth==0.61.1
+exceptiongroup==1.2.2
+tomli==2.2.1
+uvloop==0.21.0

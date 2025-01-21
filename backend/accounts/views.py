@@ -1,19 +1,18 @@
-from django.http import HttpResponseRedirect
 import jwt
-from rest_framework.views import APIView
 from .models import User
-from coding_helper.settings import HOSTUSER_EMAIL, SECRET_KEY
 from .serializers import *
+from rest_framework import status
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from django.contrib.auth import login, authenticate
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.models import update_last_login
+from coding_helper.settings import HOSTUSER_EMAIL, SECRET_KEY
 from rest_framework_simplejwt.serializers import (
     TokenObtainPairSerializer,
     TokenRefreshSerializer,
 )
-from rest_framework import status
-from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from django.contrib.auth import login, authenticate
-from django.contrib.auth.models import update_last_login
-from django.shortcuts import render, get_object_or_404
 
 # 이메일 인증 관련
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
@@ -23,7 +22,25 @@ from django.core.mail import send_mail
 from django.http import HttpResponseRedirect
 
 
-# Create your views here.
+# 캐시 초기화
+from chatbot.models import ChatHistory, Documents
+from quizbot.models import Reference
+from django.core.cache import cache
+
+# 소셜 로그인
+import requests
+from urllib.parse import urlencode
+from django.shortcuts import redirect
+from coding_helper.settings import (
+    GOOGLE_OAUTH_CLIENT_ID,
+    GOOGLE_OAUTH_CALLBACK_URL,
+    GOOGLE_OAUTH_CLIENT_SECRET,
+    GITHUB_CLIENT_ID,
+    GITHUB_REDIRECT_URI,
+    GITHUB_CLIENT_SECRET,
+)
+
+
 class SignInOutAPIView(APIView):
 
     def get_permissions(self):
@@ -37,26 +54,6 @@ class SignInOutAPIView(APIView):
         print(request.data)
         serializer = UserSerializer(data=request.data)
         value = request.data["password"]
-
-        # 비밀번호 유효성 검사
-        # if len(value) < 8:
-        #     raise serializers.ValidationError("비밀번호는 최소 8자 이상이어야 합니다.")
-        # if not re.search(r"[A-Z]", value):  # 대문자 포함
-        #     raise serializers.ValidationError(
-        #         "비밀번호는 최소한 하나의 대문자를 포함해야 합니다."
-        #     )
-        # if not re.search(r"[a-z]", value):  # 소문자 포함
-        #     raise serializers.ValidationError(
-        #         "비밀번호는 최소한 하나의 소문자를 포함해야 합니다."
-        #     )
-        # if not re.search(r"[0-9]", value):  # 숫자 포함
-        #     raise serializers.ValidationError(
-        #         "비밀번호는 최소한 하나의 숫자를 포함해야 합니다."
-        #     )
-        # if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", value):  # 특수문자 포함
-        #     raise serializers.ValidationError(
-        #         "비밀번호는 최소한 하나의 특수문자를 포함해야 합니다."
-        #     )
 
         if serializer.is_valid():
             user = serializer.save()
@@ -160,17 +157,40 @@ class EmailVerificationView(APIView):
                     status=status.HTTP_200_OK,
                 )
 
-                res = HttpResponseRedirect("https:///www.letsreadriddle.com")
+                res = HttpResponseRedirect("https://api.letsreadriddle.com")
 
                 # JWT 토큰을 쿠키에 저장
-                res.set_cookie("username", user.username, httponly=False, domain="www.letsreadriddle.com")
-                res.set_cookie("access", access_token, httponly=False, domain="www.letsreadriddle.com")
-                res.set_cookie("refresh", refresh_token, httponly=True, domain="www.letsreadriddle.com")
-
+                res.set_cookie("username", user.username, httponly=False)
+                res.set_cookie("access", access_token, httponly=False)
+                res.set_cookie("refresh", refresh_token, httponly=True)
 
                 # refresh_token을 데이터베이스에 저장
                 user.refresh_token = refresh_token
                 user.save()
+
+                # 사용자 캐시 초기화
+                chats = ChatHistory.objects.filter(user=user)
+                if chats:
+                    chathistory_key = f"{user.id}:chathistory_keys"
+                    keys = []
+                    for chat in chats:
+                        cache_key = f"{user.id}:{chat.id}:chathistory"
+                        cache.set(cache_key, chat, timeout=60 * 60)
+                        keys.append(chat.id)
+                    cache.set(chathistory_key, keys, timeout=60 * 60)
+                    print("대화내역 캐시 등록")
+
+                # 레퍼런스 초기화
+                documents = cache.get("documents")
+                if not documents:
+                    documents = Documents.objects.all()
+                    cache.set("documents", documents, timeout=60 * 60 * 24)
+                    print("공식문서 캐시 등록")
+                reference = cache.get("reference")
+                if not reference:
+                    reference = Reference.objects.all()
+                    cache.set("reference", reference, timeout=60 * 60 * 24)
+                    print("레퍼런스 캐시 등록")
 
                 return res
             else:
@@ -220,14 +240,19 @@ class AuthAPIView(APIView):
     # 로그인
     def post(self, request):
         # 유저 인증
-        user = authenticate(
-            username=request.data.get("username"), password=request.data.get("password")
-        )
+        user = User.objects.get(username=request.data.get("username"))
+        if user.social_login == False:
+            user = authenticate(
+                username=request.data.get("username"),
+                password=request.data.get("password"),
+            )
         # 이미 회원가입 된 유저일 때
         if user is not None:
             if not user.is_active:
-                return Response({"message": "User is inactive"}, status=status.HTTP_400_BAD_REQUEST)
-            
+                return Response(
+                    {"message": "User is inactive"}, status=status.HTTP_400_BAD_REQUEST
+                )
+
             login(request, user)
             update_last_login(None, user)
             serializer = UserSerializer(user)
@@ -239,16 +264,44 @@ class AuthAPIView(APIView):
                 {
                     "user": serializer.data,
                     "message": "login success",
-                    "token": {"access": access_token,"refresh": refresh_token,},
+                    "token": {
+                        "access": access_token,
+                        "refresh": refresh_token,
+                    },
                 },
                 status=status.HTTP_200_OK,
             )
             # jwt 토큰 => 쿠키에 저장
             res.set_cookie("username", user.username, httponly=False)
             res.set_cookie("access", access_token, httponly=False)
-            
+
             user.refresh_token = refresh_token
+            user.social_login = False
             user.save()
+            # 사용자 캐시 초기화
+            chats = ChatHistory.objects.filter(user=request.user)
+            if chats:
+                chathistory_key = f"{user.id}:chathistory_keys"
+                keys = []
+                for chat in chats:
+                    cache_key = f"{user.id}:{chat.id}:chathistory"
+                    cache.set(cache_key, chat, timeout=60 * 60)
+                    keys.append(chat.id)
+                cache.set(chathistory_key, keys, timeout=60 * 60)
+                print("대화내역 캐시 등록")
+
+            # 레퍼런스 초기화
+            documents = cache.get("documents")
+            if not documents:
+                documents = Documents.objects.all()
+                cache.set("documents", documents, timeout=60 * 60 * 24)
+                print("공식문서 캐시 등록")
+            reference = cache.get("reference")
+            if not reference:
+                reference = Reference.objects.all()
+                cache.set("reference", reference, timeout=60 * 60 * 24)
+                print("레퍼런스 캐시 등록")
+
             return res
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -265,6 +318,7 @@ class AuthAPIView(APIView):
         response.delete_cookie("access")
         # response.delete_cookie("refresh")
         user.refresh_token = ""
+        user.social_login = False
         user.save()
         return response
 
@@ -281,7 +335,7 @@ class PasswordAPIView(APIView):
                 {"detail": "현재 비밀번호가 일치하지 않습니다."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-            
+
         # 새 비밀번호와 확인 비밀번호가 일치하는지 확인
         if request.data["new_password"] != request.data["confirm_password"]:
             return Response(
@@ -291,26 +345,6 @@ class PasswordAPIView(APIView):
 
         # 비밀번호 유효성 검사
         value = request.data["new_password"]
-        # if len(value) < 8:
-        #     raise serializers.ValidationError("비밀번호는 최소 8자 이상이어야 합니다.")
-        # if not re.search(r"[A-Z]", value):  # 대문자 포함
-        #     raise serializers.ValidationError(
-        #         "비밀번호는 최소한 하나의 대문자를 포함해야 합니다."
-        #     )
-        # if not re.search(r"[a-z]", value):  # 소문자 포함
-        #     raise serializers.ValidationError(
-        #         "비밀번호는 최소한 하나의 소문자를 포함해야 합니다."
-        #     )
-        # if not re.search(r"[0-9]", value):  # 숫자 포함
-        #     raise serializers.ValidationError(
-        #         "비밀번호는 최소한 하나의 숫자를 포함해야 합니다."
-        #     )
-        # if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", value):  # 특수문자 포함
-        #     raise serializers.ValidationError(
-        #         "비밀번호는 최소한 하나의 특수문자를 포함해야 합니다."
-        #     )
-
-        # set_password() 메서드로 비밀번호 해싱
         user.set_password(value)
         user.save()
         return Response(
@@ -324,17 +358,10 @@ class TokenRefresh(APIView):
 
     def post(self, request):
         try:
-
-            print(">>>>>>>>> REFRESH 토큰 요청옴!!")
-            # access token을 decode 해서 유저 id 추출 => 유저 식별
-            print(request.data)
             access = request.data["access"]
             payload = jwt.decode(access, SECRET_KEY, algorithms=["HS256"])
             pk = payload.get("user_id")
-            print(payload)
-            print(pk)
             user = get_object_or_404(User, pk=pk)
-            print(user)
             refresh_token = user.refresh_token
             data = {"refresh": refresh_token}
             serializer = TokenRefreshSerializer(data=data)
@@ -345,9 +372,7 @@ class TokenRefresh(APIView):
                 serializer = UserSerializer(instance=user)
 
                 # 새로운 access와 refresh 토큰으로 응답 생성
-                res = Response(
-                    {"access": access}, status=status.HTTP_200_OK
-                )
+                res = Response({"access": access}, status=status.HTTP_200_OK)
                 res.set_cookie("username", user.username, httponly=False)
                 res.set_cookie("access", access, httponly=False)
                 # res.set_cookie("refresh", refresh)
@@ -357,6 +382,221 @@ class TokenRefresh(APIView):
             print("JWT decoding error:", str(e))
             return Response({"detail": str(e)}, status=status.HTTP_401_UNAUTHORIZED)
         except KeyError:
-            return Response({"detail": "토큰을 확인할 수 없습니다."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"detail": "토큰을 확인할 수 없습니다."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         except Exception as e:
-            return Response({"detail": "오류가 발생하였습니다. : " + str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                {"detail": "오류가 발생하였습니다. : " + str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+
+class GoogleLogin(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        google_oauth_url = "https://accounts.google.com/o/oauth2/v2/auth"
+        params = {
+            "response_type": "code",
+            "client_id": GOOGLE_OAUTH_CLIENT_ID,
+            "redirect_uri": GOOGLE_OAUTH_CALLBACK_URL,
+            "scope": "https://www.googleapis.com/auth/userinfo.email",
+            "state": "state_parameter",
+        }
+
+        auth_url = f"{google_oauth_url}?{urlencode(params)}"
+        return Response({"auth_url": auth_url})
+
+
+class GoogleLoginCallback(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, *args, **kwargs):
+        code = request.GET.get("code")
+
+        # 인증 코드가 없으면 400 오류 반환
+        if code is None:
+            return Response({"error": "Authorization code not provided"}, status=400)
+
+        # Google OAuth2 토큰 엔드포인트
+        token_endpoint_url = "https://oauth2.googleapis.com/token"
+
+        # POST 요청을 Google의 토큰 엔드포인트로 보냄
+        response = requests.post(
+            url=token_endpoint_url,
+            params={
+                "client_id": GOOGLE_OAUTH_CLIENT_ID,
+                "client_secret": GOOGLE_OAUTH_CLIENT_SECRET,
+                "code": code,
+                "grant_type": "authorization_code",
+                "redirect_uri": GOOGLE_OAUTH_CALLBACK_URL,
+            },
+        )
+
+        # 응답이 JSON 형식인지 확인하고 처리
+        try:
+            response_dict = response.json()
+            access_token = response_dict.get("access_token")
+            url = "https://www.googleapis.com/oauth2/v3/userinfo"
+            headers = {"Authorization": f"Bearer {access_token}"}
+            response = requests.get(url, headers=headers)
+            response_data = response.json()
+
+            email = response_data.get("email")
+
+            id = email.split("@")[0]
+            username = f"05_{id}"
+            try:
+                user = User.objects.get(username=username)
+                print("가입된 사용자")
+            except User.DoesNotExist:
+                print("미가입된 사용자")
+
+                user = User.objects.create(
+                    username=username,
+                    email=f"{id}@social.com",
+                    first_name="Anonymous",
+                    nickname=id,
+                    is_active=True,
+                    is_social=True,
+                )
+                user.save()
+                # 사용자 캐시 초기화
+            chats = ChatHistory.objects.filter(user=user)
+            if chats:
+                chathistory_key = f"{user.id}:chathistory_keys"
+                keys = []
+                for chat in chats:
+                    cache_key = f"{user.id}:{chat.id}:chathistory"
+                    cache.set(cache_key, chat, timeout=60 * 60)
+                    keys.append(chat.id)
+                cache.set(chathistory_key, keys, timeout=60 * 60)
+                print("대화내역 캐시 등록")
+
+            # 레퍼런스 초기화
+            documents = cache.get("documents")
+            if not documents:
+                documents = Documents.objects.all()
+                cache.set("documents", documents, timeout=60 * 60 * 24)
+                print("공식문서 캐시 등록")
+            reference = cache.get("reference")
+            if not reference:
+                reference = Reference.objects.all()
+                cache.set("reference", reference, timeout=60 * 60 * 24)
+                print("레퍼런스 캐시 등록")
+
+            login(request, user)
+            update_last_login(None, user)
+            token = TokenObtainPairSerializer.get_token(user)
+            refresh_token = str(token)
+            access = str(token.access_token)
+            res = Response(
+                {
+                    "access": access,
+                    "username": username,
+                },
+                status=status.HTTP_200_OK,
+            )
+
+            # jwt 토큰 => 쿠키에 저장
+            user.refresh_token = refresh_token
+            user.save()
+            print(res.data)
+            return res
+
+        except requests.exceptions.RequestException as e:
+            return Response({"error": f"Request error: {str(e)}"}, status=400)
+
+        except ValueError:
+            return Response({"error": "Invalid response from Google"}, status=400)
+
+
+class GithubLogin(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        github_oauth_url = "https://github.com/login/oauth/authorize"
+        params = {
+            "client_id": GITHUB_CLIENT_ID,
+            "redirect_uri": GITHUB_REDIRECT_URI,
+            "scope": "read:user",
+            "user:email" "state": "state_parameter",  # CSRF 방지용 state 값
+        }
+
+        # GitHub로 리디렉션
+        auth_url = f"{github_oauth_url}?{urlencode(params)}"
+        return redirect(auth_url)
+
+
+class GitHubLoginCallback(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, *args, **kwargs):
+        # GitHub에서 받은 인증 코드
+        code = request.GET.get("code")
+
+        # 인증 코드가 없으면 에러 반환
+        if not code:
+            return Response({"error": "Authorization code not provided"}, status=400)
+
+        # GitHub 토큰 엔드포인트
+        token_endpoint_url = "https://github.com/login/oauth/access_token"
+
+        # POST 요청으로 액세스 토큰 요청
+        response = requests.post(
+            url=token_endpoint_url,
+            headers={"Accept": "application/json"},
+            data={
+                "client_id": GITHUB_CLIENT_ID,
+                "client_secret": GITHUB_CLIENT_SECRET,
+                "code": code,
+                "redirect_uri": GITHUB_REDIRECT_URI,
+            },
+        )
+
+        # 응답을 JSON 형식으로 파싱
+        try:
+            token_data = response.json()
+            access_token = token_data.get("access_token")
+
+            if not access_token:
+                return Response({"error": "Access token not received"}, status=400)
+
+            # GitHub 사용자 정보 가져오기
+            user_info_url = "https://api.github.com/user"
+            headers = {"Authorization": f"Bearer {access_token}"}
+            response = requests.get(user_info_url, headers=headers)
+            response_data = response.json()
+            email = response_data["email"]
+            address = email.split("@")
+            id = address[0] + address[1][0] + address[1][1]
+            username = f"07_{id}"
+            try:
+                user = User.objects.get(username=username)
+                print("가입된 사용자")
+            except User.DoesNotExist:
+                print("미가입된 사용자")
+
+                user = User.objects.create(
+                    username=username,
+                    email=f"{id}@social.com",
+                    first_name="Anonymous",
+                    nickname=id,
+                    is_active=True,
+                    is_social=True,
+                )
+                user.save()
+
+            user.social_login = True
+            user.save()
+            username = user.username
+
+            return Response({"username": username})
+
+        except requests.exceptions.RequestException as e:
+            return Response({"error": f"Request error: {str(e)}"}, status=400)
+
+        except ValueError:
+            return Response({"error": "Invalid response from Google"}, status=400)
