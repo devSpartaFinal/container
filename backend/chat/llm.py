@@ -47,9 +47,9 @@ def chat_quiz():
             subjects: list[Subject]
 
         prompt = f"""
-        프로그래밍에 관련된 주제 12개를 생성해줘
-        어려움
-        done 은 모두 false
+        Make **12** 'Subject' about Programming Language and AI
+        'difficulty' is Hard
+        `done' is false
         """
 
         completion = client.beta.chat.completions.parse(
@@ -83,13 +83,28 @@ def chat_quiz():
         answer: int
 
     prompt = f"""
-        {selected_subject}
-        주제를 참고하여 프로그래밍에 관련된 문제를 생성해줘
-        done : true 로 되어있는 주제는 제외하고 생성
+        **only in korean**
+        Generate questions related to programming languages and AI programming based on the given topic.
+        
+        Each ChatQuiz should include:
 
-        description 은 문제 내용/설명
-        choices 선택지
-        answer 정답은 번호
+        Description: The content/explanation of the question.
+        Choices: Multiple-choice options.
+        Answer: The correct answer, provided as a number
+
+        <description>
+        Include simple Definition or Explanation of the Topic
+        Include both conceptual knowledge and code-based problems. 
+        For code-related questions, include a code snippet in the Description
+        **question is located only in last sentence**
+        </description>
+
+
+
+        <topic>
+        {selected_subject}
+        </topic>
+        **only in korean**
         """
 
     completion = client.beta.chat.completions.parse(
