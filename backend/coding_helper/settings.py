@@ -28,7 +28,7 @@ SECRET_KEY = DRF_SECRET_KEY
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["127.0.0.1", "www.letsreadriddle.com", "readriddleElb-1938316956.us-east-1.elb.amazonaws.com"]
 
 
 # React 프론트 관련 / # 모든 출처 허용
