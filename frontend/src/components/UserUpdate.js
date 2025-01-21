@@ -30,6 +30,7 @@ const UpdateProfile = () => {
         last_name: user.last_name,
         gender: user.gender,
         intro: user.intro,
+        is_social : user.is_social
     });
 
     const [error, setError] = useState([]); 
@@ -59,21 +60,25 @@ const UpdateProfile = () => {
     };
 
     return (
+
+        
         <Container>
             <Title>회원 정보 수정</Title>
             <Form onSubmit={handleSubmit}>
                 {/* ID */}
-                <FieldContainer>
-                    <Label htmlFor="username">ID</Label>
-                    <Input
-                        type="text"
-                        id="username"
-                        name="username"
-                        value={formData.username}
-                        onChange={handleChange}
-                        placeholder="Enter your ID"
-                    />
-                </FieldContainer>
+                {formData.is_social && (
+                    <FieldContainer>
+                        <Label htmlFor="username">ID</Label>
+                        <Input
+                            type="text"
+                            id="username"
+                            name="username"
+                            value={formData.username}
+                            onChange={handleChange}
+                            placeholder="Enter your ID"
+                        />
+                    </FieldContainer>
+                )}
 
                 {/* Nickname */}
                 <FieldContainer>
@@ -125,7 +130,6 @@ const UpdateProfile = () => {
                         value={formData.first_name}
                         onChange={handleChange}
                         placeholder="Enter your first name"
-                        required
                     />
                     </FieldContainerCol>
         
@@ -139,7 +143,6 @@ const UpdateProfile = () => {
                         value={formData.last_name}
                         onChange={handleChange}
                         placeholder="Enter your last name"
-                        required
                     />
                     </FieldContainerCol>
                 </FieldContainerRow>
@@ -152,18 +155,17 @@ const UpdateProfile = () => {
                     name="gender"
                     value={formData.gender}
                     onChange={handleChange}
-                    required
                     >
-                    <option value="">Select your gender</option>
-                    <option value="M">Male</option>
-                    <option value="F">Female</option>
+                    <option value="">성별을 선택해주세요</option>
+                    <option value="M">남성</option>
+                    <option value="F">여성</option>
                     <option value="O">Other</option>
                     </Select>
                 </FieldContainer>
         
                 {/* Intro */}
                 <FieldContainer>
-                    <Label htmlFor="intro">Introduction</Label>
+                    <Label htmlFor="intro">자기소개를 입력해주세요</Label>
                     <TextArea
                     id="intro"
                     name="intro"
