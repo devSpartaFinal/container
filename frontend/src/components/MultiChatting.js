@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import "./MultiChatRoom.css";
+import ReactMarkdown from "react-markdown";
 
 const MultiChatRoom = () => {
     const username = localStorage.getItem("username");
@@ -161,7 +162,7 @@ const MultiChatRoom = () => {
         const interval = setInterval(updatePopQuizStatus, 1000); // 1초 간격으로 상태 업데이트
     
         return () => clearInterval(interval); // 컴포넌트 언마운트 시 정리
-    }, [popQuizActive, popQuizTimeLeft, isAnswer, timeToSolveQuiz, correctAnswerUser]);
+    }, [popQuizActive, isAnswer, timeToSolveQuiz, correctAnswerUser]); // popQuizTimeLeft 필요시 추가
     
     // 제한시간 관리
     useEffect(() => {
@@ -254,9 +255,9 @@ const MultiChatRoom = () => {
                                         <small style={{ marginRight: '10px', fontSize: '0.8em', color: 'gray', display: 'inline-block' }}>{msg.timestamp}</small>
                                         <div
                                             className={`chatting-message own-message`}
-                                            style={{ display: 'inline-block'}}
+                                            style={{ display: 'inline-block', whiteSpace: 'pre-wrap'}}
                                         >
-                                            {msg.message}
+                                            <ReactMarkdown>{msg.message}</ReactMarkdown>
                                         </div>
                                     </>
                                 ) : (
@@ -265,8 +266,9 @@ const MultiChatRoom = () => {
                                         <strong>{msg.username}</strong><br/>
                                         <div
                                             className={`chatting-message other-message`}
+                                            style={{ display: 'inline-block', whiteSpace: 'pre-wrap'}}
                                         >
-                                            {msg.message}
+                                            <ReactMarkdown>{msg.message}</ReactMarkdown>
                                         </div>
                                         <small style={{ marginLeft: '10px', fontSize: '0.8em', color: 'gray', display: 'inline-block' }}>{msg.timestamp}</small>
                                     </>
