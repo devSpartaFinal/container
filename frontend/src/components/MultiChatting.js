@@ -257,7 +257,7 @@ const MultiChatRoom = () => {
                                             className={`chatting-message own-message`}
                                             style={{ display: 'inline-block', whiteSpace: 'pre-wrap'}}
                                         >
-                                            <ReactMarkdown>{msg.message}</ReactMarkdown>
+                                            {msg.message}
                                         </div>
                                     </>
                                 ) : (
