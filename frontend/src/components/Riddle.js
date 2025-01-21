@@ -22,6 +22,8 @@ import {
   OptionContainer,
   Option2Button,
   Option2Container,
+  Option3Button,
+  Option3Container,
   SubmitContainer,
   SubmitButton,
   ModalContainer,
@@ -396,6 +398,7 @@ const Riddle = () => {
     setFeedbackDetails({});
 
     setIsGenerateLoading(true);
+    setIsChecked(false);
 
     const formData = {
       category: selectedCategory,
@@ -593,84 +596,55 @@ const Riddle = () => {
                   <TitleContainer style={{ textAlign: "left" }}>
                     Q{quiz.number}. {quiz.content}
                 <div style={{ maxWidth: "100%", overflowX: "auto" }}>
-                  <ReactMarkdown
-                    components={{
-                      p: ({ node, ...props }) => (
-                        <pre
-                          style={{
-                            fontSize: "0.65em", 
-                            backgroundColor: "black",
-                            color: "white",
-                            padding: "10px",
-                            whiteSpace: "pre-wrap",
-                            wordBreak: "break-word",
-                            overflowX: "auto",
-                          }}
-                          {...props}
-                        />
-                      ),
-                      pre: ({ node, ...props }) => (
-                        <pre
-                          style={{
-                            fontSize: "0.65em", 
-                            backgroundColor: "black",
-                            color: "white",
-                            padding: "10px",
-                            whiteSpace: "pre-wrap",
-                            wordBreak: "break-word",
-                            overflowX: "auto",
-                          }}
-                          {...props}
-                        />
-                      ),
-                    }}
-                  >
-                    {quiz.code_snippets}
-                  </ReactMarkdown>
+                <ReactMarkdown
+                  components={{
+                    h1: ({ node, ...props }) => <p {...props} style={{ fontWeight: "bold" }} />,  // h1을 일반 텍스트로 처리
+                    h2: ({ node, ...props }) => <p {...props} style={{ fontWeight: "bold" }} />,
+                    h3: ({ node, ...props }) => <p {...props} style={{ fontWeight: "bold" }} />,
+                    p: ({ node, ...props }) => (
+                      <pre
+                        style={{
+                          fontSize: "0.65em",
+                          backgroundColor: "black",
+                          color: "white",
+                          padding: "10px",
+                          whiteSpace: "pre-wrap",
+                          wordBreak: "break-word",
+                          overflowX: "auto",
+                        }}
+                        {...props}
+                      />
+                    ),
+                    h1: ({ node, ...props }) => <p {...props} style={{ fontWeight: "bold" }} />,  // h1을 일반 텍스트로 처리
+                    h2: ({ node, ...props }) => <p {...props} style={{ fontWeight: "bold" }} />,
+                    h3: ({ node, ...props }) => <p {...props} style={{ fontWeight: "bold" }} />,
+                    pre: ({ node, ...props }) => (
+                      <pre
+                        style={{
+                          fontSize: "0.65em",
+                          backgroundColor: "black",
+                          color: "white",
+                          padding: "10px",
+                          whiteSpace: "pre-wrap",
+                          wordBreak: "break-word",
+                          overflowX: "auto",
+                        }}
+                        {...props}
+                      />
+                    ),
+                  }}
+                >
+                  {quiz.code_snippets}
+                </ReactMarkdown>
                 </div>
               </TitleContainer>
 
-                <QuizContentContainer>
-                  {quiz.answer_type === "ox" ? (
-                    <Option2Container>
-                      {quiz.choices.map((choice) => (
-                        <Option2Button
-                          key={choice.number}
-                          style={{
-                            backgroundColor: isCorrected(quiz.number, choice.number)
-                              ? "#43b738" // 정답인 경우 초록색
-                              : selectedOptions[quiz.number] === choice.number
-                              ? "#007bff" // 사용자가 선택한 경우 푸른색
-                              : isHighlighted(quiz.number, choice.number)
-                              ? "#e57f7b" // 오답이고 하이라이트된 경우 빨간색
-                              : isPreviousAnswer(quiz.number, choice.number)
-                              ? "#cccccc" // 이전에 선택된 경우 회색
-                              : "transparent", // 기본값은 없음
-                            color: isHighlighted(quiz.number, choice.number)
-                              ? "#000000"
-                              : "",
-                            fontWeight: isHighlighted(quiz.number, choice.number)
-                              ? "bold" // 하이라이트된 경우 글자 굵게
-                              : "normal", // 기본은 normal
-                          }}
-                          className={
-                            selectedOptions[quiz.number] === choice.number
-                              ? "selected"
-                              : ""
-                          }
-                          onClick={() =>
-                            handleSelectOption(quiz.number, choice.number)
-                          }
-                          disabled={isFeedbackShown} // feedbackDetail 후 버튼 비활성화
-                        >
-                          {choice.content}
-                        </Option2Button>
-                      ))}
-                    </Option2Container>
-                  ) : (
-                    <OptionContainer>
-                      {quiz.choices.map((choice) => (
-                        <OptionButton
+              <QuizContentContainer>
+              {quiz.answer_type === "ox" ? (
+                quiz.choices[0].content.length <= 1 ? (
+                  <Option2Container>
+                    {quiz.choices.map((choice) => (
+                      <Option2Button
                         key={choice.number}
                         style={{
                           backgroundColor: isCorrected(quiz.number, choice.number)
@@ -689,26 +663,87 @@ const Riddle = () => {
                             ? "bold" // 하이라이트된 경우 글자 굵게
                             : "normal", // 기본은 normal
                         }}
-                          className={
-                            selectedOptions[quiz.number] === choice.number
-                              ? "selected"
-                              : ""
-                          }
-                          onClick={() =>
-                            handleSelectOption(quiz.number, choice.number)
-                          }
-                          disabled={isFeedbackShown}
-                        >
-                          {choice.content}
-                        </OptionButton>
-                      ))}
-                     
-                    </OptionContainer>
-                  )}
-                </QuizContentContainer>
+                        className={
+                          selectedOptions[quiz.number] === choice.number ? "selected" : ""
+                        }
+                        onClick={() => handleSelectOption(quiz.number, choice.number)}
+                        disabled={isFeedbackShown} // feedbackDetail 후 버튼 비활성화
+                      >
+                        {choice.content}
+                      </Option2Button>
+                    ))}
+                  </Option2Container>
+                ) : (
+                  // choices의 길이가 2일 때 다른 UI를 구성
+                  <Option3Container>
+                    {quiz.choices.map((choice, index) => (
+                      <Option3Button
+                        key={choice.number}
+                        style={{
+                          backgroundColor: isCorrected(quiz.number, choice.number)
+                            ? "#43b738" // 정답인 경우 초록색
+                            : selectedOptions[quiz.number] === choice.number
+                            ? "#007bff" // 사용자가 선택한 경우 푸른색
+                            : isHighlighted(quiz.number, choice.number)
+                            ? "#e57f7b" // 오답이고 하이라이트된 경우 빨간색
+                            : isPreviousAnswer(quiz.number, choice.number)
+                            ? "#cccccc" // 이전에 선택된 경우 회색
+                            : "transparent", // 기본값은 없음
+                          color: isHighlighted(quiz.number, choice.number)
+                            ? "#000000"
+                            : "",
+                          fontWeight: isHighlighted(quiz.number, choice.number)
+                            ? "bold" // 하이라이트된 경우 글자 굵게
+                            : "normal", // 기본은 normal
+                        }}
+                        className={
+                          selectedOptions[quiz.number] === choice.number ? "selected" : ""
+                        }
+                        onClick={() => handleSelectOption(quiz.number, choice.number)}
+                        disabled={isFeedbackShown} // feedbackDetail 후 버튼 비활성화
+                      >
+                        {choice.content}
+                      </Option3Button>
+                    ))}
+                  </Option3Container>
+                )
+              ) : (
+                <OptionContainer>
+                  {quiz.choices.map((choice) => (
+                    <OptionButton
+                      key={choice.number}
+                      style={{
+                        backgroundColor: isCorrected(quiz.number, choice.number)
+                          ? "#43b738" // 정답인 경우 초록색
+                          : selectedOptions[quiz.number] === choice.number
+                          ? "#007bff" // 사용자가 선택한 경우 푸른색
+                          : isHighlighted(quiz.number, choice.number)
+                          ? "#e57f7b" // 오답이고 하이라이트된 경우 빨간색
+                          : isPreviousAnswer(quiz.number, choice.number)
+                          ? "#cccccc" // 이전에 선택된 경우 회색
+                          : "transparent", // 기본값은 없음
+                        color: isHighlighted(quiz.number, choice.number)
+                          ? "#000000"
+                          : "",
+                        fontWeight: isHighlighted(quiz.number, choice.number)
+                          ? "bold" // 하이라이트된 경우 글자 굵게
+                          : "normal", // 기본은 normal
+                      }}
+                      className={
+                        selectedOptions[quiz.number] === choice.number ? "selected" : ""
+                      }
+                      onClick={() => handleSelectOption(quiz.number, choice.number)}
+                      disabled={isFeedbackShown}
+                    >
+                      {choice.content}
+                    </OptionButton>
+                  ))}
+                </OptionContainer>
+              )}
+            </QuizContentContainer>
 
                     {isFeedbackShown && feedbackDetails[quiz.number] && (
-                      <FeedbackContent  style={{ textAlign: "left" }}>
+                      <FeedbackContent  style={{ textAlign: "left", marginTop: "-200px"}}>
                         {feedbackDetails[quiz.number]}
                       </FeedbackContent>
                     )}

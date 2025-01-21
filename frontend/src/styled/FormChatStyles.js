@@ -156,7 +156,7 @@ export const QuizContentContainer = styled.div`
   font-size: 1.2em; 
   font-weight: bold;
   color: #63b5da;
-  height: 80%;
+  height: 70%;
   overflow-y: auto;
   margin-left: -3%;
   padding-right: 4%;
@@ -171,6 +171,7 @@ export const OptionButton = styled.button`
   cursor: pointer;
   font-size: 1em;
   border-radius: 7px;
+  margin-bottom: -1%;
 
   &:hover {
     color: black;
@@ -253,9 +254,9 @@ export const Option2Button = styled.button`
   border: 2px solid #464646;
   background-color: transparent;
   width: 95%;
-  height: 65%;
+  height: 60%;
   cursor: pointer;
-  font-size: 7em;
+  font-size: 5em;
   border-radius: 7px;
 
   &:hover {
@@ -338,7 +339,6 @@ export const FeedbackContent = styled.div`
   color: #3c3c3c;
   line-height: 1.7;
   font-size: 1.2em;
-  margin-top: -10%;
   margin-right: 3%;
 `;
 
@@ -353,4 +353,40 @@ export const ContentButton = styled.button`
   border-radius: 10px;
   font-size: 1em;
   color: #ffffff;
+`;
+
+export const Option3Container = styled.div`
+  position: absolute;
+  width: 100%;
+  height: 30%;
+  overflow-x: hidden;
+
+`;
+
+export const Option3Button = styled.button`
+  background-color: transparent;
+  color: #464646;
+  border: 2px solid #464646;
+  padding: 10px 10px;
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 1em;
+  min-width: 90%;
+  margin-top: 1.5%;
+  margin-left: 4%;
+  margin-bottom: 2%;
+
+  &:hover {
+    color: black;
+  }
+
+  &.selected {
+    background-color: #6e6e6e;
+    color: white;
+    font-weight: bold;
+  }
+
+  &:focus {
+    outline: none;
+  }
 `;
