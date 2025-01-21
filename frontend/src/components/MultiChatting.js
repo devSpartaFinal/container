@@ -88,7 +88,6 @@ const MultiChatRoom = () => {
         const now = new Date();
         const minutes = now.getMinutes();
         let nextQuizMinutes = Math.ceil((minutes + 0.1) / 3) * 3; // 5의 배수를 정확히 넘기기 위해 0.1 추가
-
         if (nextQuizMinutes === 60) { // 60분인 경우는 시간을 넘기고 분은 0으로 초기화
             now.setHours(now.getHours() + 1);
             nextQuizMinutes = 0;
@@ -104,6 +103,17 @@ const MultiChatRoom = () => {
         console.log("popQuizTimeLeft : " + popQuizTimeLeft)
         console.log("popQuizActive : " + popQuizActive)
         console.log("isAnswer : " + isAnswer)
+
+        if ( timeToNextQuiz === 30000 && !popQuizActive) {
+            if (socket.current && socket.current.readyState === WebSocket.OPEN) {
+                console.log("퀴즈 생성요청 type : create_quiz")
+                socket.current.send(
+                    JSON.stringify({
+                        type: "create_quiz", active: true, // 새로운 QUIZ 생성
+                    })
+                );
+            }
+        }
 
         if (timeToNextQuiz <= 1000 && !popQuizActive) { // POP QUIZ 활성화 조건
             setPopQuizMessage("POP RIDDLE!");

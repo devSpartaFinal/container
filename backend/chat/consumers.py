@@ -30,20 +30,20 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         data = json.loads(text_data)
-        
         pprint(f"Teddy : Received message: {data}")
         
+        if data["type"] == "create_quiz":
+            print("퀴즈 생성요청 수신")
+            self.question, self.quiz_answer = chat_quiz()
+            print(f"생성된 퀴즈: {self.question}, 정답: {self.quiz_answer}")
+            
         if data["type"] == "pop_quiz_active":
         # 클라이언트에서 POP QUIZ 활성화 메시지 수신
             self.pop_quiz_active = data["active"]
             print(f"POP QUIZ active state updated: {self.pop_quiz_active}")
             
             # 퀴즈 브로드캐스트
-            if data['active'] == True:
-                print("퀴즈 생성 요청 수신")
-                self.question, self.quiz_answer = chat_quiz()
-                print(f"생성된 퀴즈: {self.question}, 정답: {self.quiz_answer}")
-                
+            if data['active'] == True:    
                 await self.channel_layer.group_send(
                     self.room_group_name,
                     {

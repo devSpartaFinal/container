@@ -21,7 +21,11 @@ export const AuthProvider = ({ children }) => {
     const accessToken = getCookie("accessToken") || getCookie("access");
     // const accessToken = getCookie("accessToken");
     const userID = getCookie("username");
-    
+  
+    // 로컬 스토리지에 저장
+    localStorage.setItem("accessToken", accessToken);
+    localStorage.setItem("username", userID);
+
     if (accessToken) {
       apiRequest.interceptors.request.use(
         (config) => {
