@@ -66,7 +66,7 @@ class SignInOutAPIView(APIView):
             # 이메일 인증 링크 생성
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             token = default_token_generator.make_token(user)
-            verification_link = f"http://44.222.253.186:80/verify-email/{uid}/{token}/"
+            verification_link = f"http://letsreadriddle.com/verify-email/{uid}/{token}/"
 
             # 이메일 전송
             send_mail(
