@@ -159,10 +159,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 self.isOwner = False
                 
                 # 남아있는 참여자가 있다면 새로운 방장을 지정
-                if self.channel_layer.participants:
-                    new_owner = next(iter(self.channel_layer.participants))
-                    print(f"New owner assigned: {new_owner}")
+                other_participants = [
+                    participant for participant in self.channel_layer.participants
+                    if participant != data["myusername"]
+                ]
 
+                if other_participants:
+                    new_owner = other_participants[0]  # 첫번째 참여자 선택
+                    print(f"New owner assigned: {new_owner}")
                     # 새로운 방장에게 owner 권한 부여 메시지 전송
                     await self.channel_layer.group_send(
                         self.room_group_name,
