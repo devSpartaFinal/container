@@ -103,7 +103,7 @@ const MultiChatRoom = () => {
         
         const now = new Date();
         const minutes = now.getMinutes();
-        let nextQuizMinutes = Math.ceil((minutes + 0.1) / 3) * 3; // 5의 배수를 정확히 넘기기 위해 0.1 추가
+        let nextQuizMinutes = Math.ceil((minutes + 0.1) / 5) * 5; // 5의 배수를 정확히 넘기기 위해 0.1 추가
         if (nextQuizMinutes === 60) { // 60분인 경우는 시간을 넘기고 분은 0으로 초기화
             now.setHours(now.getHours() + 1);
             nextQuizMinutes = 0;
