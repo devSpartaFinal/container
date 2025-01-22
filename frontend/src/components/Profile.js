@@ -70,9 +70,11 @@ const Profile = () => {
           <ActionButton onClick={() => navigate("/update")}>
             Edit Profile
           </ActionButton>
+          {!user.is_social &&
           <ActionButton onClick={() => navigate("/change_password")}>
-            Change Password
+          Change Password
           </ActionButton>
+          }
         </ButtonContainer>
       </ProfileCard>
     </ProfileContainer>
