@@ -35,7 +35,6 @@ const Login = ({ setIsLoggedIn, isLoggedIn }) => {
 
     try {
       const response = await apiRequest.post("auth/", formData);
-      console.log("Login Success:", response.data);
 
       const { token, user } = response.data;
       document.cookie = `accessToken=${token.access}; path=/; max-age=86400; SameSite=Lax`;
@@ -80,7 +79,6 @@ const Login = ({ setIsLoggedIn, isLoggedIn }) => {
       return;
     }
     
-    console.log("isLoggedIn:", isLoggedIn);
     if (!isLoggedIn) return; // 로그인하지 않았으면 실행하지 않음
 
     // console.log("컴포넌트 마운트됨, setInterval 설정 시작");
