@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import "./MultiChatRoom.css";
 import ReactMarkdown from "react-markdown";
+import puzzlebook from '../assets/puzzlebook.png'
 
 const MultiChatRoom = () => {
     const myusername = localStorage.getItem("username");
@@ -252,7 +253,10 @@ const MultiChatRoom = () => {
                 <div className="pop-quiz-display">
                     {popQuizMessage === "POP QUIZ!" ? (
                     <div>
-                        <h1 className="header">{popQuizMessage}</h1>
+                        <h1 className="header">{popQuizMessage}
+                        <img className="image2" alt="read" src={puzzlebook} style={{marginBottom: '0%', width: '7%', display:'inline-block'}} />
+                        </h1>
+                    
                         <p>남은 시간 : {timeToSolveQuiz !== null ? formatTime(timeToSolveQuiz) : "시간 종료"} </p>
                     </div>
                     ) : (
@@ -260,6 +264,7 @@ const MultiChatRoom = () => {
                         <h2>
                         {popQuizMessage}{" "}
                         <strong>{popQuizTimeLeft !== null ? formatTime(popQuizTimeLeft - 1) : "0분 0초"}</strong> 남았습니다.
+                        <img className="image2" alt="read" src={puzzlebook} style={{marginBottom: '0%', width: '6%'}} />
                         </h2>
                     </div>
                     )}
