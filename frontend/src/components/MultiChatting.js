@@ -57,10 +57,13 @@ const MultiChatRoom = () => {
                 setisAnswer(1); // 정답 입력으로 변경
                 setCorrectAnswerUser(data.username);
             }
-            else if (data.type === "quiz_active_check") {
-                setPopQuizActive(data.quiz_status);  // 서버에서 받은 pop_quiz_active 값을 상태로 설정
-            }
+            // else if (data.type === "quiz_active_check") {
+            //     setPopQuizActive(data.quiz_status);  // 서버에서 받은 pop_quiz_active 값을 상태로 설정
+            // }
             else if (data.type === "quiz_broadcast") {
+                setMessages((prevMessages) => [...prevMessages, data]);
+            }
+            else if (data.type === "quiz_intro") {
                 setMessages((prevMessages) => [...prevMessages, data]);
             }
             else if (data.type === "quiz_update") {
@@ -133,7 +136,6 @@ const MultiChatRoom = () => {
 
         if (timeToNextQuiz <= 1000 && !popQuizActive) { // POP QUIZ 활성화 조건
             setPopQuizMessage("POP RIDDLE 시작!");
-            setPopQuizActive(true);
             setPopQuizTimeLeft(null);
             console.log("퀴즈 생성")
             console.log("isAnswer : " + isAnswer)
@@ -146,6 +148,7 @@ const MultiChatRoom = () => {
                         active: true, // POP QUIZ 활성화 상태
                     })
                 );
+                setPopQuizActive(true);
             }
         }
         else
@@ -167,6 +170,7 @@ const MultiChatRoom = () => {
                         active: false,
                     })
                 );
+                setPopQuizActive(false);
             }
         }
     };
@@ -290,7 +294,27 @@ const MultiChatRoom = () => {
                                             style={{ display: 'inline-block', whiteSpace: 'pre-wrap'}}
                                         >
                                             {msg.username === "ReadRiddle" ? (
-                                            <ReactMarkdown>{msg.message}</ReactMarkdown>
+                                            <ReactMarkdown
+                                                components={{
+                                                    code: ({ node, inline, children, ...props }) => (
+                                                    <pre
+                                                        style={{
+                                                        fontSize: "0.65em",
+                                                        backgroundColor: "black",
+                                                        color: "white",
+                                                        padding: "10px",
+                                                        margin: 0,
+                                                        whiteSpace: "pre-wrap",
+                                                        wordBreak: "break-word",
+                                                        overflowX: "auto",
+                                                        }}
+                                                        {...props}
+                                                    >
+                                                        {children}
+                                                    </pre>
+                                                    ),
+                                                }}
+                                            >{msg.message}</ReactMarkdown>
                                             ) : <span>{msg.message}</span>}
                                         </div>
                                         <small style={{ marginLeft: '10px', fontSize: '0.8em', color: 'white', display: 'inline-block' }}>{msg.timestamp}</small>

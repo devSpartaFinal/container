@@ -74,6 +74,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     intro = models.TextField(blank=True, null=True)
 
     # 자동 입력
+    RiddleScore = models.IntegerField(default=1200)
     is_superuser = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_social = models.BooleanField(default=False)

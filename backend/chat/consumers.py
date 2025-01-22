@@ -3,9 +3,10 @@ import asyncio
 from pprint import pprint
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.layers import get_channel_layer
-from asgiref.sync import async_to_sync
+from asgiref.sync import async_to_sync, sync_to_async
 from datetime import datetime, timedelta
 from .llm import chat_quiz
+from accounts.models import User
 
 class ChatConsumer(AsyncWebsocketConsumer):
     pop_quiz_active = False  # POP QUIZ 활성화 상태
@@ -36,19 +37,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
         data = json.loads(text_data)
         pprint(f"Teddy : Received message: {data}")
         
-        if data["type"] == "create_quiz" and self.isOwner:
+        if data["type"] == "create_quiz":
             print("퀴즈 생성요청 수신")
-            ChatConsumer.question, ChatConsumer.quiz_answer = chat_quiz()
-            print(f"생성된 퀴즈: {ChatConsumer.question}, 정답: {ChatConsumer.quiz_answer}")
             
-            # 모든 클라이언트에 브로드캐스트
-            await self.channel_layer.group_send(
-                "quiz_group",  # 모든 클라이언트가 속한 그룹
-                {
-                    "type": "quiz_update",  # 이벤트 타입
-                    "quiz_answer": ChatConsumer.quiz_answer,
-                }
-            )
+            if self.isOwner:
+                ChatConsumer.question, ChatConsumer.quiz_answer = chat_quiz()
+                print(f"퀴즈 생성 완료. 정답: {ChatConsumer.quiz_answer}")
+            
+                # 모든 클라이언트에 브로드캐스트
+                await self.channel_layer.group_send(
+                    "quiz_group",  # 모든 클라이언트가 속한 그룹
+                    {
+                        "type": "quiz_update",  # 이벤트 타입
+                        "quiz_answer": ChatConsumer.quiz_answer,
+                    }
+                )
             return
         
         if data["type"] == "pop_quiz_active":
@@ -57,14 +60,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
             print(f"POP QUIZ active state updated: {ChatConsumer.pop_quiz_active}")
             
             # 퀴즈 브로드캐스트
-            if data['active'] == True:    
+            if data['active'] == True and self.isOwner:    
                 await self.channel_layer.group_send(
                     self.room_group_name,
                     {
                         "type": "quiz_broadcast",
                         "message": ChatConsumer.question,
                         "username": "ReadRiddle",
-                        # 'timestamp': data['timestamp'],
+                    }
+                )
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        "type": "quiz_intro",
+                        "message": "문제의 보기 번호를 정답으로 입력하세요! (예시: '3')",
+                        "username": "ReadRiddle",
                     }
                 )
             return
@@ -116,6 +126,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         elif data["type"] == "join":
             # 클라이언트가 보낸 join 메시지 처리
             self.isOwner = False
+            self.pop_quiz_active = False
             username = data["myusername"]
             print(f"User {username} joined the room.")
 
@@ -140,14 +151,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     'participants': list(self.channel_layer.participants),
                 }
             )
-            # 참여자 목록을 모든 클라이언트에 전송
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {
-                    'type': 'quiz_active_check',
-                    'quiz_status': ChatConsumer.pop_quiz_active,
-                }
-            )
+            # quiz_active_check 동기화
+            # await self.channel_layer.group_send(
+            #     self.room_group_name,
+            #     {
+            #         'type': 'quiz_active_check',
+            #         'quiz_status': ChatConsumer.pop_quiz_active,
+            #     }
+            # )
             
         elif data["type"] == "leave":
             # 클라이언트가 보낸 leave 메시지 처리
@@ -219,12 +230,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'participants': participants,
         }))
 
-    async def quiz_active_check(self, event):
-        # 연결된 클라이언트에게 pop_quiz_active 상태를 전달
-        await self.send(text_data=json.dumps({
-            "type": "quiz_active_check",  # 클라이언트가 수신할 타입
-            "quiz_status": event["quiz_status"],  # 현재 pop_quiz_active 상태 전송
-        }))
+    # async def quiz_active_check(self, event):
+    #     # 연결된 클라이언트에게 pop_quiz_active 상태를 전달
+    #     await self.send(text_data=json.dumps({
+    #         "type": "quiz_active_check",  # 클라이언트가 수신할 타입
+    #         "quiz_status": event["quiz_status"],  # 현재 pop_quiz_active 상태 전송
+    #     }))
         
     async def pop_quiz_result(self, event):
         message = event["message"]
@@ -233,30 +244,36 @@ class ChatConsumer(AsyncWebsocketConsumer):
         
         # 정답을 맞춘 유저 전달
         if self.correct_answer_user:
-            await self.send(text_data=json.dumps({
-                "type": "pop_quiz_result",  # 클라이언트가 인식할 메시지 타입
-                "message": message,
-                "username": username,
-                "timestamp": timestamp,
-                "correct_answer_user": ChatConsumer.correct_answer_user,  # 정답을 맞춘 유저 추가
-            }))
-        else:
-            await self.send(text_data=json.dumps({
-                "type": "pop_quiz_result",  # 클라이언트가 인식할 메시지 타입
-                "message": message,
-                "username": username,
-                "timestamp": timestamp,
-            }))
+            user = await sync_to_async(User.objects.get)(username=username)
+            user.RiddleScore += 10  # RiddleScore 10 증가
+            await sync_to_async(user.save)()  # 변경사항 저장
+            print(user.username, "님의 RiddleScore가 10 증가하였습니다.")
+        
+        await self.send(text_data=json.dumps({
+            "type": "pop_quiz_result",  # 클라이언트가 인식할 메시지 타입
+            "message": message,
+            "username": username,
+            "timestamp": timestamp,
+            "correct_answer_user": ChatConsumer.correct_answer_user,
+        }))
         
         
     async def quiz_broadcast(self, event):
-        if self.isOwner:
-            await self.send(text_data=json.dumps({
-                    "type": "quiz_broadcast",
-                    "message": event["message"],
-                    "username": event["username"],
-                    # "timestamp": event["timestamp"],
-                }))
+        print(f"Teddy : 클라이언트로 팝퀴즈 발송")
+        await self.send(text_data=json.dumps({
+                "type": "quiz_broadcast",
+                "message": event["message"],
+                "username": event["username"],
+                # "timestamp": event["timestamp"],
+            }))
+    
+    async def quiz_intro(self, event):
+        await self.send(text_data=json.dumps({
+                "type": "quiz_intro",
+                "message": event["message"],
+                "username": event["username"],
+                # "timestamp": event["timestamp"],
+            }))
     
     async def quiz_update(self, event):
         # 그룹 메시지를 수신하여 클라이언트로 전송
