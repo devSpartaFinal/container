@@ -35,7 +35,7 @@ SECRET_KEY = DRF_SECRET_KEY
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["127.0.0.1", "172.31.82.73", "18.232.172.210", "54.208.56.239", "api.letsreadriddle.com", "dualstack.readriddleelb-1938316956.us-east-1.elb.amazonaws.com.", "www.letsreadriddle.com", "letsreadriddle.com"]
+ALLOWED_HOSTS = ["127.0.0.1", "172.31.87.147", "18.232.172.210", "54.208.56.239", "api.letsreadriddle.com", "dualstack.readriddleelb-1938316956.us-east-1.elb.amazonaws.com.", "www.letsreadriddle.com", "letsreadriddle.com"]
 
 # React 프론트 관련 / # 모든 출처 허용
 CORS_ALLOW_ALL_ORIGINS = True  
