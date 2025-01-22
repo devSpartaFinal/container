@@ -62,6 +62,16 @@ class ProfileEditSerializer(serializers.ModelSerializer):
             "gender",
             "intro",
         ]
+        
+    def validate_birth_date(self, value):
+        today = date.today()
+        min_date = today.replace(year=today.year - 150)
+        max_date = today.replace(year=today.year - 7)
+
+        if value < min_date or value > max_date:
+            raise serializers.ValidationError("유효하지 않은 날짜입니다.")
+        
+        return value
 
     def update(self, instance, validated_data):
         instance.email = validated_data.get("email", instance.email)
