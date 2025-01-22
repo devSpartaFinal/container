@@ -110,7 +110,6 @@ const Riddle = () => {
         `/feedback/${session_no}/`
       );
 
-      console.log("Response from API:", feedback_response.data);
       setFeedbackContent(feedback_response.data.total_feedback);
       setIsLoading(false);
       setShowModal(true);

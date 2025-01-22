@@ -119,7 +119,6 @@ const Signup = () => {
       setShowModal(true);
       setModalMessage("회원가입 인증 중...");
       const response = await apiRequest.post("/", userData);
-      console.log("Signup Success:", response.data);
 
       setTimeout(() => {
         setShowModal(false);

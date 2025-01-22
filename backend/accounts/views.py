@@ -44,14 +44,12 @@ from coding_helper.settings import (
 class SignInOutAPIView(APIView):
 
     def get_permissions(self):
-        """POST 요청은 인증 없이 허용"""
         if self.request.method == "POST":
             return [AllowAny()]
         return [IsAuthenticated()]
 
     def post(self, request):
 
-        print(request.data)
         serializer = UserSerializer(data=request.data)
         value = request.data["password"]
 
@@ -81,7 +79,6 @@ class SignInOutAPIView(APIView):
                 status=status.HTTP_201_CREATED,
             )
 
-        print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request):
@@ -503,7 +500,6 @@ class GoogleLoginCallback(APIView):
             # jwt 토큰 => 쿠키에 저장
             user.refresh_token = refresh_token
             user.save()
-            print(res.data)
             return res
 
         except requests.exceptions.RequestException as e:
