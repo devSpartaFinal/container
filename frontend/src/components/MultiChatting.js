@@ -22,7 +22,7 @@ const MultiChatRoom = () => {
     // const wsUrl = "wss://api.letsreadriddle.com/ws/chat/global_room/";
 
     useEffect(() => {
-          document.title = "ReadRiddle - MultiChat";
+        document.title = "ReadRiddle - MultiChat";
         }, []);
 
     // WebSocket 연결
@@ -103,7 +103,7 @@ const MultiChatRoom = () => {
         
         const now = new Date();
         const minutes = now.getMinutes();
-        let nextQuizMinutes = Math.ceil((minutes + 0.1) / 5) * 5; // 5의 배수를 정확히 넘기기 위해 0.1 추가
+        let nextQuizMinutes = Math.ceil((minutes + 0.1) / 3) * 3; // 5의 배수를 정확히 넘기기 위해 0.1 추가
         if (nextQuizMinutes === 60) { // 60분인 경우는 시간을 넘기고 분은 0으로 초기화
             now.setHours(now.getHours() + 1);
             nextQuizMinutes = 0;
@@ -137,7 +137,7 @@ const MultiChatRoom = () => {
             setPopQuizTimeLeft(null);
             console.log("퀴즈 생성")
             console.log("isAnswer : " + isAnswer)
-            setTimeToSolveQuiz(180);
+            setTimeToSolveQuiz(120);
             // 서버에 POP QUIZ 활성화 알림 전송
             if (socket.current && socket.current.readyState === WebSocket.OPEN) {
                 socket.current.send(
@@ -287,11 +287,11 @@ const MultiChatRoom = () => {
                                         <strong>{msg.username}</strong><br/>
                                         <div
                                             className={`chatting-message other-message`}
-                                            style={{ display: 'inline-block', whiteSpace: 'pre-wrap', fontWeight: 'bold'}}
+                                            style={{ display: 'inline-block', whiteSpace: 'pre-wrap'}}
                                         >
                                             {msg.username === "ReadRiddle" ? (
                                             <ReactMarkdown>{msg.message}</ReactMarkdown>
-                                            ) : <span>({msg.message})</span>}
+                                            ) : <span>{msg.message}</span>}
                                         </div>
                                         <small style={{ marginLeft: '10px', fontSize: '0.8em', color: 'white', display: 'inline-block' }}>{msg.timestamp}</small>
                                     </>
