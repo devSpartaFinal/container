@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import logo from '../assets/logo.png'
+import book from '../assets/book.png'
 import readLogo from '../assets/read.png'
 import riddleLogo from '../assets/riddle.png'
 
@@ -18,6 +19,10 @@ const Home = () => {
   //     navigate(url);
   //   }
   // };
+
+  useEffect(() => {
+    document.title = "ReadRiddle - Home";
+  }, []);
 
   const getCookie = (name) => {
     const value = `; ${document.cookie}`;

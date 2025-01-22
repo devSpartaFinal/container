@@ -15,8 +15,13 @@ import {
   Name,
   ButtonContainer,
 } from "../styled/ProfileStyles";
+import { useEffect } from "react";
 
 const Profile = () => {
+  useEffect(() => {
+        document.title = "ReadRiddle - Profile";
+      }, []);
+
   const { user, loading } = useAuth();
   const navigate = useNavigate();
 

@@ -16,8 +16,13 @@ import {
 import { useNavigate } from "react-router-dom";
 import { apiRequest } from "../apiRequest";
 import logo from '../assets/logo.png'
+import { useEffect } from "react";
 
 const Signup = () => {
+  useEffect(() => {
+          document.title = "ReadRiddle - Signup";
+        }, []);
+  
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({

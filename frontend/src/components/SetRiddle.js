@@ -41,6 +41,10 @@ import riddleLogo from '../assets/riddle.png'
 import book from '../assets/book.png'
 
 const SetRiddle = () => {
+  useEffect(() => {
+        document.title = "ReadRiddle - Riddle";
+      }, []);
+      
   const [isDropdownOpen1, setIsDropdownOpen1] = useState(false);
   const [isDropdownOpen2, setIsDropdownOpen2] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);

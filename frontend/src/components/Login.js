@@ -7,7 +7,12 @@ import { FaGoogle } from "react-icons/fa";
 import logo from '../assets/logo.png'
 
 
+
 const Login = ({ setIsLoggedIn, isLoggedIn }) => {
+  useEffect(() => {
+            document.title = "ReadRiddle - Login";
+          }, []);
+
   const [formData, setFormData] = useState({
     username: "",
     password: "",

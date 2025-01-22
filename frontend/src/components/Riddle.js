@@ -28,6 +28,7 @@ import {
   ModalContent,
   CloseButton,
   DetailButton,
+  FeedbackContentContainer,
   FeedbackContent,
   ContentButton,
 } from "../styled/FormChatStyles";
@@ -39,6 +40,10 @@ import ReactMarkdown from "react-markdown";
 import "./app.css";
 
 const Riddle = () => {
+  useEffect(() => {
+      document.title = "ReadRiddle - Riddle";
+    }, []);
+
   const location = useLocation();
   const [isDropdownOpen1, setIsDropdownOpen1] = useState(false);
   const [isDropdownOpen2, setIsDropdownOpen2] = useState(false);
@@ -688,37 +693,47 @@ const Riddle = () => {
               <QuizContentContainer>
               {quiz.answer_type === "ox" ? (
                 quiz.choices[0].content.length <= 1 ? (
-                  <Option2Container>
-                    {quiz.choices.map((choice) => (
-                      <Option2Button
-                        key={choice.number}
-                        style={{
-                          backgroundColor: isCorrected(quiz.number, choice.number)
-                            ? "#43b738" // 정답인 경우 초록색
-                            : selectedOptions[quiz.number] === choice.number
-                            ? "#007bff" // 사용자가 선택한 경우 푸른색
-                            : isHighlighted(quiz.number, choice.number)
-                            ? "#e57f7b" // 오답이고 하이라이트된 경우 빨간색
-                            : isPreviousAnswer(quiz.number, choice.number)
-                            ? "#cccccc" // 이전에 선택된 경우 회색
-                            : "transparent", // 기본값은 없음
-                          color: isHighlighted(quiz.number, choice.number)
-                            ? "#000000"
-                            : "",
-                          fontWeight: isHighlighted(quiz.number, choice.number)
-                            ? "bold" // 하이라이트된 경우 글자 굵게
-                            : "normal", // 기본은 normal
-                        }}
-                        className={
-                          selectedOptions[quiz.number] === choice.number ? "selected" : ""
-                        }
-                        onClick={() => handleSelectOption(quiz.number, choice.number)}
-                        disabled={isFeedbackShown} // feedbackDetail 후 버튼 비활성화
-                      >
-                        {choice.content}
-                      </Option2Button>
-                    ))}
-                  </Option2Container>
+                  <>
+                    <Option2Container>
+                      {quiz.choices.map((choice) => (
+                        <Option2Button
+                          key={choice.number}
+                          style={{
+                            backgroundColor: isCorrected(quiz.number, choice.number)
+                              ? "#43b738" // 정답인 경우 초록색
+                              : selectedOptions[quiz.number] === choice.number
+                              ? "#007bff" // 사용자가 선택한 경우 푸른색
+                              : isHighlighted(quiz.number, choice.number)
+                              ? "#e57f7b" // 오답이고 하이라이트된 경우 빨간색
+                              : isPreviousAnswer(quiz.number, choice.number)
+                              ? "#cccccc" // 이전에 선택된 경우 회색
+                              : "transparent", // 기본값은 없음
+                            color: isHighlighted(quiz.number, choice.number)
+                              ? "#000000"
+                              : "",
+                            fontWeight: isHighlighted(quiz.number, choice.number)
+                              ? "bold" // 하이라이트된 경우 글자 굵게
+                              : "normal", // 기본은 normal
+                          }}
+                          className={
+                            selectedOptions[quiz.number] === choice.number ? "selected" : ""
+                          }
+                          onClick={() => handleSelectOption(quiz.number, choice.number)}
+                          disabled={isFeedbackShown} // feedbackDetail 후 버튼 비활성화
+                        >
+                          {choice.content}
+                        </Option2Button>
+                      ))}
+                    </Option2Container>
+
+                    {isFeedbackShown && feedbackDetails[quiz.number] && (
+                      <FeedbackContentContainer>
+                        <FeedbackContent style={{ textAlign: "left", fontSize: "1em" }}>
+                          {feedbackDetails[quiz.number]}
+                        </FeedbackContent>
+                      </FeedbackContentContainer>
+                    )}
+                  </>
                 ) : (
                   // choices의 길이가 2일 때 다른 UI를 구성
                   <Option3Container>
@@ -751,6 +766,11 @@ const Riddle = () => {
                         {choice.content}
                       </Option3Button>
                     ))}
+                    {isFeedbackShown && feedbackDetails[quiz.number] && (
+                      <FeedbackContent  style={{ textAlign: "left", marginTop: "3%", marginLeft:"5%", marginRight:"0%", fontSize: "1em"}}>
+                        {feedbackDetails[quiz.number]}
+                      </FeedbackContent>
+                    )}
                   </Option3Container>
                 )
               ) : (
@@ -784,15 +804,14 @@ const Riddle = () => {
                       {choice.content}
                     </OptionButton>
                   ))}
-                </OptionContainer>
-              )}
-            </QuizContentContainer>
-
-                    {isFeedbackShown && feedbackDetails[quiz.number] && (
-                      <FeedbackContent  style={{ textAlign: "left", marginTop: "-200px"}}>
+                  {isFeedbackShown && feedbackDetails[quiz.number] && (
+                      <FeedbackContent  style={{ textAlign: "left", marginTop: "3%", marginLeft:"1%", marginRight:"0%", fontSize: "1em"}}>
                         {feedbackDetails[quiz.number]}
                       </FeedbackContent>
                     )}
+                </OptionContainer>
+              )}
+            </QuizContentContainer>
               </FormQuizCardContainer>
             ))}
         </FormQuizTestContainer>
