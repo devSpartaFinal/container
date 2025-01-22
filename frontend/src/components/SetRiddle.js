@@ -264,12 +264,14 @@ const SetRiddle = () => {
 
   const selectCategory = (category) => {
     setSelectedCategory(category);
+    setSelectedKeyword("");
     setSelectedTitle(null);
     setIsDropdownOpen1(false);
   };
 
   const selectTitle = (titleText, titleId) => {
     setSelectedTitle(titleText);
+    setSelectedKeyword("");
     setSelectedTitleIndex(titleId);
     setIsDropdownOpen2(false);
   };
@@ -650,7 +652,16 @@ const SetRiddle = () => {
               </ButtonContainer>
               
               <ButtonContainer>
-                <Button onClick={(e) => handleGenerateQuiz(e)}>
+              <Button 
+                onClick={(e) => {
+                  if (selectedKeyword === "") {
+                    alert("키워드를 먼저 선택해 주세요!");
+                    return;
+                  }
+                  handleGenerateQuiz(e);
+                }} 
+                disabled={selectedKeyword === ""}
+              >
                   <span
                     style={{
                       color: "#ffffff",
