@@ -757,3 +757,88 @@ if (popQuizTimeLeft <= 1 && !popQuizActive) {
 ```js
 if (timeToNextQuiz <= 1 && !popQuizActive) { 
 ```
+
+5. 단체 퀴즈 채팅방에 QUIZ가 참여자 수만큼 출력되는 문제
+(문제 코드)
+```py
+if data["type"] == "pop_quiz_active":
+  # 클라이언트에서 POP QUIZ 활성화 메시지 수신
+      ChatConsumer.pop_quiz_active = data["active"]
+      print(f"POP QUIZ active state updated: {ChatConsumer.pop_quiz_active}")
+      
+      # 퀴즈 브로드캐스트
+      if data['active'] == True:    
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                "type": "quiz_broadcast",
+                "message": ChatConsumer.question,
+                "username": "ReadRiddle",
+            }
+        )
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                "type": "quiz_intro",
+                "message": "문제의 보기 번호를 정답으로 입력하세요!",
+                "username": "ReadRiddle",
+            }
+        )
+      return
+```
+(원인) POP QUIZ 생성시간이 되었을 때, 퀴즈를 Broadcast 하는 과정에서 모든 참여자의 인원수만큼 문제가 출력
+
+(수정)
+1. isOwner 로 방이 최초 생성되었을 때 방장을 나타내는 변수 설정. 이후 isOwner 로 설정된 유저가 대화방을 떠날 떄(웹소켓이 DISCONNECT) 다른 참여자들 그룹 중 가장 먼저 입장한 유저의 isOwner 값 True 로 변경
+```py
+elif data["type"] == "join":
+  # 클라이언트가 보낸 join 메시지 처리
+  self.isOwner = False
+  self.pop_quiz_active = False
+  username = data["myusername"]
+  print(f"User {username} joined the room.")
+
+  # 참여자 목록에 추가
+  if not hasattr(self.channel_layer, "participants"):
+      self.channel_layer.participants = set()
+      print(f"participants 그룹이 생성되었습니다.")
+      self.isOwner = True # 방장 여부
+      print(f"{username} 가 방장이 되었습니다.")
+  self.channel_layer.participants.add(username)
+
+...
+
+# 남아있는 참여자가 있다면 새로운 방장을 지정
+  other_participants = [
+      participant for participant in self.channel_layer.participants
+      if participant != data["myusername"]
+  ]
+  if other_participants and self.isOwner:
+      print(f"방장 {username} 이 방을 나갔습니다.")
+      new_owner = other_participants[0]  # 첫번째 참여자 선택
+      print(f"New owner assigned: {new_owner}")
+      # 새로운 방장에게 owner 권한 부여 메시지 전송
+      await self.channel_layer.group_send(
+          self.room_group_name,
+          {
+              "type": "assign_owner",
+              "new_owner": new_owner,
+          }
+      )
+  elif not other_participants:
+      del self.channel_layer.participants
+      print("참여자가 없어 participants 그룹이 삭제되었습니다.")
+```
+2. isOwner 가 설정된 유저만 퀴즈 생성 및 group_send 가 가 가능하도록 조건 추가
+```py
+# 퀴즈 브로드캐스트
+  if data['active'] == True and self.isOwner:    
+      await self.channel_layer.group_send(
+          self.room_group_name,
+          {
+              "type": "quiz_broadcast",
+              "message": ChatConsumer.question,
+              "username": "ReadRiddle",
+          }
+      )
+```
