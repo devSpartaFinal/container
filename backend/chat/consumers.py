@@ -122,8 +122,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
             # 참여자 목록에 추가
             if not hasattr(self.channel_layer, "participants"):
                 self.channel_layer.participants = set()
+                print(f"participants 그룹이 생성되었습니다.")
                 self.isOwner = True # 방장 여부
-                
+                print(f"{username} 가 방장이 되었습니다.")
             self.channel_layer.participants.add(username)
 
             # 방 그룹에 참여
@@ -153,29 +154,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             username = data["myusername"]
             print(f"User {username} has left the room.")
             
-            # 만약 방장이 나간 경우
-            if self.isOwner:
-                print(f"Owner {username} left the room.")
-                self.isOwner = False
-                
-                # 남아있는 참여자가 있다면 새로운 방장을 지정
-                other_participants = [
-                    participant for participant in self.channel_layer.participants
-                    if participant != data["myusername"]
-                ]
-
-                if other_participants:
-                    new_owner = other_participants[0]  # 첫번째 참여자 선택
-                    print(f"New owner assigned: {new_owner}")
-                    # 새로운 방장에게 owner 권한 부여 메시지 전송
-                    await self.channel_layer.group_send(
-                        self.room_group_name,
-                        {
-                            "type": "assign_owner",
-                            "new_owner": new_owner,
-                        }
-                    )
-                    
             # 참여자 목록에서 제거
             if hasattr(self.channel_layer, "participants") and username in self.channel_layer.participants:
                 self.channel_layer.participants.remove(username)
@@ -192,6 +170,26 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     'participants': list(self.channel_layer.participants),
                 }
             )
+            # 남아있는 참여자가 있다면 새로운 방장을 지정
+            other_participants = [
+                participant for participant in self.channel_layer.participants
+                if participant != data["myusername"]
+            ]
+            if other_participants and self.isOwner:
+                print(f"방장 {username} 이 방을 나갔습니다.")
+                new_owner = other_participants[0]  # 첫번째 참여자 선택
+                print(f"New owner assigned: {new_owner}")
+                # 새로운 방장에게 owner 권한 부여 메시지 전송
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        "type": "assign_owner",
+                        "new_owner": new_owner,
+                    }
+                )
+            elif not other_participants:
+                del self.channel_layer.participants
+                print("참여자가 없어 participants 그룹이 삭제되었습니다.")
         
         elif data["type"] == "update_answer":
             self.quiz_answer = data["quiz_answer"]
@@ -222,7 +220,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         }))
 
     async def quiz_active_check(self, event):
-
         # 연결된 클라이언트에게 pop_quiz_active 상태를 전달
         await self.send(text_data=json.dumps({
             "type": "quiz_active_check",  # 클라이언트가 수신할 타입
@@ -253,16 +250,24 @@ class ChatConsumer(AsyncWebsocketConsumer):
         
         
     async def quiz_broadcast(self, event):
-        await self.send(text_data=json.dumps({
-                "type": "quiz_broadcast",
-                "message": event["message"],
-                "username": event["username"],
-                # "timestamp": event["timestamp"],
-            }))
+        if self.isOwner:
+            await self.send(text_data=json.dumps({
+                    "type": "quiz_broadcast",
+                    "message": event["message"],
+                    "username": event["username"],
+                    # "timestamp": event["timestamp"],
+                }))
     
     async def quiz_update(self, event):
         # 그룹 메시지를 수신하여 클라이언트로 전송
         await self.send(text_data=json.dumps({
             "type": "quiz_update",
             "quiz_answer": event["quiz_answer"],
+        }))
+        
+    async def assign_owner(self, event):
+        # 그룹 메시지를 수신하여 클라이언트로 전송
+        await self.send(text_data=json.dumps({
+            "type": "assign_owner",
+            "new_owner": event["new_owner"],
         }))
