@@ -44,14 +44,12 @@ from coding_helper.settings import (
 class SignInOutAPIView(APIView):
 
     def get_permissions(self):
-        """POST 요청은 인증 없이 허용"""
         if self.request.method == "POST":
             return [AllowAny()]
         return [IsAuthenticated()]
 
     def post(self, request):
 
-        print(request.data)
         serializer = UserSerializer(data=request.data)
         value = request.data["password"]
 
@@ -63,7 +61,7 @@ class SignInOutAPIView(APIView):
             # 이메일 인증 링크 생성
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             token = default_token_generator.make_token(user)
-            verification_link = f"http://api.letsreadriddle.com/verify-email/{uid}/{token}/"
+            verification_link = f"http://127.0.0.1:8000/verify-email/{uid}/{token}/"
 
             # 이메일 전송
             send_mail(
@@ -81,7 +79,6 @@ class SignInOutAPIView(APIView):
                 status=status.HTTP_201_CREATED,
             )
 
-        print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request):
@@ -503,7 +500,6 @@ class GoogleLoginCallback(APIView):
             # jwt 토큰 => 쿠키에 저장
             user.refresh_token = refresh_token
             user.save()
-            print(res.data)
             return res
 
         except requests.exceptions.RequestException as e:
