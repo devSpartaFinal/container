@@ -133,33 +133,21 @@ margin-top: 10%;
   width: 40%;
   height: auto;
   margin-bottom: -18%;
-  margin-top: -30%;
 }
 
 .image3 {
   width: 40%;
   height: auto;
   margin-bottom: -18%;
-  margin-top: -30%;
 }
 
-@media (max-width: 1600px) {
-  .image2 {
-    margin-top: -15%;
-  }
-  .image3 {
-    margin-top: -7%;
-  }
+.image4 {
+  width: 40%;
+  height: auto;
+  margin-bottom: -18%;
 }
 
-@media (max-width: 1400px) {
-  .image2 {
-    margin-top: -3%;
-  }
-  .image3 {
-    margin-top: -3.5%;
-  }
-}
+
 
 .submit-button:disabled {
   position: relative;

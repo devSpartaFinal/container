@@ -64,7 +64,7 @@ const Home = () => {
           </ButtonHalf>
           <ButtonHalf onClick={() => handleButtonClick("/multi_chat")}>
             <div>
-              <img className="image2" alt="read" src={popquiz} style={{marginBottom: '-15%', width: '100%', height: '200px'}} />
+              <img className="image4" alt="popquiz" src={popquiz} style={{marginLeft: '30%'}} />
             </div>
             <ButtonDescription style={{ color: "#000000"}}>
             <hr style={{ borderColor: "#000000", borderWidth: "2px", borderStyle: "solid"}} />
@@ -174,12 +174,12 @@ const ButtonHalf = styled.div`
   cursor: pointer;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  align-items: center;
   text-align: left;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
-  padding: 0.5%;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
 
   &:hover {
     transform: scale(1.05);
