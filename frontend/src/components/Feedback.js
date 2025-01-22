@@ -147,11 +147,10 @@ const Feedback = () => {
             ))}
           </FeedbackDetails>
         ) : (
-          <Notice style={{ fontSize: '3em', overflow:'hidden' }}>
+          <Notice style={{ fontSize: '3em', fontWeight: "bold", overflow:'hidden', color: 'black', textAlign: 'center'}}>
             {error ? error : (
               <>
-                Quiz List에서 퀴즈를 선택하여<br />
-                피드백을 확인하세요.
+                선택된 퀴즈 리스트가 없습니다.
               </>
             )}
           </Notice>
@@ -160,7 +159,7 @@ const Feedback = () => {
 
       {/* 우측 퀴즈 리스트 패널 */}
       <QuizListPanel>
-        <FeedbackTitle>Quiz List</FeedbackTitle>
+        <FeedbackTitle>QUIZ LIST</FeedbackTitle>
         {quizList.length > 0 ? (
           <div>
             {quizList.map((quiz) => (
@@ -206,7 +205,7 @@ const Feedback = () => {
             ))}
           </div>
         ) : (
-          <p style={{color: 'white'}}>퀴즈 목록을 불러오는 중이거나 비어 있습니다.</p>
+          <p style={{color: 'white'}}>퀴즈 리스트를 불러오는 중이거나 비어있습니다.</p>
         )}
       </QuizListPanel>
     </FeedbackContainer>

@@ -49,10 +49,10 @@ export const DropDownParentContainer = styled.div`
 `;
 
 export const TitleContainer = styled.div`
-  text-align: flex-start;
+  text-align: center;
   align-items: center;
   justify-content: center;
-  margin-left: 10%;
+  margin-left: 5%;
   margin-top: 5%;
   margin-bottom: 5%;
   font-size: 2.5em; 
@@ -160,7 +160,7 @@ export const InformationButton = styled.button`
   flex-direction: column;  /* 요소들을 세로로 배치 */
   align-items: center;  /* 수평 방향으로 중앙 정렬 */
   padding: 7% 3%;
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(255, 255, 255, 0.1);
   border: none;
   width: 100%;
   height: 100%;  /* 높이를 내용에 맞게 자동으로 설정 */

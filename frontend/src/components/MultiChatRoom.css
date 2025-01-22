@@ -38,16 +38,18 @@
 
 .participants-box {
     flex: 2; /* 참여자 목록 영역의 비율 */
-    border: 1px solid #ddd;
+    border: 2px solid #000000;
     border-radius: 8px;
     padding: 1%;
-    background-color: #fff;
-
+    color: #000000;
+    background-color: rgb(255, 255, 255);
+    border-bottom: 2px solid #000000;
 }
 
 .participants-box h2 {
-    font-size: 1.2em;
-    margin-bottom: 10px;
+    font-size: 1.5em;
+    border-bottom: 1px solid #3a3a3a; 
+    margin-bottom: 5%;
 }
 
 .participants-box ul {
@@ -57,7 +59,7 @@
 
 .participants-box li {
     padding: 5px 0;
-    border-bottom: 1px solid #eee;
+    /* border-bottom: 1px solid #eee; */
     font-size: 1em;
 }
 
@@ -66,7 +68,8 @@
     border: 1px solid #ddd;
     border-radius: 8px;
     padding: 1%;
-    background-color: 	#53c5d0;
+    background-color:#53c5d0;
+    /* background: linear-gradient(135deg, #53c5d0, #31787e); */
     overflow-y: auto;
     overflow-x: hidden;
     position: relative;

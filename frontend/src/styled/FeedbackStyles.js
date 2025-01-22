@@ -37,7 +37,7 @@ export const QuizListPanel = styled.div`
 `;
 
 export const FeedbackTitle = styled.h1`
-  font-size: 1.5rem;
+  font-size: 2.2rem;
   color: white;
   margin-bottom: 20px;
 `;

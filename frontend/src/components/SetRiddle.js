@@ -401,27 +401,17 @@ const SetRiddle = () => {
           <HomeContainer>
           <DropDownParentContainer>
           <TitleContainer>
-              <div
-                style={{
+              <div style={{
                   display: 'flex',
                   flexDirection: 'row',
                   alignItems: 'center',
                   textAlign: 'center',
-                  marginLeft: '25%',
-                  transformOrigin: 'left',
+                  transformOrigin: 'center',
                 }}
               >
-                <p
-                  style={{
-                    fontSize: '1em',
-                    margin: 0,
-                  }}
-                >
-                  Let's Riddle!
-                </p>
+                <p style={{fontSize: '1.5em', margin: 0, textAlign: 'center'}}> Let's Riddle! </p>
               </div>
             </TitleContainer>
-
             <DivContainer3>
               <DropdownContainer>
               <DropdownButton onClick={toggle1Dropdown} style={{
@@ -526,7 +516,7 @@ const SetRiddle = () => {
                         height: '100%',
                         borderRadius: '5px',
                         color: "black",
-                        backgroundColor: "rgba(255, 255, 255, 0.5)",
+                        backgroundColor: "rgba(255, 255, 255, 1.0)",
                         border: '3px solid #ffffff',
                         padding: '3%',
                         boxSizing: 'border-box',
@@ -541,9 +531,9 @@ const SetRiddle = () => {
               <InformationButton>
               <label
                     htmlFor="quizCount"
-                    style={{ textAlign: "left", color: "white" }}
+                    style={{ textAlign: "left", color: "white", fontSize: "1em", fontWeight: "bold" }}
                     >
-                    Count
+                    COUNT
                   </label>
                   <input
                     id="quizCount"
@@ -555,7 +545,7 @@ const SetRiddle = () => {
                       const value = Number(e.target.value);
 
                       if (selectCategory === "OFFICIAL_DOCS" && value > 5) {
-                        alert("출제할 수 있는 퀴즈는 최대 5개입니다!");
+                        alert("공식문서의 경우, 출제할 수 있는 퀴즈는 최대 5개입니다!");
                       } else if (value > 10) {
                         alert("출제할 수 있는 퀴즈는 최대 10개입니다!");
                       } else {
@@ -578,9 +568,9 @@ const SetRiddle = () => {
                 <InformationButton>
                   <label
                     htmlFor="quizDifficulty"
-                    style={{ textAlign: "left", color: "white" }}
+                    style={{ textAlign: "left", color: "white", fontSize: "1em", fontWeight: "bold"}}
                     >
-                    Difficulty
+                    DIFFICULTY
                   </label>
                   <select
                     id="quizDifficulty"
@@ -606,9 +596,9 @@ const SetRiddle = () => {
                 <InformationButton>
                   <label
                     htmlFor="type"
-                    style={{ textAlign: "left", color: "white" }}
+                    style={{ textAlign: "left", color: "white", fontSize: "1em", fontWeight: "bold" }}
                     >
-                    Type
+                    TYPE
                   </label>
                   <select
                     id="type"

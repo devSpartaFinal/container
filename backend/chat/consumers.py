@@ -73,7 +73,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     self.room_group_name,
                     {
                         "type": "quiz_intro",
-                        "message": "문제의 보기 번호를 정답으로 입력하세요! (예시: '3')",
+                        "message": "문제의 보기 번호를 정답으로 입력하세요!",
                         "username": "ReadRiddle",
                     }
                 )
