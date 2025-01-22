@@ -135,7 +135,7 @@ const MultiChatRoom = () => {
         }
 
         if (timeToNextQuiz <= 1000 && !popQuizActive) { // POP QUIZ 활성화 조건
-            setPopQuizMessage("POP RIDDLE 시작!");
+            setPopQuizMessage("POP QUIZ!");
             setPopQuizTimeLeft(null);
             console.log("퀴즈 생성")
             console.log("isAnswer : " + isAnswer)
@@ -153,7 +153,7 @@ const MultiChatRoom = () => {
         }
         else
         {
-            setPopQuizMessage("다음 Riddle까지");
+            setPopQuizMessage("다음 POP QUIZ까지");
             setPopQuizActive(false);
         }
 
@@ -250,7 +250,7 @@ const MultiChatRoom = () => {
             <div className="chat-container">
                 {/* <h1 className="header">Challenge Riddle POP!</h1> */}
                 <div className="pop-quiz-display">
-                    {popQuizMessage === "POP RIDDLE 시작!" ? (
+                    {popQuizMessage === "POP QUIZ!" ? (
                     <div>
                         <h1 className="header">{popQuizMessage}</h1>
                         <p>남은 시간 : {timeToSolveQuiz !== null ? formatTime(timeToSolveQuiz) : "시간 종료"} </p>

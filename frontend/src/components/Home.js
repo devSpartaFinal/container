@@ -61,6 +61,19 @@ const Home = () => {
               - 공식문서와 관련된 학습을 할 수 있습니다.
             </ButtonDescription>
           </ButtonHalf>
+          <ButtonHalf onClick={() => handleButtonClick("/multi_chat")}>
+            <div style={{ color: "#000000", fontWeight: "bold", textAlign: "center", fontSize: "3em", marginLeft: '5%', marginTop: '-15%', marginBottom: '-10%'}}>
+              <h1>POP QUIZ!</h1>
+            </div>
+            <ButtonDescription style={{ color: "#000000"}}>
+            <hr style={{ borderColor: "#000000", borderWidth: "2px", borderStyle: "solid"}} />
+              - 다른 유저들과 함께 POP QUIZ에 도전해보세요! <br></br>
+              - 정해진 시간마다 POP QUIZ가 생성됩니다. <br></br>
+              - 문제 당 제한시간은 2분입니다. <br></br>
+              - POP QUIZ가 생성되면 보기 번호 중 정답 숫자를 입력합니다.<br></br>
+              - 제한시간이 모두 초과되면 새로운 POP QUIZ가 시작됩니다.
+            </ButtonDescription>
+          </ButtonHalf>
           <ButtonHalf onClick={() => handleButtonClick("/riddle")}>
             <div>
               <img className="image3" alt="riddle" src={riddleLogo} style={{marginLeft: '5%'}} />
@@ -153,7 +166,7 @@ const ButtonGroup = styled.div`
 `;
 
 const ButtonHalf = styled.div`
-  width: 48.5%; /* 각 버튼 영역을 절반으로 나눔 */
+  width: 32%; /* 각 버튼 영역을 절반으로 나눔 */
   height: 100%;
   background-color: #eeeeee;
   border-radius: 15px;
