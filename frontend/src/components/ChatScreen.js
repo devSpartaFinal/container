@@ -37,6 +37,10 @@ import Session from "./Session";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const ChatScreen = () => {
+  useEffect(() => {
+      document.title = "ReadRiddle - Read";
+    }, []);
+
   const categoryOptions = [
     "PYTHON",
     "ML",

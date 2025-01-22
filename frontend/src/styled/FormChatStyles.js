@@ -148,6 +148,7 @@ export const TitleContainer = styled.div`
   margin-top: 1.5%;
   font-size: 1.3em; 
   font-weight: bold;
+  line-height: 1.5;
   color: #464646;
 `;
 
@@ -156,9 +157,10 @@ export const QuizContentContainer = styled.div`
   font-size: 1.2em; 
   font-weight: bold;
   color: #63b5da;
-  height: 70%;
+  height: 100%;
   overflow-y: auto;
   margin-left: -3%;
+  margin-top: 1%;
   padding-right: 4%;
 `;
 
@@ -248,13 +250,13 @@ export const Option2Container = styled.div`
 
 export const Option2Button = styled.button`
   margin-left: 5%;
-  margin-top: 5%;
+  margin-top: 3%;
   justify-content: center;
   color: #464646;
   border: 2px solid #464646;
   background-color: transparent;
-  width: 95%;
-  height: 60%;
+  width: 30%;
+  height: 50%;
   cursor: pointer;
   font-size: 5em;
   border-radius: 7px;
@@ -329,6 +331,15 @@ color: #333;
 cursor: pointer;
 `;
 
+export const FeedbackContentContainer = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  position: relative;
+  z-index: 1000;
+  top: -10%;
+`;
+
 export const FeedbackContent = styled.div`
   display: flex;
   flex-direction: column;
@@ -338,8 +349,9 @@ export const FeedbackContent = styled.div`
   position: relative; 
   color: #3c3c3c;
   line-height: 1.7;
-  font-size: 1.2em;
-  margin-right: 3%;
+  font-size: 1em;
+  margin-left: 3%;
+  z-index: 1001;
 `;
 
 export const ContentButton = styled.button`
@@ -358,9 +370,8 @@ export const ContentButton = styled.button`
 export const Option3Container = styled.div`
   position: absolute;
   width: 100%;
-  height: 30%;
+  height: 55%;
   overflow-x: hidden;
-
 `;
 
 export const Option3Button = styled.button`

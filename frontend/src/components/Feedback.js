@@ -19,6 +19,10 @@ const Feedback = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false); // 로딩 상태 추가
 
+  useEffect(() => {
+        document.title = "ReadRiddle - Feedback";
+      }, []);
+
   // 퀴즈 리스트 가져오기
   useEffect(() => {
     const loadQuizList = async () => {

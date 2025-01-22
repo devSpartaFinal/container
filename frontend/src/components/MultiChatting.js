@@ -20,6 +20,10 @@ const MultiChatRoom = () => {
     const chatContainerRef = useRef(null);
     const wsUrl = "ws://localhost:8000/ws/chat/global_room/"; // 고정된 room_name
 
+    useEffect(() => {
+          document.title = "ReadRiddle - MultiChat";
+        }, []);
+
     // WebSocket 연결
     useEffect(() => {
         if (socket.current) {
@@ -204,7 +208,13 @@ const MultiChatRoom = () => {
 
     useEffect(() => {
         if (chatContainerRef.current) {
-            chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+            const container = chatContainerRef.current;
+            const distanceFromBottom = container.scrollHeight - container.scrollTop - container.clientHeight;
+            const isAtBottom = distanceFromBottom <= 150;
+
+            if (isAtBottom) {
+                container.scrollTop = container.scrollHeight;
+            }
         }
     }, [messages]);
 
