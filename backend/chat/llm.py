@@ -75,36 +75,36 @@ def chat_quiz():
         cache.set(cache_key, subject_dict, timeout=60 * 60)
 
     class ChatQuiz(BaseModel):
-        description: str
-        choices: str
-        answer: int
+            description: str
+            answer: str
+            language : str
 
     prompt = f"""
-        **only in korean**
-        Generate questions related to programming languages and AI programming based on the given topic.
-        
-        Each ChatQuiz should include:
+            **only in korean**
+            Generate questions related to programming languages and AI programming based on the given topic.
+            
+            Each ChatQuiz should include:
 
-        Description: The content/explanation of the question.
-        Choices: 5-Multiple-choice options.
-        Answer: The correct answer, provided as a number
+            description: The content of the question.
+            answer: The correct answer, provided as a short noun word
+            language : "한글입니다." or "영어입니다." or "숫자입니다."
 
-        <description>
-        Include simple intoduction of the Topic
-        Include both conceptual knowledge and code-based problems. 
-        For code-related questions, include a code snippet in the Description
-        **remove annotation in code snippet**
-        **question is located only in last sentence**
-        **you should not include answer in description**
-        </description>
+            <description>
+            Include simple intoduction of the Topic
+            Include both conceptual knowledge and code-based problems. 
+            For code-related questions, include a code snippet in the Description
+            **remove annotation in code snippet**
+            **exclude answer in description**
+            **question is located only in last sentence**
+            </description>
 
+            **if answer is in korean give alert*
 
-
-        <topic>
-        {selected_subject}
-        </topic>
-        **only in korean**
-        """
+            <topic>
+            {selected_subject}
+            </topic>
+            **only in korean**
+            """
 
     completion = client.beta.chat.completions.parse(
         model="gpt-4o",  # 조정 필요
@@ -118,6 +118,6 @@ def chat_quiz():
     quiz = completion.choices[0].message.parsed
     quiz_json = json.dumps(quiz.model_dump(), indent=2)
     quiz_dict = json.loads(quiz_json)
-    question = f"[POP RIDDLE] \n {quiz_dict['description']} \n {quiz_dict['choices']}"
-    answer = str(quiz_dict["answer"])
+    question = f"[POP RIDDLE]\n{quiz_dict['description']}\n정답은 {quiz_dict['language']}"
+    answer = str(quiz_dict["answer"]).replace(" ", "")
     return question, answer
