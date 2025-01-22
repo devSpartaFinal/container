@@ -304,14 +304,16 @@ const MultiChatRoom = () => {
                                                     code: ({ node, inline, children, ...props }) => (
                                                     <pre
                                                         style={{
-                                                        fontSize: "0.65em",
-                                                        backgroundColor: "black",
+                                                        fontSize: "1.2em",
+                                                        fontWeight: "bold",
+                                                        backgroundColor: "#1E3269",
                                                         color: "white",
                                                         padding: "10px",
                                                         margin: 0,
                                                         whiteSpace: "pre-wrap",
                                                         wordBreak: "break-word",
                                                         overflowX: "auto",
+                                                        borderRadius: "5px"
                                                         }}
                                                         {...props}
                                                     >
