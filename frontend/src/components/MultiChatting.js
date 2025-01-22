@@ -4,7 +4,7 @@ import "./MultiChatRoom.css";
 import ReactMarkdown from "react-markdown";
 
 const MultiChatRoom = () => {
-    const username = localStorage.getItem("username");
+    const myusername = localStorage.getItem("username");
     const location = useLocation();
     const [messages, setMessages] = useState([]);
     const [message, setMessage] = useState("");
@@ -19,6 +19,7 @@ const MultiChatRoom = () => {
     const socket = useRef(null);
     const chatContainerRef = useRef(null);
     const wsUrl = "ws://localhost:8000/ws/chat/global_room/"; // 고정된 room_name
+    // const wsUrl = "wss://api.letsreadriddle.com/ws/chat/global_room/";
 
     useEffect(() => {
           document.title = "ReadRiddle - MultiChat";
@@ -35,7 +36,7 @@ const MultiChatRoom = () => {
             console.log("WebSocket is connected to 'global_room'");
             // 서버에 현재 사용자의 참여 알림 전송
             if (socket.current.readyState === WebSocket.OPEN) {
-                socket.current.send(JSON.stringify({ type: "join", username }));
+                socket.current.send(JSON.stringify({ type: "join", myusername }));
             }
         };
 
@@ -61,7 +62,17 @@ const MultiChatRoom = () => {
             }
             else if (data.type === "quiz_broadcast") {
                 setMessages((prevMessages) => [...prevMessages, data]);
-                setPopQuizActive(true); // POP QUIZ 비활성화
+            }
+            else if (data.type === "quiz_update") {
+                const quiz_answer = data.quiz_answer;
+                socket.current.send(JSON.stringify({ type: "update_answer", quiz_answer }));
+            }
+            else if (data.type === "assign_owner") {
+                const newOwner = data.new_owner;
+                console.log(`새로운 방장: ${newOwner}`);
+                if (newOwner === myusername) {
+                    socket.current.send(JSON.stringify({ type: "change_owner", myusername }));
+                }
             }
         };
 
@@ -72,7 +83,7 @@ const MultiChatRoom = () => {
         // beforeunload 이벤트를 추가하여 페이지를 떠날 때 leave 메시지 전송
         const handleBeforeUnload = () => {
             if (socket.current && socket.current.readyState === WebSocket.OPEN) {
-                socket.current.send(JSON.stringify({ type: "leave", username }));
+                socket.current.send(JSON.stringify({ type: "leave", myusername }));
             }
         };
         window.addEventListener("beforeunload", handleBeforeUnload);
@@ -85,7 +96,7 @@ const MultiChatRoom = () => {
                 socket.current.close(); // disconnect 메서드 호출
             }
         };
-    }, [username, location]);
+    }, [myusername, location]);
 
     const updatePopQuizStatus = () => {
         if (isAnswer === 0 && popQuizActive) return; // POP QUIZ 활성화 중에는 타이머 업데이트 중단
@@ -109,7 +120,7 @@ const MultiChatRoom = () => {
         console.log("popQuizActive : " + popQuizActive)
         console.log("isAnswer : " + isAnswer)
 
-        if ( timeToNextQuiz === 30000 && !popQuizActive) {
+        if ( timeToNextQuiz === 20000 && !popQuizActive) {
             if (socket.current && socket.current.readyState === WebSocket.OPEN) {
                 console.log("퀴즈 생성요청 type : create_quiz")
                 socket.current.send(
@@ -121,12 +132,12 @@ const MultiChatRoom = () => {
         }
 
         if (timeToNextQuiz <= 1000 && !popQuizActive) { // POP QUIZ 활성화 조건
-            setPopQuizMessage("POP RIDDLE!");
+            setPopQuizMessage("POP RIDDLE 시작!");
             setPopQuizActive(true);
             setPopQuizTimeLeft(null);
             console.log("퀴즈 생성")
             console.log("isAnswer : " + isAnswer)
-            setTimeToSolveQuiz(120);
+            setTimeToSolveQuiz(180);
             // 서버에 POP QUIZ 활성화 알림 전송
             if (socket.current && socket.current.readyState === WebSocket.OPEN) {
                 socket.current.send(
@@ -223,7 +234,7 @@ const MultiChatRoom = () => {
         if (socket.current && socket.current.readyState === WebSocket.OPEN) {
             const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
             socket.current.send(
-                JSON.stringify({ type: "user_message", message, username, timestamp })
+                JSON.stringify({ type: "user_message", message, myusername, timestamp })
             );
             setMessage("");
         } else {
@@ -235,7 +246,7 @@ const MultiChatRoom = () => {
             <div className="chat-container">
                 {/* <h1 className="header">Challenge Riddle POP!</h1> */}
                 <div className="pop-quiz-display">
-                    {popQuizMessage === "POP RIDDLE!" ? (
+                    {popQuizMessage === "POP RIDDLE 시작!" ? (
                     <div>
                         <h1 className="header">{popQuizMessage}</h1>
                         <p>남은 시간 : {timeToSolveQuiz !== null ? formatTime(timeToSolveQuiz) : "시간 종료"} </p>
@@ -255,11 +266,11 @@ const MultiChatRoom = () => {
                         <div
                             key={index}
                             className={`chat-message ${
-                                msg.username === username ? "chat-own" : "chat-other"
+                                msg.username === myusername ? "chat-own" : "chat-other"
                             }`}
                         >
                             <p>
-                                {msg.username === username ? (
+                                {msg.username === myusername ? (
                                     <>
                                         {/* msg.timestamp은 메시지 왼쪽에 표시 */}
                                         <small style={{ marginRight: '10px', fontSize: '0.8em', color: 'white', display: 'inline-block' }}>{msg.timestamp}</small>
@@ -278,7 +289,9 @@ const MultiChatRoom = () => {
                                             className={`chatting-message other-message`}
                                             style={{ display: 'inline-block', whiteSpace: 'pre-wrap', fontWeight: 'bold'}}
                                         >
+                                            {msg.username === "ReadRiddle" ? (
                                             <ReactMarkdown>{msg.message}</ReactMarkdown>
+                                            ) : <span>({msg.message})</span>}
                                         </div>
                                         <small style={{ marginLeft: '10px', fontSize: '0.8em', color: 'white', display: 'inline-block' }}>{msg.timestamp}</small>
                                     </>
