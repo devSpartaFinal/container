@@ -53,7 +53,7 @@ const SetRiddle = () => {
   const [selectedKeyword, setSelectedKeyword] = useState("");
   const [selectedSummary, setSelectedSummary] = useState(null);
   const [selectedQuestions, setSelectedQuestions] = useState([]);
-  const [quizCount, setQuizCount] = useState(10);
+  const [quizCount, setQuizCount] = useState(5);
   const [quizDifficulty, setQuizDifficulty] = useState("easy");
   const [quizType, setQuizType] = useState("4_multiple_choice");
   const [isLoading, setIsLoading] = useState(false);
@@ -403,42 +403,22 @@ const SetRiddle = () => {
           <TitleContainer>
               <div
                 style={{
-                  display: 'flex', 
+                  display: 'flex',
                   flexDirection: 'row',
-                  alignItems: 'center', 
+                  alignItems: 'center',
                   textAlign: 'center',
                   marginLeft: '25%',
-                  transform: 'scale(0.8)', 
                   transformOrigin: 'left',
                 }}
               >
-                <img
-                  className="phoneImage"
-                  alt="title"
-                  src={book}
-                  style={{
-                    width: '20%',
-                    height: 'auto'
-                  }}
-                />
                 <p
                   style={{
-                    fontSize: '1em', 
-                    margin: 0, 
+                    fontSize: '1em',
+                    margin: 0,
                   }}
                 >
-                  Let's Start Riddle
+                  Let's Riddle!
                 </p>
-
-                <img
-                  className="phoneImage"
-                  alt="title"
-                  src={book}
-                  style={{
-                    width: '25%',
-                    height: 'auto'
-                  }}
-                />
               </div>
             </TitleContainer>
 
@@ -573,11 +553,14 @@ const SetRiddle = () => {
                     value={quizCount}
                     onChange={(e) => {
                       const value = Number(e.target.value);
-                      if (value > 20) {
-                        alert("Quiz Count cannot exceed 20!");
-                        return;
+
+                      if (selectCategory === "OFFICIAL_DOCS" && value > 5) {
+                        alert("출제할 수 있는 퀴즈는 최대 5개입니다!");
+                      } else if (value > 10) {
+                        alert("출제할 수 있는 퀴즈는 최대 10개입니다!");
+                      } else {
+                        setQuizCount(value);
                       }
-                      setQuizCount(value);
                     }}
                     style={{
                       padding: "5%",

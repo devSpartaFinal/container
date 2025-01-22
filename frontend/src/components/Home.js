@@ -6,6 +6,7 @@ import logo from '../assets/logo.png'
 import book from '../assets/book.png'
 import readLogo from '../assets/read.png'
 import riddleLogo from '../assets/riddle.png'
+import popquiz from '../assets/popquiz.png'
 
 const Home = () => {
   const navigate = useNavigate();
@@ -62,8 +63,8 @@ const Home = () => {
             </ButtonDescription>
           </ButtonHalf>
           <ButtonHalf onClick={() => handleButtonClick("/multi_chat")}>
-            <div style={{ color: "#000000", fontWeight: "bold", textAlign: "center", fontSize: "3em", marginLeft: '5%', marginTop: '-15%', marginBottom: '-10%'}}>
-              <h1>POP QUIZ!</h1>
+            <div>
+              <img className="image2" alt="read" src={popquiz} style={{marginBottom: '-15%', width: '100%', height: '200px'}} />
             </div>
             <ButtonDescription style={{ color: "#000000"}}>
             <hr style={{ borderColor: "#000000", borderWidth: "2px", borderStyle: "solid"}} />

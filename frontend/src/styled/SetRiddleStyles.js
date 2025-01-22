@@ -50,14 +50,16 @@ export const DropDownParentContainer = styled.div`
 
 export const TitleContainer = styled.div`
   text-align: flex-start;
-  margin-top: -3%;
-  margin-left: -2%;
+  align-items: center;
+  justify-content: center;
+  margin-left: 10%;
+  margin-top: 5%;
+  margin-bottom: 5%;
   font-size: 2.5em; 
   font-weight: bold;
   color: #ffffff;
 
   @media (max-width: 1200px) {
-  margin-left: -15%;
   }
 `;
 
