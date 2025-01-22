@@ -90,19 +90,16 @@ def chat_quiz():
             language : "한글입니다." or "영어입니다." or "숫자입니다."
 
             <description>
-            Include simple intoduction of the Topic
             Include both conceptual knowledge and code-based problems. 
             For code-related questions, include a code snippet in the Description
             **remove annotation in code snippet**
-            **exclude answer in description**
             **question is located only in last sentence**
             </description>
-
-            **if answer is in korean give alert*
 
             <topic>
             {selected_subject}
             </topic>
+            **Do Not include answer in description**
             **only in korean**
             """
 
@@ -118,6 +115,6 @@ def chat_quiz():
     quiz = completion.choices[0].message.parsed
     quiz_json = json.dumps(quiz.model_dump(), indent=2)
     quiz_dict = json.loads(quiz_json)
-    question = f"[POP RIDDLE]\n{quiz_dict['description']}\n정답은 {quiz_dict['language']}"
-    answer = str(quiz_dict["answer"]).replace(" ", "")
+    question = f"[POP RIDDLE]\n{quiz_dict['description']}\n\n정답은 {quiz_dict['language']}"
+    answer = str(quiz_dict["answer"])
     return question, answer
