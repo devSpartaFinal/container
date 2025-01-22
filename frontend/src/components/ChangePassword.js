@@ -43,12 +43,12 @@ const UpdateProfile = () => {
         if (new_password && new_password.length < 8) {
             passwordErrors.push("비밀번호는 최소 8자 이상이어야 합니다.");
         }
-        if (new_password && !/[A-Z]/.test(new_password)) {
-            passwordErrors.push("비밀번호는 최소한 하나의 대문자를 포함해야 합니다.");
+        if (new_password && !/[A-Za-z]/.test(new_password)) {
+            passwordErrors.push("비밀번호는 최소한 하나의 영문을 포함해야 합니다.");
         }
-        if (new_password && !/[a-z]/.test(new_password)) {
-            passwordErrors.push("비밀번호는 최소한 하나의 소문자를 포함해야 합니다.");
-        }
+        // if (new_password && !/[a-z]/.test(new_password)) {
+        //     passwordErrors.push("비밀번호는 최소한 하나의 소문자를 포함해야 합니다.");
+        // }
         if (new_password && !/[0-9]/.test(new_password)) {
             passwordErrors.push("비밀번호는 최소한 하나의 숫자를 포함해야 합니다.");
         }

@@ -82,10 +82,10 @@ const Signup = () => {
       passwordErrors.push("비밀번호는 숫자를 포함해야 합니다.");
     }
 
-    const specialCharRegex = /[!^*]/;
-    if (specialCharRegex.test(password) && !/[!^*]/.test(password)) {
-      passwordErrors.push("비밀번호는 특수기호(!, ^, *)를 포함할 수 있습니다.");
-    }
+    // const specialCharRegex = /[!^*]/;
+    // if (specialCharRegex.test(password) && !/[!^*]/.test(password)) {
+    //   passwordErrors.push("비밀번호는 특수기호(!, ^, *)를 포함할 수 있습니다.");
+    // }
 
     return passwordErrors;
   };
@@ -172,7 +172,7 @@ const Signup = () => {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              placeholder="비밀번호는 8자 이상의 영문과 숫자 조합이어야 하며, 특수기호(!, ^, *)를 포함할 수 있습니다"
+              placeholder="비밀번호는 8자 이상의 영문과 숫자의 조합이어야 합니다."
               required
             />
             <Input
