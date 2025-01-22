@@ -93,10 +93,12 @@ def chat_quiz():
         Answer: The correct answer, provided as a number
 
         <description>
-        Include simple Definition or Explanation of the Topic
+        Include simple intoduction of the Topic
         Include both conceptual knowledge and code-based problems. 
         For code-related questions, include a code snippet in the Description
+        **remove annotation in code snippet**
         **question is located only in last sentence**
+        **you should not include answer in description**
         </description>
 
 
@@ -119,6 +121,6 @@ def chat_quiz():
     quiz = completion.choices[0].message.parsed
     quiz_json = json.dumps(quiz.model_dump(), indent=2)
     quiz_dict = json.loads(quiz_json)
-    question = f"[POP RIDDLE] \n\n {quiz_dict['description']} \n\n {quiz_dict['choices']}"
+    question = f"[POP RIDDLE] \n {quiz_dict['description']} \n {quiz_dict['choices']}"
     answer = str(quiz_dict['answer'])
     return question, answer
