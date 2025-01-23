@@ -39,11 +39,15 @@ import { Background } from "../styled/ChatHomeStyles";
 import readLogo from '../assets/read.png'
 import riddleLogo from '../assets/riddle.png'
 import book from '../assets/book.png'
+import gift from '../assets/gift.png'
 
 const SetRiddle = () => {
   useEffect(() => {
         document.title = "ReadRiddle - Riddle";
       }, []);
+
+  
+  useEffect(() => { const interval = setInterval(() => { setRotation((prev) => prev + 5);  }, 30); return () => clearInterval(interval);  }, []);
       
   const [isDropdownOpen1, setIsDropdownOpen1] = useState(false);
   const [isDropdownOpen2, setIsDropdownOpen2] = useState(false);
@@ -60,6 +64,7 @@ const SetRiddle = () => {
   const [summaryLoading, setSummaryLoading] = useState(false);
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
+  const [rotation, setRotation] = useState(0);
 
   const categoryOptions = [
     "PYTHON",
@@ -401,6 +406,20 @@ const SetRiddle = () => {
       ) : (
         <>
           <HomeContainer>
+            <a href="https://forms.gle/CA7SaahEhNMG7DUw8" style={{ textAlign: "center"}}>
+                  <img
+                    src={gift}
+                    alt="React Animated"
+                    style={{
+                      width: "10%",
+                      zIndex: '1000',
+                      position: 'fixed',
+                      marginLeft: '32%',
+                      transform: `rotate(${rotation}deg)`,
+                      transition: "transform 10s linear",
+                    }}
+                  />
+                </a>
           <DropDownParentContainer>
           <TitleContainer>
               <div style={{

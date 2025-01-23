@@ -26,6 +26,29 @@ export const FeedbackPanel = styled.div`
   width: 72%;
 `;
 
+export const Button = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 30px; 
+    margin-left: 18%;
+    font-size: 0.8em; 
+    width: 50%;
+    border: none;
+    border-radius: 100px;
+    background: #fb4759;
+    color: white;
+    cursor: pointer;
+    transition: 0.3s ease-in-out opacity, box-shadow;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3); 
+
+    &:hover {
+        //transform: scale(1.05);
+        background:rgb(254, 99, 115);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1); 
+    }
+`;
+
 export const QuizListPanel = styled.div`
   padding: 1% 2% 1% 2%;
   height: 87%;
