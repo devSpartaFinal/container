@@ -47,7 +47,7 @@ def chat_quiz():
             subjects: list[Subject]
 
         prompt = f"""
-        Make **12** 'Subject' about Programming Language and AI
+        Make **30** 'Subject' about programming algorithm
         'difficulty' is Hard
         `done' is false
         """
@@ -75,31 +75,36 @@ def chat_quiz():
         cache.set(cache_key, subject_dict, timeout=60 * 60)
 
     class ChatQuiz(BaseModel):
-            description: str
-            answer: str
-            language : str
+        description: str
+        code_snippet: str
+        answer: str
 
     prompt = f"""
             **only in korean**
-            Generate questions related to programming languages and AI programming based on the given topic.
-            
-            Each ChatQuiz should include:
 
-            description: The content of the question.
-            answer: The correct answer, provided as a short noun word
-            language : "한글입니다." or "영어입니다." or "숫자입니다."
-
-            <description>
-            Include both conceptual knowledge and code-based problems. 
-            For code-related questions, include a code snippet in the Description
-            **remove annotation in code snippet**
+            Generate 10 questions about topic.
+            question type is "code-based problems" or "conceptual knowledge"
             **question is located only in last sentence**
-            </description>
+            **Do Not include answer in description**
+            include code in ```code``` format
+            **remove annotation in code snippet**
+            **Do Not include answer in code_snippet**
+
+            <conceptual knowledge>
+            description: concept or knowledge
+            code_snippet: code example
+            answer: short answer (maximum 3 word)
+            </conceptual knowledge>
+
+            <code-based problems>
+            description: answer code to fill blank
+            code_snippet: code with blank
+            answer: short code
+            </code-based problems>
 
             <topic>
             {selected_subject}
             </topic>
-            **Do Not include answer in description**
             **only in korean**
             """
 
@@ -115,6 +120,8 @@ def chat_quiz():
     quiz = completion.choices[0].message.parsed
     quiz_json = json.dumps(quiz.model_dump(), indent=2)
     quiz_dict = json.loads(quiz_json)
-    question = f"[POP RIDDLE]\n{quiz_dict['description']}\n\n정답은 {quiz_dict['language']}"
+    question = (
+        f"[POP RIDDLE]\n{quiz_dict['description']}\n\n{quiz_dict['code_snippet']}"
+    )
     answer = str(quiz_dict["answer"])
     return question, answer
