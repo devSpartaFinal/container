@@ -89,6 +89,7 @@ def quizz_chain(content, input):
         Questions should challenge the reader to think critically by analyzing, interpreting, or applying the given code in realistic scenarios.
         **Note:** Use Markdown syntax to format the code snippets properly for better readability.  
         do not include annotation and text without code.
+        do not include code snippets if it in the choices.
         do not include '#'
         </code_snippets>
         **Types of problems:**
