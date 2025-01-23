@@ -8,9 +8,11 @@ import {
   FeedbackDetails,
   SpinnerContainer,
   Notice,
+  Button,
 } from "../styled/FeedbackStyles";
 import "./app.css";
 import { AiOutlineClose } from "react-icons/ai";
+import { Link } from "react-router-dom";
 
 const Feedback = () => {
   const [quizList, setQuizList] = useState([]);
@@ -151,6 +153,13 @@ const Feedback = () => {
             {error ? error : (
               <>
                 선택된 퀴즈 리스트가 없습니다.
+                <div style={{ marginTop: "20px" }}>
+                  <Link to="/riddle" style={{ textDecoration: "none" }}>
+                    <Button>
+                      Riddle 시작하기!
+                    </Button>
+                  </Link>
+                </div>
               </>
             )}
           </Notice>

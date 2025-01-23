@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
@@ -7,9 +7,12 @@ import book from '../assets/book.png'
 import readLogo from '../assets/read.png'
 import riddleLogo from '../assets/riddle.png'
 import popquiz from '../assets/popquiz.png'
+import gift from '../assets/gift.png'
 
 const Home = () => {
   const navigate = useNavigate();
+  const [style, setStyle] = useState({ transform: "scale(1)", opacity: 1 });
+  const [rotation, setRotation] = useState(0);
 
   // const handleButtonClick = (url) => {
   //   const accessToken = Cookies.get("accessToken");
@@ -24,7 +27,7 @@ const Home = () => {
   useEffect(() => {
     document.title = "ReadRiddle - Home";
   }, []);
-
+  
   const getCookie = (name) => {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
@@ -42,11 +45,28 @@ const Home = () => {
       navigate(url);
     }
   };
-
+  
+  useEffect(() => { const interval = setInterval(() => { setRotation((prev) => prev + 5);  }, 30); return () => clearInterval(interval);  }, []);
+  
   return (
     <HomeContainer>
       {/* <Header> */}
       <img className="image" alt="title" src={logo}/>
+      <a href="https://forms.gle/CA7SaahEhNMG7DUw8" style={{ textAlign: "center"}}>
+      <img
+        src={gift}
+        alt="React Animated"
+        style={{
+          width: "10%",
+          zIndex: '1000',
+          position: 'fixed',
+          marginTop: '-17%',
+          marginLeft: '33%',
+          transform: `rotate(${rotation}deg)`,
+          transition: "transform 10s linear",
+        }}
+      />
+    </a>
       <Content>
         <ButtonGroup>
           <ButtonHalf onClick={() => handleButtonClick("/read")}>
