@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { apiRequest, chatApiRequest, quizApiRequest }  from "../apiRequest";
+import { apiRequest, chatApiRequest, quizApiRequest,popquizApiRequest  }  from "../apiRequest";
 
 const AuthContext = createContext();
 
@@ -44,6 +44,14 @@ export const AuthProvider = ({ children }) => {
       );
 
       quizApiRequest.interceptors.request.use(
+        (config) => {
+          config.headers['Authorization'] = `Bearer ${accessToken}`;
+          return config;
+        },
+        (error) => Promise.reject(error)
+      );
+
+      popquizApiRequest.interceptors.request.use(
         (config) => {
           config.headers['Authorization'] = `Bearer ${accessToken}`;
           return config;

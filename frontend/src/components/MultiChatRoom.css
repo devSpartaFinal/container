@@ -1,8 +1,8 @@
 .chat-container {
     display: flex;
     flex-direction: column;
-    width: 70%;
-    height: 90%;
+    width: 90%;
+    height: 100%;
     padding: 20px;
     border-radius: 8px;
     background-color: transparent;
@@ -123,6 +123,8 @@
 
 .input-container {
     display: flex;
+    left: 20%;
+    width: 64.5%;
     gap: 1%;
     padding: 10px 0 0 0;
     position: sticky;

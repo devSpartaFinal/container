@@ -23,18 +23,28 @@ const MultiChatRoom = () => {
     const chatContainerRef = useRef(null);
     const wsUrl = "ws://localhost:8000/ws/chat/global_room/"; // 고정된 room_name
     // const wsUrl = "wss://api.letsreadriddle.com/ws/chat/global_room/";
+    const fetchScores = async () => {
 
-    useEffect(() => {
-        console.log("스코어 세팅")
-        const fetchScores = async () => {
+        try{
             console.log("패치 스코어")
             const response = await popquizApiRequest.get('/riddle-scores/');
-            const data = await response.json();
-            console.log("패치 스코어 데이터", data)
-            setUserScores(data);
-        };
+            console.log("패치 스코어 데이터", response.data)
+            setUserScores(response.data);
+        }
+        catch (error)
+        {
+            console.error("Error fetching sessions:", error);
+        }
+       
+    };
+
+    useEffect(() => {
         fetchScores();
-    }, [myusername]);
+
+        const interval = setInterval(fetchScores, 120000);
+    
+        return () => clearInterval(interval);
+      }, [isAnswer]);
 
     useEffect(() => {
         document.title = "ReadRiddle - MultiChat";
@@ -298,11 +308,16 @@ const MultiChatRoom = () => {
                 <div className="chat-room">
                 <div className="ranking-box">
                     <h2 style={{borderBottom: '1px solid white', width: '100%', padding: '2%', marginTop:'10%'}}>Riddle Rank</h2>
-                        <ul style={{listStyle:'none', marginLeft:'-15%'}}>
-                            {participants.map((participant, index) => (
-                                <li style={{textAlign: 'left', lineHeight: '2'}} key={index}>{participant}</li>
+                    <ul style={{ listStyle: 'none', marginLeft: '-15%' }}>
+                        {userScores
+                            .sort((a, b) => b.RiddleScore - a.RiddleScore) // 내림차순 정렬
+                            .map((user, index) => (
+                                <li style={{ textAlign: 'left', lineHeight: '2' }} key={index}>
+                                    {index + 1}위. {user.username} ({user.RiddleScore !== undefined ? user.RiddleScore : 'Score not found'}점)
+                                </li>
                             ))}
-                        </ul>
+                    </ul>
+
                     </div>
                 <div className="chat-box" ref={chatContainerRef}>
                     {messages.map((msg, index) => (
