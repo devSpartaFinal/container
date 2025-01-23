@@ -47,7 +47,7 @@ def chat_quiz():
             subjects: list[Subject]
 
         prompt = f"""
-        Make **12** 'Subject' about Programming Language and AI
+        Make **30** 'Subject' about programming algorithm
         'difficulty' is Hard
         `done' is false
         """
@@ -76,35 +76,37 @@ def chat_quiz():
 
     class ChatQuiz(BaseModel):
         description: str
-        choices: str
-        answer: int
+        code_snippet: str
+        answer: str
 
     prompt = f"""
-        **only in korean**
-        Generate questions related to programming languages and AI programming based on the given topic.
-        
-        Each ChatQuiz should include:
+            **only in korean**
 
-        Description: The content/explanation of the question.
-        Choices: 5-Multiple-choice options.
-        Answer: The correct answer, provided as a number
+            Generate 10 questions about topic.
+            question type is "code-based problems" or "conceptual knowledge"
+            **question is located only in last sentence**
+            **Do Not include answer in description**
+            include code in ```code``` format
+            **remove annotation in code snippet**
+            **Do Not include answer in code_snippet**
 
-        <description>
-        Include simple intoduction of the Topic
-        Include both conceptual knowledge and code-based problems. 
-        For code-related questions, include a code snippet in the Description
-        **remove annotation in code snippet**
-        **question is located only in last sentence**
-        **you should not include answer in description**
-        </description>
+            <conceptual knowledge>
+            description: concept or knowledge
+            code_snippet: code example
+            answer: short answer (maximum 3 word)
+            </conceptual knowledge>
 
+            <code-based problems>
+            description: answer code to fill blank
+            code_snippet: code with blank
+            answer: short code
+            </code-based problems>
 
-
-        <topic>
-        {selected_subject}
-        </topic>
-        **only in korean**
-        """
+            <topic>
+            {selected_subject}
+            </topic>
+            **only in korean**
+            """
 
     completion = client.beta.chat.completions.parse(
         model="gpt-4o",  # 조정 필요
@@ -118,6 +120,8 @@ def chat_quiz():
     quiz = completion.choices[0].message.parsed
     quiz_json = json.dumps(quiz.model_dump(), indent=2)
     quiz_dict = json.loads(quiz_json)
-    question = f"[POP RIDDLE] \n {quiz_dict['description']} \n {quiz_dict['choices']}"
+    question = (
+        f"[POP RIDDLE]\n{quiz_dict['description']}\n\n{quiz_dict['code_snippet']}"
+    )
     answer = str(quiz_dict["answer"])
     return question, answer
