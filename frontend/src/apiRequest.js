@@ -19,3 +19,10 @@ export const quizApiRequest = axios.create({
         "Content-Type": "application/json",
     },
 });
+
+export const popquizApiRequest = axios.create({
+    baseURL: 'http://localhost:8000/api/v1/chat',
+    headers: {
+        "Content-Type": "application/json",
+    },
+});

@@ -313,3 +313,16 @@ class ChatConsumer(AsyncWebsocketConsumer):
             "username": event["username"],
             "timestamp": event["timestamp"],
         }))
+        
+    async def get_all_users_riddle_scores(self, event):
+        # Django ORM 쿼리를 비동기로 실행
+        user_data = await sync_to_async(list)(User.objects.values('username', 'RiddleScore'))
+        # for user in user_data:
+        #     print(f"Username: {user['username']}, RiddleScore: {user['RiddleScore']}")
+        await self.send(text_data=json.dumps({
+            "type": "quiz_timeout",
+            "message": event["message"],
+            "username": event["username"],
+            "timestamp": event["timestamp"],
+        }))
+        return user_data

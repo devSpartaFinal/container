@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import "./MultiChatRoom.css";
 import ReactMarkdown from "react-markdown";
 import popquiz_width from '../assets/popquiz_width.png'
+import { popquizApiRequest } from '../apiRequest';
 
 const MultiChatRoom = () => {
     const myusername = localStorage.getItem("username");
@@ -16,11 +17,24 @@ const MultiChatRoom = () => {
     const [timeToSolveQuiz, setTimeToSolveQuiz] = useState(null); // 퀴즈 풀이 남은 시간
     const [isAnswer, setisAnswer] = useState(0);
     const [correctAnswerUser, setCorrectAnswerUser] = useState(null); // 정답 유저
+    const [userScores, setUserScores] = useState([]);
 
     const socket = useRef(null);
     const chatContainerRef = useRef(null);
     const wsUrl = "ws://localhost:8000/ws/chat/global_room/"; // 고정된 room_name
     // const wsUrl = "wss://api.letsreadriddle.com/ws/chat/global_room/";
+
+    useEffect(() => {
+        console.log("스코어 세팅")
+        const fetchScores = async () => {
+            console.log("패치 스코어")
+            const response = await popquizApiRequest.get('/riddle-scores/');
+            const data = await response.json();
+            console.log("패치 스코어 데이터", data)
+            setUserScores(data);
+        };
+        fetchScores();
+    }, [myusername]);
 
     useEffect(() => {
         document.title = "ReadRiddle - MultiChat";
