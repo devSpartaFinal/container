@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import "./MultiChatRoom.css";
 import ReactMarkdown from "react-markdown";
-import puzzlebook from '../assets/puzzlebook.png'
 import popquiz_width from '../assets/popquiz_width.png'
 
 const MultiChatRoom = () => {
@@ -344,15 +343,23 @@ const MultiChatRoom = () => {
                         </div>
                     ))}
                 </div>
-
-                    <div className="participants-box">
-                        <h2>👤참여자</h2>
+                <div className="right-box">
+                    <div className="ranking-box">
+                    <h2 style={{marginTop:'5%', borderRadius:'5px', boxShadow:'inset 0px 0px 8px rgba(0, 0, 0, 0.2)'}}>🏅랭킹🎖️</h2>
                         <ul>
-                            {participants.map((participant, index) => (
-                                <li key={index}>{participant}</li>
-                            ))}
+                                <li>
+                                </li>
                         </ul>
                     </div>
+                    <div className="participants-box">
+                            <h2 style={{marginTop:'5%'}}>👤참여자</h2>
+                            <ul>
+                                {participants.map((participant, index) => (
+                                    <li key={index}>{participant}</li>
+                                ))}
+                            </ul>
+                        </div>
+                </div>
                 </div>
                 <div className="input-container">
                     <input
