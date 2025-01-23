@@ -96,3 +96,33 @@ export const ActionButton = styled.button`
     transform: scale(0.98);
   }
 `;
+
+export const Modal = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+`;
+
+export const ModalOverlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+`;
+
+export const ModalContent = styled.div`
+  background: #E8E3DC;
+  padding: 20px;
+  border-radius: 8px;
+  z-index: 1001;
+  width: 80%;
+  max-width: 500px;
+`;
