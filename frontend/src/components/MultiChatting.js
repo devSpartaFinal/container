@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import "./MultiChatRoom.css";
 import ReactMarkdown from "react-markdown";
-import puzzlebook from '../assets/puzzlebook.png'
 import popquiz_width from '../assets/popquiz_width.png'
 
 const MultiChatRoom = () => {
@@ -262,7 +261,7 @@ const MultiChatRoom = () => {
 
     return (
             <div className="chat-container">
-                <div className="pop-quiz-display">
+                <div className="pop-quiz-display" style={{color:'black'}}>
                     {popQuizMessage === "POP QUIZ!" ? (
                     <div style={{
                             display: 'flex',
@@ -283,6 +282,14 @@ const MultiChatRoom = () => {
                     )}
                 </div>
                 <div className="chat-room">
+                <div className="ranking-box">
+                    <h2 style={{borderBottom: '1px solid white', width: '100%', padding: '2%', marginTop:'10%'}}>Riddle Rank</h2>
+                        <ul style={{listStyle:'none', marginLeft:'-15%'}}>
+                            {participants.map((participant, index) => (
+                                <li style={{textAlign: 'left', lineHeight: '2'}} key={index}>{participant}</li>
+                            ))}
+                        </ul>
+                    </div>
                 <div className="chat-box" ref={chatContainerRef}>
                     {messages.map((msg, index) => (
                         <div
@@ -344,15 +351,14 @@ const MultiChatRoom = () => {
                         </div>
                     ))}
                 </div>
-
                     <div className="participants-box">
-                        <h2>👤참여자</h2>
-                        <ul>
-                            {participants.map((participant, index) => (
-                                <li key={index}>{participant}</li>
-                            ))}
-                        </ul>
-                    </div>
+                            <h2 style={{marginTop:'4%', padding: '2%'}}>Users</h2>
+                            <ul>
+                                {participants.map((participant, index) => (
+                                    <li key={index}>{participant}</li>
+                                ))}
+                            </ul>
+                        </div>
                 </div>
                 <div className="input-container">
                     <input

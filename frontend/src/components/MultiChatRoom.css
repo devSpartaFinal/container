@@ -4,9 +4,8 @@
     width: 70%;
     height: 90%;
     padding: 20px;
-    border: 1px solid #ccc;
     border-radius: 8px;
-    background-color: #f9f9f9;
+    background-color: transparent;
     margin-left: 5%;
     padding-bottom: 1%;
     overflow: hidden;
@@ -36,19 +35,35 @@
     overflow: hidden;
 }
 
+.right-box {
+    flex: 2; /* 참여자 목록 영역의 비율 */
+}
+
+.ranking-box {
+    flex: 2.5;
+    height: 30%;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #D26E6E, #B94646);
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+    padding-left: 1%;
+    padding-right: 2%;
+    height: 100%;
+    color: white;
+
+}
+
 .participants-box {
     flex: 2; /* 참여자 목록 영역의 비율 */
-    border: 2px solid #000000;
+    /* border: 2px solid #000000; */
     border-radius: 8px;
     padding: 1%;
-    color: #000000;
-    background-color: rgb(255, 255, 255);
-    border-bottom: 2px solid #000000;
+    color: white;
+    background-color: #61b3bb;
 }
 
 .participants-box h2 {
     font-size: 1.5em;
-    border-bottom: 1px solid #3a3a3a; 
+    border-bottom: 1px solid white;
     margin-bottom: 5%;
 }
 
@@ -65,15 +80,31 @@
 
 .chat-box {
     flex: 10; /* 채팅 메시지 영역의 비율 */
-    border: 1px solid #ddd;
     border-radius: 8px;
     padding: 1%;
-    background-color:#53c5d0;
+    background-color: rgba(255, 255, 255, 0.3); /* 수정: rgba() */
     /* background: linear-gradient(135deg, #53c5d0, #31787e); */
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow-y: auto; /* 수직 스크롤 */
+    overflow-x: hidden; /* 수평 스크롤 숨김 */
     position: relative;
-}
+  }
+  
+  /* 스크롤바 스타일 */
+  .chat-box::-webkit-scrollbar {
+    width: 10px; /* 세로 스크롤바 너비 */
+    height: 10px; /* 가로 스크롤바 높이 */
+  }
+  
+  .chat-box::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px; /* 둥근 모서리 */
+  }
+  
+  .chat-box::-webkit-scrollbar-thumb {
+    background: #888; /* 핸들 색상 */
+    border-radius: 10px; /* 둥근 모서리 */
+  }
+  
 
 .chat-message {
     margin-bottom: 1%;
