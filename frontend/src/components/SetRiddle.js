@@ -50,7 +50,7 @@ const SetRiddle = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedTitle, setSelectedTitle] = useState(null);
   const [selectedTitleIndex, setSelectedTitleIndex] = useState(null);
-  const [selectedKeyword, setSelectedKeyword] = useState("");
+  const [selectedKeyword, setSelectedKeyword] = useState(null);
   const [selectedSummary, setSelectedSummary] = useState(null);
   const [selectedQuestions, setSelectedQuestions] = useState([]);
   const [quizCount, setQuizCount] = useState(5);
@@ -264,14 +264,14 @@ const SetRiddle = () => {
 
   const selectCategory = (category) => {
     setSelectedCategory(category);
-    setSelectedKeyword("");
+    setSelectedKeyword(null);
     setSelectedTitle(null);
     setIsDropdownOpen1(false);
   };
 
   const selectTitle = (titleText, titleId) => {
     setSelectedTitle(titleText);
-    setSelectedKeyword("");
+    setSelectedKeyword(null);
     setSelectedTitleIndex(titleId);
     setIsDropdownOpen2(false);
   };
@@ -508,7 +508,7 @@ const SetRiddle = () => {
                     <h3> Keyword </h3>
                     <input
                       type="text"
-                      placeholder="Keyword of the document"
+                      placeholder=""
                       value={selectedKeyword} 
                       onChange={(e) => setSelectedKeyword(e.target.value)} 
                       style={{
@@ -654,13 +654,12 @@ const SetRiddle = () => {
               <ButtonContainer>
               <Button 
                 onClick={(e) => {
-                  if (selectedKeyword === "") {
-                    alert("키워드를 먼저 선택해 주세요!");
+                  if (selectedCategory === "OFFICIAL_DOCS" && !selectedKeyword) {
+                    alert("공식문서의 경우 관련 키워드를 입력해주세요!");
                     return;
                   }
                   handleGenerateQuiz(e);
                 }} 
-                disabled={selectedKeyword === ""}
               >
                   <span
                     style={{
