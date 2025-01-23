@@ -60,13 +60,13 @@ const MultiChatRoom = () => {
                 setisAnswer(1); // 정답 입력으로 변경
                 setCorrectAnswerUser(data.username);
             }
-            // else if (data.type === "quiz_active_check") {
-            //     setPopQuizActive(data.quiz_status);  // 서버에서 받은 pop_quiz_active 값을 상태로 설정
-            // }
             else if (data.type === "quiz_broadcast") {
                 setMessages((prevMessages) => [...prevMessages, data]);
             }
             else if (data.type === "quiz_intro") {
+                setMessages((prevMessages) => [...prevMessages, data]);
+            }
+            else if (data.type === "quiz_timeout") {
                 setMessages((prevMessages) => [...prevMessages, data]);
             }
             else if (data.type === "quiz_update") {
@@ -109,7 +109,7 @@ const MultiChatRoom = () => {
         
         const now = new Date();
         const minutes = now.getMinutes();
-        let nextQuizMinutes = Math.ceil((minutes + 0.1) / 3) * 3; // 5의 배수를 정확히 넘기기 위해 0.1 추가
+        let nextQuizMinutes = Math.ceil((minutes + 0.1) / 2) * 2; // 5의 배수를 정확히 넘기기 위해 0.1 추가
         if (nextQuizMinutes === 60) { // 60분인 경우는 시간을 넘기고 분은 0으로 초기화
             now.setHours(now.getHours() + 1);
             nextQuizMinutes = 0;
@@ -142,13 +142,15 @@ const MultiChatRoom = () => {
             setPopQuizTimeLeft(null);
             console.log("퀴즈 생성")
             console.log("isAnswer : " + isAnswer)
-            setTimeToSolveQuiz(120);
+            setTimeToSolveQuiz(90);
             // 서버에 POP QUIZ 활성화 알림 전송
             if (socket.current && socket.current.readyState === WebSocket.OPEN) {
+                const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
                 socket.current.send(
                     JSON.stringify({
                         type: "pop_quiz_active", // 새로운 메시지 타입
                         active: true, // POP QUIZ 활성화 상태
+                        timestamp: timestamp,
                     })
                 );
                 setPopQuizActive(true);
@@ -156,21 +158,23 @@ const MultiChatRoom = () => {
         }
         else
         {
-            setPopQuizMessage(" 다음 POP QUIZ까지");
+            setPopQuizMessage(" 다음 POP QUIZ까지 남은시간: ");
             setPopQuizActive(false);
         }
 
         if (isAnswer === 1) {
             setisAnswer(0); // 정답 입력 상태 초기화
             setTimeToSolveQuiz(0);
-            console.log("정답 입력1")
+            console.log("정답 입력")
             console.log("timeToNextQuiz : " + timeToNextQuiz)
             // 서버에 POP QUIZ 비활성화 알림 전송
             if (socket.current && socket.current.readyState === WebSocket.OPEN) {
+                const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
                 socket.current.send(
                     JSON.stringify({
                         type: "pop_quiz_active",
                         active: false,
+                        timestamp: timestamp,
                     })
                 );
                 setPopQuizActive(false);
@@ -192,26 +196,33 @@ const MultiChatRoom = () => {
 
         const interval = setInterval(() => {
             setTimeToSolveQuiz((prev) => {
-                if (prev > 0) {
-                    console.log("퀴즈시간 감소")
+                console.log("퀴즈시간 감소")
+                console.log("timeToSolveQuiz : " + timeToSolveQuiz)
+                if (prev <= 2) {
+                    console.log("제한시간 종료")
                     console.log("timeToSolveQuiz : " + timeToSolveQuiz)
-                    if (prev === 1) {
-                        console.log("제한시간 종료")
-                        console.log("timeToSolveQuiz : " + timeToSolveQuiz)
-                        setPopQuizActive(false);
-                        // 서버에 POP QUIZ 비활성화 알림 전송
-                        if (socket.current && socket.current.readyState === WebSocket.OPEN) {
-                            socket.current.send(
-                                JSON.stringify({
-                                    type: "pop_quiz_active",
-                                    active: false,
-                                })
-                            );
-                        }
-                        updatePopQuizStatus();
+                    setPopQuizActive(false);
+                    // 서버에 POP QUIZ 비활성화 알림 전송
+                    if (socket.current && socket.current.readyState === WebSocket.OPEN) {
+                        const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+                        socket.current.send(
+                            JSON.stringify({
+                                type: "pop_quiz_active",
+                                active: false,
+                                timestamp: timestamp,
+                            })
+                        );
+                        socket.current.send(
+                            JSON.stringify({
+                                type: "pop_quiz_timeout",
+                                timestamp: timestamp,
+                            })
+                        );
                     }
-                    return prev - 1; // 매 초마다 1초 감소
+                    updatePopQuizStatus();
+                    return 0;
                 }
+                return prev - 1; // 매 초마다 1초 감소
             });
         }, 1000);
         
@@ -253,20 +264,21 @@ const MultiChatRoom = () => {
             <div className="chat-container">
                 <div className="pop-quiz-display">
                     {popQuizMessage === "POP QUIZ!" ? (
-                    <div>
-                        {/* <h1 className="header">{popQuizMessage}
-                        <img className="image2" alt="read" src={puzzlebook} style={{marginBottom: '0%', width: '7%', display:'inline-block'}} />
-                        </h1> */}
-                        <img className="image5" alt="" src={popquiz_width} style={{marginBottom: '-1%', width: '10%', height: '10%'}} />
-                        <p>남은 시간 : {timeToSolveQuiz !== null ? formatTime(timeToSolveQuiz) : "시간 종료"} </p>
+                    <div style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                        }}>
+                        <img className="image5" alt="" src={popquiz_width} style={{marginBottom: '-1%', width: '15%', height: '15%'}} />
+                        <h3>남은 시간 : {timeToSolveQuiz !== null ? formatTime(timeToSolveQuiz) : "시간 종료"} </h3>
                     </div>
                     ) : (
                     <div>
-                        <h2>
-                        <img className="image5" alt="" src={popquiz_width} style={{marginBottom: '-1%', width: '10%', height: '10%'}} />
-                        {popQuizMessage}{" "}
-                        <strong>{popQuizTimeLeft !== null ? formatTime(popQuizTimeLeft - 1) : "0분 0초"}</strong> 남았습니다.
-                        </h2>
+                        <h3>{popQuizMessage}
+                        <strong>{popQuizTimeLeft !== null ? formatTime(popQuizTimeLeft - 1) : "0분 0초"}</strong>
+                        {/* <img className="image5" alt="" src={puzzlebook} style={{marginBottom: '-1%', width: '10%', height: '10%'}} /> */}
+                        </h3>
                     </div>
                     )}
                 </div>
@@ -348,9 +360,15 @@ const MultiChatRoom = () => {
                         value={message}
                         placeholder="메시지를 입력하세요..."
                         onChange={(e) => setMessage(e.target.value)}
-                        onKeyPress={(e) => e.key === "Enter" && sendMessage()}
+                        onKeyPress={(e) => {
+                            if (e.key === "Enter" && message.trim() !== "") {
+                                sendMessage();
+                            }
+                        }}
                     />
-                    <button onClick={sendMessage}>전송</button>
+                    <button onClick={() => {if (message.trim() !== "") {sendMessage();}}}>
+                        전송
+                    </button>
                 </div>
             </div>
     );

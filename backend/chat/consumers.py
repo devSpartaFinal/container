@@ -57,6 +57,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if data["type"] == "pop_quiz_active":
         # 클라이언트에서 POP QUIZ 활성화 메시지 수신
             ChatConsumer.pop_quiz_active = data["active"]
+            timestamp = data['timestamp']
             print(f"POP QUIZ active state updated: {ChatConsumer.pop_quiz_active}")
             
             # 퀴즈 브로드캐스트
@@ -67,14 +68,29 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         "type": "quiz_broadcast",
                         "message": ChatConsumer.question,
                         "username": "ReadRiddle",
+                        'timestamp': timestamp,
                     }
                 )
                 await self.channel_layer.group_send(
                     self.room_group_name,
                     {
                         "type": "quiz_intro",
-                        "message": "문제의 보기 번호를 정답으로 입력하세요!",
+                        "message": "정답은 단답형입니다. (띄어쓰기, 대소문자 구분 X)",
                         "username": "ReadRiddle",
+                        'timestamp': timestamp,
+                    }
+                )
+            return
+        
+        if data["type"] == "pop_quiz_timeout":
+            timestamp = data['timestamp']
+            await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        "type": "quiz_timeout",
+                        "message": f"🔔---------제한시간 종료!---------🔔 \n 정답은 {ChatConsumer.quiz_answer} 였습니다.",
+                        "username": "ReadRiddle",
+                        'timestamp': timestamp,
                     }
                 )
             return
@@ -84,10 +100,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
             username = data.get('myusername', '익명')  # 유저 이름이 없으면 '익명' 처리
             timestamp = data['timestamp']
             print(f"Teddy : 팝퀴즈 관련정보: {ChatConsumer.pop_quiz_active} and {message}")
+            input_answer = message.replace(" ", "").lower()
+            real_answer = ChatConsumer.quiz_answer.replace(" ", "").lower()
+            print(f"Teddy : 팝퀴즈 정답비교: {input_answer} ?= {real_answer}")
             # POP QUIZ 정답 처리
-            if ChatConsumer.pop_quiz_active and message == ChatConsumer.quiz_answer:
+            if ChatConsumer.pop_quiz_active and message.replace(" ", "").lower() == ChatConsumer.quiz_answer.replace(" ", "").lower():
                 print("\nTeddy : 정답!\n")
                 ChatConsumer.pop_quiz_active = False  # POP QUIZ 비활성화
+                # 정답을 맞춘 유저 점수 증가
+                user = await sync_to_async(User.objects.get)(username=username)
+                user.RiddleScore += 10  # RiddleScore 10 증가
+                await sync_to_async(user.save)()  # 변경사항 저장
+                print(user.username, "님의 RiddleScore가 10 증가하였습니다.")
                 
                 # 정답 입력
                 await self.channel_layer.group_send(
@@ -105,7 +129,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     self.room_group_name,
                     {
                         "type": "pop_quiz_result",
-                        "message": f"{username}님이 정답을 맞췄습니다!",
+                        "message": f"{username}님 정답!! \n Riddle Score +10점을 획득했습니다! 💯💯",
                         "username": "ReadRiddle",
                         "timestamp": timestamp,
                     },
@@ -151,14 +175,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     'participants': list(self.channel_layer.participants),
                 }
             )
-            # quiz_active_check 동기화
-            # await self.channel_layer.group_send(
-            #     self.room_group_name,
-            #     {
-            #         'type': 'quiz_active_check',
-            #         'quiz_status': ChatConsumer.pop_quiz_active,
-            #     }
-            # )
             
         elif data["type"] == "leave":
             # 클라이언트가 보낸 leave 메시지 처리
@@ -264,7 +280,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 "type": "quiz_broadcast",
                 "message": event["message"],
                 "username": event["username"],
-                # "timestamp": event["timestamp"],
+                "timestamp": event["timestamp"],
             }))
     
     async def quiz_intro(self, event):
@@ -272,7 +288,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 "type": "quiz_intro",
                 "message": event["message"],
                 "username": event["username"],
-                # "timestamp": event["timestamp"],
+                "timestamp": event["timestamp"],
             }))
     
     async def quiz_update(self, event):
@@ -287,4 +303,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             "type": "assign_owner",
             "new_owner": event["new_owner"],
+        }))
+    
+    async def quiz_timeout(self, event):
+        # 그룹 메시지를 수신하여 클라이언트로 전송
+        await self.send(text_data=json.dumps({
+            "type": "quiz_timeout",
+            "message": event["message"],
+            "username": event["username"],
+            "timestamp": event["timestamp"],
         }))
