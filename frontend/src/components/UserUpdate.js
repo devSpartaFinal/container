@@ -66,7 +66,7 @@ const UpdateProfile = () => {
             <Title>회원 정보 수정</Title>
             <Form onSubmit={handleSubmit}>
                 {/* ID */}
-                {formData.is_social && (
+                {/* {!user?.is_social && (
                     <FieldContainer>
                         <Label htmlFor="username">ID</Label>
                         <Input
@@ -78,7 +78,7 @@ const UpdateProfile = () => {
                             placeholder="Enter your ID"
                         />
                     </FieldContainer>
-                )}
+                )} */}
 
                 {/* Nickname */}
                 <FieldContainer>
