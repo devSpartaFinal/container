@@ -74,6 +74,7 @@ export const AuthProvider = ({ children }) => {
             last_login: userData.last_login,
             created_at: userData.created_at,
             is_social: userData.is_social,
+            riddle_score: userData.RiddleScore
           });
         } catch (err) {
           console.error("Failed to load user data:", err);
