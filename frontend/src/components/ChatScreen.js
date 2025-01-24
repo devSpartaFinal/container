@@ -578,7 +578,7 @@ const ChatScreen = () => {
             </Chat>
           </CenterContainer>
   
-          <PlusButton
+          {/* <PlusButton
             icon={faSquarePlus}
             size="2x"
             disabled={loading || !selectedCategory || !selectedTitle}
@@ -590,7 +590,7 @@ const ChatScreen = () => {
               setSessionNo(null);
             }}
             style={{cursor: (loading || !selectedCategory || !selectedTitle) ? 'not-allowed' : 'pointer'}}
-          />
+          /> */}
         </ChatScreenContainer>
       </HomeContainer>
   
