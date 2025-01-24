@@ -268,7 +268,7 @@ const MultiChatRoom = () => {
         }, 1000);
         
         return () => clearInterval(interval); // 컴포넌트 언마운트 시 정리
-    }, [popQuizActive, timeToSolveQuiz]);
+    }, [popQuizActive]);
 
     const formatTime = (seconds) => {
         const mins = Math.floor(seconds / 60);
