@@ -49,7 +49,24 @@
     padding-right: 2%;
     height: 100%;
     color: white;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
 
+/* 스크롤바 스타일 */
+.ranking-box::-webkit-scrollbar {
+width: 10px; /* 세로 스크롤바 너비 */
+height: 10px; /* 가로 스크롤바 높이 */
+}
+
+.ranking-box::-webkit-scrollbar-track {
+background: #f1f1f1;
+border-radius: 10px; /* 둥근 모서리 */
+}
+
+.ranking-box::-webkit-scrollbar-thumb {
+background: #888; /* 핸들 색상 */
+border-radius: 10px; /* 둥근 모서리 */
 }
 
 .participants-box {

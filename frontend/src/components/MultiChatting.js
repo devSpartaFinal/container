@@ -219,33 +219,35 @@ const MultiChatRoom = () => {
 
         const interval = setInterval(() => {
             setTimeToSolveQuiz((prev) => {
-                console.log("퀴즈시간 감소")
-                console.log("timeToSolveQuiz : " + timeToSolveQuiz)
-                if (prev <= 2) {
-                    console.log("제한시간 종료")
+                if (prev > 0) {
+                    console.log("퀴즈시간 감소")
                     console.log("timeToSolveQuiz : " + timeToSolveQuiz)
-                    setPopQuizActive(false);
-                    // 서버에 POP QUIZ 비활성화 알림 전송
-                    if (socket.current && socket.current.readyState === WebSocket.OPEN) {
-                        const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
-                        socket.current.send(
-                            JSON.stringify({
-                                type: "pop_quiz_active",
-                                active: false,
-                                timestamp: timestamp,
-                            })
-                        );
-                        socket.current.send(
-                            JSON.stringify({
-                                type: "pop_quiz_timeout",
-                                timestamp: timestamp,
-                            })
-                        );
+                    if (prev <= 1) {
+                        console.log("제한시간 종료")
+                        console.log("timeToSolveQuiz : " + timeToSolveQuiz)
+                        setPopQuizActive(false);
+                        // 서버에 POP QUIZ 비활성화 알림 전송
+                        if (socket.current && socket.current.readyState === WebSocket.OPEN) {
+                            const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+                            socket.current.send(
+                                JSON.stringify({
+                                    type: "pop_quiz_active",
+                                    active: false,
+                                    timestamp: timestamp,
+                                })
+                            );
+                            socket.current.send(
+                                JSON.stringify({
+                                    type: "pop_quiz_timeout",
+                                    timestamp: timestamp,
+                                })
+                            );
+                        }
+                        updatePopQuizStatus();
+                        return 0;
                     }
-                    updatePopQuizStatus();
-                    return 0;
+                    return prev - 1; // 매 초마다 1초 감소
                 }
-                return prev - 1; // 매 초마다 1초 감소
             });
         }, 1000);
         
