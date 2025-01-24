@@ -293,8 +293,8 @@ const MultiChatRoom = () => {
                             justifyContent: 'center',
                             alignItems: 'center',
                         }}>
-                        <img className="image5" alt="" src={popquiz_width} style={{marginBottom: '-1%', width: '15%', height: '15%'}} />
-                        <h3>남은 시간 : {timeToSolveQuiz !== null ? formatTime(timeToSolveQuiz) : "시간 종료"} </h3>
+                        <img className="image5" alt="" src={popquiz_width} style={{marginBottom: '-1%', width: '12%', height: '12%'}} />
+                        <p>남은 시간 : {timeToSolveQuiz !== null ? formatTime(timeToSolveQuiz) : "시간 종료"} </p>
                     </div>
                     ) : (
                     <div>

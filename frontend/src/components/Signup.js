@@ -60,9 +60,9 @@ const Signup = () => {
   };
 
   const validateUsername = (username) => {
-    const usernameRegex = /^[a-zA-Z0-9!^*]+$/;
+    const usernameRegex = /^[a-zA-Z0-9]+$/;
     if (!usernameRegex.test(username)) {
-      return "ID는 영문, 숫자, 또는 특수기호(!, ^, *)만 포함할 수 있습니다.";
+      return "ID는 특수문자를 포함할 수 없습니다.";
     }
     return "";
   };
@@ -81,12 +81,6 @@ const Signup = () => {
     if (!/[0-9]/.test(password)) {
       passwordErrors.push("비밀번호는 숫자를 포함해야 합니다.");
     }
-
-    // const specialCharRegex = /[!^*]/;
-    // if (specialCharRegex.test(password) && !/[!^*]/.test(password)) {
-    //   passwordErrors.push("비밀번호는 특수기호(!, ^, *)를 포함할 수 있습니다.");
-    // }
-
     return passwordErrors;
   };
 
@@ -154,7 +148,7 @@ const Signup = () => {
               name="username"
               value={formData.username}
               onChange={handleChange}
-              placeholder="ID는 영문, 숫자, 특수기호(!, ^, *)만 포함할 수 있습니다"
+              placeholder="ID는 특수문자를 포함할 수 없습니다."
               required
             />
             {error.username && <p style={{ color: "red" }}>{error.username}</p>}

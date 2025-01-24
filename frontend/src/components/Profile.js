@@ -98,6 +98,19 @@ const Profile = () => {
                 <Value>{new Date(user.created_at).toLocaleDateString("ko-KR")}</Value>
               </Field>
               <Field>
+                <Label style={{ marginTop: "8%"}}>Riddle Rank:</Label>
+                <Value>
+                  <img
+                    src={renderRiddleRankIcon(user.riddle_score)}
+                    alt="Rank Icon"
+                    style={{
+                      width: "60px",
+                      marginBottom: "5%",
+                    }}
+                  />
+                </Value>
+              </Field>
+              <Field>
                 <Label>
                   <span
                     style={{ cursor: "pointer", color: " #ea3a53", textDecoration: "underline" }}
@@ -107,19 +120,6 @@ const Profile = () => {
                   </span>
                 </Label>
                 <Value>{user.riddle_score}</Value>
-              </Field>
-              <Field>
-                <Label style={{ marginTop: "8%"}}>Riddle Rank:</Label>
-                <Value>
-                  <img
-                    src={renderRiddleRankIcon(user.riddle_score)}
-                    alt="Rank Icon"
-                    style={{
-                      width: "40px",
-                      marginBottom: "5%",
-                    }}
-                  />
-                </Value>
               </Field>
             </ProfileBody>
             <ButtonContainer>
