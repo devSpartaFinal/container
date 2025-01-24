@@ -92,9 +92,9 @@ def chat_quiz():
             </conceptual knowledge>
 
             <code-based problems>
-            description: ask the result of code execution. Do not include example in description.
+            description: ask the result of code execution. Do not include example in description. 
             code_snippet: **only include code**
-            answer: the result of code execution
+            answer: the result of code execution. if the answer is a number, it must be greater than 10.
             spawn Probability: 80%
             </code-based problems>
 
