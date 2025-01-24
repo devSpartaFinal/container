@@ -4,6 +4,9 @@ import "./MultiChatRoom.css";
 import ReactMarkdown from "react-markdown";
 import popquiz_width from '../assets/popquiz_width.png'
 import { popquizApiRequest } from '../apiRequest';
+import { TbLaurelWreath1 } from "react-icons/tb";
+import { TbLaurelWreath2 } from "react-icons/tb";
+import { TbLaurelWreath3 } from "react-icons/tb";
 
 const MultiChatRoom = () => {
     const myusername = localStorage.getItem("username");
@@ -37,6 +40,19 @@ const MultiChatRoom = () => {
         }
        
     };
+
+    const getMedalIcon = (rank) => {
+        switch (rank) {
+          case 1:
+            return <TbLaurelWreath1 style={{ color: 'gold' }} />;
+          case 2:
+            return <TbLaurelWreath2 style={{ color: 'silver' }} />;
+          case 3:
+            return <TbLaurelWreath3 style={{ color: '#cd7f32' }} />;  
+          default:
+            return `${rank}위`; 
+        }
+      };
 
     useEffect(() => {
         fetchScores();
@@ -246,7 +262,7 @@ const MultiChatRoom = () => {
                         updatePopQuizStatus();
                         return 0;
                     }
-                    return prev - 1; // 매 초마다 1초 감소
+                    return prev - 1;
                 }
             });
         }, 1000);
@@ -311,14 +327,24 @@ const MultiChatRoom = () => {
                 <div className="ranking-box">
                     <h2 style={{borderBottom: '1px solid white', width: '100%', padding: '2%', marginTop:'10%'}}>Riddle Rank</h2>
                     <ul style={{ listStyle: 'none', marginLeft: '-15%' }}>
-                        {userScores
-                            .sort((a, b) => b.RiddleScore - a.RiddleScore) // 내림차순 정렬
-                            .map((user, index) => (
-                                <li style={{ textAlign: 'left', lineHeight: '2' }} key={index}>
-                                    {index + 1}위. {user.username} ({user.RiddleScore !== undefined ? user.RiddleScore : 'Score not found'}점)
-                                </li>
-                            ))}
+                    {userScores
+                        .sort((a, b) => b.RiddleScore - a.RiddleScore)
+                        .reduce((acc, user, index, arr) => {
+                        if (index === 0 || user.RiddleScore !== arr[index - 1].RiddleScore) {
+                            user.rank = acc.length + 1;
+                        } else {
+                            user.rank = acc[acc.length - 1].rank;
+                        }
+                        acc.push(user);
+                        return acc;
+                        }, [])
+                        .map((user, index) => (
+                        <li style={{ textAlign: 'left', lineHeight: '2' }} key={index}>
+                            {getMedalIcon(user.rank)} {user.username} ({user.RiddleScore !== undefined ? user.RiddleScore : 'Score not found'}점)
+                        </li>
+                        ))}
                     </ul>
+
 
                     </div>
                 <div className="chat-box" ref={chatContainerRef}>
