@@ -412,7 +412,7 @@ const MultiChatRoom = () => {
                                     }}
                                 />
 
-                                 ({user.RiddleScore !== undefined ? user.RiddleScore : 'Score not found'}점)
+                                 ({user.RiddleScore !== undefined ? user.RiddleScore : 'Score not found'})
 
                                 
                             </li>
