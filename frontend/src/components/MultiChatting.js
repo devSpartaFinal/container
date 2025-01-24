@@ -395,7 +395,7 @@ const MultiChatRoom = () => {
                             }, [])
                             .map((user, index) => (
                             <li
-                                style={{ textAlign: 'left', lineHeight: '2', cursor: 'pointer', color: 'blue'}} 
+                                style={{ textAlign: 'left', lineHeight: '2', cursor: 'pointer', color: 'white'}} 
                                 key={index}
                                 onClick={() => handleUsernameClick(user.username)}
                             >
