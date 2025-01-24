@@ -3,10 +3,33 @@ import { useLocation } from "react-router-dom";
 import "./MultiChatRoom.css";
 import ReactMarkdown from "react-markdown";
 import popquiz_width from '../assets/popquiz_width.png'
-import { popquizApiRequest } from '../apiRequest';
+import { popquizApiRequest, apiRequest } from '../apiRequest';
 import { TbLaurelWreath1 } from "react-icons/tb";
 import { TbLaurelWreath2 } from "react-icons/tb";
 import { TbLaurelWreath3 } from "react-icons/tb";
+import {
+    ProfileContainer,
+    ProfileBody,
+    ProfileHeader,
+    ProfileCard,
+    Nickname,
+    Avatar,
+    ActionButton,
+    Label,
+    Field,
+    Value,
+    Name,
+    ButtonContainer,
+    Modal,
+    ModalContent,
+    ModalOverlay,
+  } from "../styled/ProfileStyles";
+import master from "../assets/master.png";
+import bronze from "../assets/bronze.png";
+import silver from "../assets/silver.png";
+import sapphire from "../assets/sapphire.png";
+import ruby from "../assets/ruby.png";
+import gold from "../assets/gold.png";
 
 const MultiChatRoom = () => {
     const myusername = localStorage.getItem("username");
@@ -21,6 +44,12 @@ const MultiChatRoom = () => {
     const [isAnswer, setisAnswer] = useState(0);
     const [correctAnswerUser, setCorrectAnswerUser] = useState(null); // 정답 유저
     const [userScores, setUserScores] = useState([]);
+    const [userInfo, setUserInfo] = useState(null); 
+    const [isModalOpen, setModalOpen] = useState(false); 
+
+    const toggleModal = () => {
+        setModalOpen(!isModalOpen);
+      };
 
     const socket = useRef(null);
     const chatContainerRef = useRef(null);
@@ -40,6 +69,25 @@ const MultiChatRoom = () => {
         }
        
     };
+
+    const handleUsernameClick = async (username) => {
+        try {
+          const response = await apiRequest.get(`/${username}`);
+          setUserInfo(response.data);
+          setModalOpen(true);
+        } catch (error) {
+          console.error("사용자 정보를 가져오는 중 오류가 발생했습니다.", error);
+        }
+      };
+
+      const renderRiddleRankIcon = (score) => {
+        if (score < 1301) return bronze;
+        if (score < 1401) return silver;
+        if (score < 1501) return gold;
+        if (score < 1701) return sapphire;
+        if (score < 2001) return ruby;
+        return master;
+      };
 
     const getMedalIcon = (rank) => {
         switch (rank) {
@@ -334,26 +382,98 @@ const MultiChatRoom = () => {
                 <div className="ranking-box">
                     <h2 style={{borderBottom: '1px solid white', width: '100%', padding: '2%', marginTop:'10%'}}>Riddle Rank</h2>
                     <ul style={{ listStyle: 'none', marginLeft: '-15%' }}>
-                    {userScores
-                        .sort((a, b) => b.RiddleScore - a.RiddleScore)
-                        .reduce((acc, user, index, arr) => {
-                        if (index === 0 || user.RiddleScore !== arr[index - 1].RiddleScore) {
-                            user.rank = acc.length + 1;
-                        } else {
-                            user.rank = acc[acc.length - 1].rank;
-                        }
-                        acc.push(user);
-                        return acc;
-                        }, [])
-                        .map((user, index) => (
-                        <li style={{ textAlign: 'left', lineHeight: '2' }} key={index}>
-                            {getMedalIcon(user.rank)} {user.username} ({user.RiddleScore !== undefined ? user.RiddleScore : 'Score not found'}점)
-                        </li>
-                        ))}
-                    </ul>
+                        {userScores
+                            .sort((a, b) => b.RiddleScore - a.RiddleScore)
+                            .reduce((acc, user, index, arr) => {
+                            if (index === 0 || user.RiddleScore !== arr[index - 1].RiddleScore) {
+                                user.rank = acc.length + 1;
+                            } else {
+                                user.rank = acc[acc.length - 1].rank;
+                            }
+                            acc.push(user);
+                            return acc;
+                            }, [])
+                            .map((user, index) => (
+                            <li
+                                style={{ textAlign: 'left', lineHeight: '2', cursor: 'pointer', color: 'blue'}} 
+                                key={index}
+                                onClick={() => handleUsernameClick(user.username)}
+                            >
+                                {getMedalIcon(user.rank)}
+                                <span style={{ marginLeft: "10px" }}>{user.username}</span>
+                                 
+                                 <img
+                                    src={renderRiddleRankIcon(user.RiddleScore)}
+                                    alt="Rank Icon"
+                                    style={{
+                                    marginLeft: "10px",
+                                    width: "20px",
+                                    marginBottom: "-2%",
+                                    }}
+                                />
 
+                                 ({user.RiddleScore !== undefined ? user.RiddleScore : 'Score not found'}점)
+
+                                
+                            </li>
+                            ))}
+                        </ul>
 
                     </div>
+
+                    {isModalOpen && (
+                              <Modal>
+                                <ModalOverlay onClick={toggleModal} />
+                                <ModalContent>
+                                <ProfileHeader>
+                                              <Avatar>{userInfo.username.charAt(0).toUpperCase()}</Avatar>
+                                              <Name>{userInfo.username}</Name>
+                                              <Nickname>{userInfo.email}</Nickname>
+                                            </ProfileHeader>
+                                            <ProfileBody>
+                                              <Field>
+                                                <Label>닉네임:</Label>
+                                                <Value>{userInfo.nickname}</Value>
+                                              </Field>
+                                              <Field>
+                                                <Label>이름:</Label>
+                                                <Value>{`${userInfo.first_name} ${userInfo.last_name}`}</Value>
+                                              </Field>
+                                              <Field>
+                                                <Label>생년월일:</Label>
+                                                <Value>{userInfo.birth_date}</Value>
+                                              </Field>
+                                              <Field>
+                                                <Label>성별:</Label>
+                                                <Value>{userInfo.gender}</Value>
+                                              </Field>
+                                              <Field>
+                                                <Label>소개글:</Label>
+                                                <Value>{userInfo.intro}</Value>
+                                              </Field>
+                                              <Field>
+                                                <Label>가입 날짜:</Label>
+                                                <Value>{new Date(userInfo.created_at).toLocaleDateString("ko-KR")}</Value>
+                                              </Field>
+                                              <Field>
+                                                <Label style={{ marginTop: "8%"}}>Riddle Rank:</Label>
+                                                <Value>
+                                                  <img
+                                                    src={renderRiddleRankIcon(userInfo.RiddleScore)}
+                                                    alt="Rank Icon"
+                                                    style={{
+                                                      width: "60px",
+                                                      marginBottom: "-5%",
+                                                    }}
+                                                  />
+                                                </Value>
+                                              </Field>
+                                              </ProfileBody>
+
+                                  <ActionButton onClick={toggleModal} style={{ marginTop: "10px", marginLeft: "40%" }}>Close</ActionButton>
+                                </ModalContent>
+                              </Modal>
+                            )}
                 <div className="chat-box" ref={chatContainerRef}>
                     {messages.map((msg, index) => (
                         <div
