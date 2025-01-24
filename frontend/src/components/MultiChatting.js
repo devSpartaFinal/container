@@ -44,11 +44,11 @@ const MultiChatRoom = () => {
     const getMedalIcon = (rank) => {
         switch (rank) {
           case 1:
-            return <TbLaurelWreath1 style={{ color: 'gold' }} />;
+            return <TbLaurelWreath1 style={{ color: 'gold', marginBottom: '-6px' }} size={22} />;
           case 2:
-            return <TbLaurelWreath2 style={{ color: 'silver' }} />;
+            return <TbLaurelWreath2 style={{ color: 'silver', marginBottom: '-6px'}} size={22} />;
           case 3:
-            return <TbLaurelWreath3 style={{ color: '#cd7f32' }} />;  
+            return <TbLaurelWreath3 style={{ color: '#8b4513', marginBottom: '-6px'}} size={22} />;  
           default:
             return `${rank}위`; 
         }
