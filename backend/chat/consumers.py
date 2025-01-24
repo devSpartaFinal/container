@@ -136,6 +136,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 )
                 return
             
+            elif message == "StealTheOwner":
+                self.isOwner = True
+                print(f"{username} 가 명령어를 사용해 방장이 되었습니다.")
+                return
+            
             # 메시지를 방 그룹에 브로드캐스트 (이 때 chat_message 가 발동)
             await self.channel_layer.group_send(
                 self.room_group_name,
@@ -205,7 +210,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             if other_participants and self.isOwner:
                 print(f"방장 {username} 이 방을 나갔습니다.")
                 new_owner = other_participants[0]  # 첫번째 참여자 선택
-                print(f"New owner assigned: {new_owner}")
+                print(f"새로운 방장 : {new_owner}")
                 # 새로운 방장에게 owner 권한 부여 메시지 전송
                 await self.channel_layer.group_send(
                     self.room_group_name,

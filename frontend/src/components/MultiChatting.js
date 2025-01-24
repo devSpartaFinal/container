@@ -148,9 +148,11 @@ const MultiChatRoom = () => {
         
         const now = new Date();
         const minutes = now.getMinutes();
-        let nextQuizMinutes = Math.ceil((minutes + 0.1) / 2) * 2; // 5의 배수를 정확히 넘기기 위해 0.1 추가
+        let nextQuizMinutes = Math.ceil((minutes + 0.1) / 6) * 6; // 5의 배수를 정확히 넘기기 위해 0.1 추가
         if (nextQuizMinutes === 60) { // 60분인 경우는 시간을 넘기고 분은 0으로 초기화
+            console.log("60분 예외처리 이전 nowHour : " + now.getHours())
             now.setHours(now.getHours() + 1);
+            console.log("60분 예외처리 이후 nowHour : " + now.getHours())
             nextQuizMinutes = 0;
         }
         const nextQuizTime = new Date(now.getTime());
@@ -165,7 +167,7 @@ const MultiChatRoom = () => {
         console.log("popQuizActive : " + popQuizActive)
         console.log("isAnswer : " + isAnswer)
 
-        if ( timeToNextQuiz === 20000 && !popQuizActive) {
+        if ( timeToNextQuiz === 10000 && !popQuizActive) {
             if (socket.current && socket.current.readyState === WebSocket.OPEN) {
                 console.log("퀴즈 생성요청 type : create_quiz")
                 socket.current.send(
@@ -181,7 +183,7 @@ const MultiChatRoom = () => {
             setPopQuizTimeLeft(null);
             console.log("퀴즈 생성")
             console.log("isAnswer : " + isAnswer)
-            setTimeToSolveQuiz(90);
+            setTimeToSolveQuiz(300);
             // 서버에 POP QUIZ 활성화 알림 전송
             if (socket.current && socket.current.readyState === WebSocket.OPEN) {
                 const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });

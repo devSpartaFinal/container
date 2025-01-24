@@ -86,13 +86,13 @@ const Home = () => {
             <div>
               <img className="image4" alt="popquiz" src={popquiz} style={{marginLeft: '30%'}} />
             </div>
-            <ButtonDescription style={{ color: "#000000"}}>
-            <hr style={{ borderColor: "#000000", borderWidth: "2px", borderStyle: "solid"}} />
-              - 다른 유저들과 함께 POP QUIZ에 도전해보세요! <br></br>
-              - 정해진 시간마다 POP QUIZ가 생성됩니다. <br></br>
-              - 문제 당 제한시간은 2분입니다. <br></br>
-              - POP QUIZ가 생성되면 보기 번호 중 정답 숫자를 입력합니다.<br></br>
-              - 제한시간이 모두 초과되면 새로운 POP QUIZ가 시작됩니다.
+            <ButtonDescription style={{ color: "#666666"}}>
+            <hr style={{ borderColor: "#666666", borderWidth: "2px", borderStyle: "solid"}} />
+              - 다른 유저들과 함께 POP QUIZ 챌린지에 도전해보세요! <br></br>
+              - 정해진 시간마다 단답형 POP QUIZ가 생성됩니다. <br></br>
+              - 제한시간 내에 정답을 맞추면 Riddle점수를 획득합니다.<br></br>
+              - 제한시간이 초과될 경우, 정답이 공개됩니다.<br></br>
+              - 채팅창과 프로필 페이지에서 내 Riddle 랭킹과 등급을 확인할 수 있습니다.
             </ButtonDescription>
           </ButtonHalf>
           <ButtonHalf onClick={() => handleButtonClick("/riddle")}>

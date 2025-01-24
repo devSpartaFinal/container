@@ -35,7 +35,7 @@ def chat_quiz():
     if not subjects:
         print("\n<--------------캐시 없음/주제 모두 사용-------------->\n")
 
-        # 주제, 난이도 생성 / 한시간에 12개 - 5분에 하나
+        # 주제, 난이도 생성
         class Subject(BaseModel):
             subject: str
             difficulty: str
@@ -45,17 +45,17 @@ def chat_quiz():
             subjects: list[Subject]
 
         prompt = f"""
-        Make **30** 'Subject' about programming algorithm
+        Make **30** 'Subject' about programming algorithm theory
         'difficulty' is Hard
         `done' is false
         """
 
         completion = client.beta.chat.completions.parse(
-            model="gpt-4o",  # 조정 필요
+            model="gpt-4o-mini",  # 조정 필요
             messages=[
                 {"role": "system", "content": prompt},
             ],
-            temperature=0.7,  # 조정 필요
+            temperature=0.3,  # 조정 필요
             response_format=Subjects,
         )
 
@@ -88,12 +88,14 @@ def chat_quiz():
             description: ask concept or knowledge
             code_snippet: code example
             answer: short answer (maximum 1 word)
+            spawn Probability: 20%
             </conceptual knowledge>
 
             <code-based problems>
-            description: ask code to fill blank
+            description: ask the result of code execution. Do not include example in description.
             code_snippet: **only include code**
-            answer: code
+            answer: the result of code execution
+            spawn Probability: 80%
             </code-based problems>
 
             <topic>
@@ -101,7 +103,7 @@ def chat_quiz():
             </topic>
 
             <rule>
-            located question in last sentence
+            locate question in last sentence
             do not include answer in description and code_snippet.
             explain the concept and knowledge in detail without directly mentioning the answer or specific keywords
             Include a practical and detailed code example in code_snippet, excluding any references or annotations.
@@ -145,11 +147,11 @@ def chat_quiz():
                 시간 복잡도:
                     문자열의 길이가 최대 100이므로, func_a와 solution 함수 모두 시간 복잡도는 O(n)입니다.
 
-                다음 작성된 코드 예시 속에서 빈칸에 들어갈 코드는 무엇일까요?
+                다음 작성된 코드를 실행했을 때 나오는 결과값 'answer' 는 무엇일까요?
             code_snippet:
                 def func_a(string, length):
                     padZero = ""
-                    padSize = (--빈칸--)
+                    padSize = length - len(string)
                     for i in range(padSize):
                         padZero += "0"
                     return padZero + string
@@ -167,10 +169,10 @@ def chat_quiz():
 
                 binaryA = "10010"
                 binaryB = "110"
-                ret = solution(binaryA, binaryB)
+                answer = solution(binaryA, binaryB)
 
-                print("solution 함수의 반환 값은", ret, "입니다.")
-            answer: len(string)
+                print("solution 함수의 반환 값은", answer, "입니다.")
+            answer: 2
             </positive example>
 
             <negative example>
@@ -211,7 +213,7 @@ def chat_quiz():
         messages=[
             {"role": "system", "content": prompt},
         ],
-        temperature=0.1,  # 조정 필요
+        temperature=0.25,  # 조정 필요
         response_format=ChatQuiz,
     )
     quiz = completion.choices[0].message.parsed
@@ -225,32 +227,31 @@ def chat_quiz():
         description: str
         code_snippet: str
 
-    prompt_2 = f"""
-    answer과 description, code_snippet을 화인한 후 
-    description에 모든 answer 또는 비슷한 표현을 (--빈칸--) 으로 변경한 뒤 description 반환
-    code_snippet 모든 answer 또는 비슷한 표현을 (--빈칸--) 으로 변경 뒤 code_snippet 반환
+    # prompt_2 = f"""
+    # answer과 code_snippet을 화인한 후     
+    # code_snippet에서 answer 과 동일한 표현을 (       ) 으로 변경 뒤 code_snippet 반환
 
-    <description>
-    {description}
-    </description>
+    # <code_snippet>
+    # {code_snippet}
+    # </code_snippet>
 
-    <code_snippet>
-    {code_snippet}
-    </code_snippet>
-
-    <answer>
-    {answer}
-    </answer>
-    """
-
-    completion = client.beta.chat.completions.parse(
-        model="gpt-4o-mini",  # 조정 필요
-        messages=[
-            {"role": "system", "content": prompt_2},
-        ],
-        temperature=0.1,  # 조정 필요
-        response_format=Filter,
-    )
+    # <answer>
+    # {answer}
+    # </answer>
+    # """
+    # # description에 모든 answer 또는 비슷한 표현을 (       ) 으로 변경한 뒤 description 반환
+    # # <description>
+    # # {description}
+    # # </description>
+    
+    # completion = client.beta.chat.completions.parse(
+    #     model="gpt-4o-mini",  # 조정 필요
+    #     messages=[
+    #         {"role": "system", "content": prompt_2},
+    #     ],
+    #     temperature=0.1,  # 조정 필요
+    #     response_format=Filter,
+    # )
     filtered = completion.choices[0].message.parsed
     filtered_json = json.dumps(filtered.model_dump(), indent=2)
     filtered_dict = json.loads(filtered_json)
