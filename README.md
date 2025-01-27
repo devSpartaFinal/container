@@ -12,7 +12,8 @@
 ## 👀 Introduction
 
 
-![home](./img/home.png)
+![home](./img/preview1.gif)
+
 
 
 ReadRiddle은 개발/AI 관련 학습을 원하는 사용자가 챗봇 / 시험지 형식을 통해 
@@ -22,81 +23,75 @@ ReadRiddle은 개발/AI 관련 학습을 원하는 사용자가 챗봇 / 시험�
 ---
 ## 📣 How To Use
 
-Local Server Version
+👇 ReadRiddle 사이트 접속 👇
+https://www.letsreadriddle.com/home
+
+![home](./img/preview2.gif)
 
 
 
-1. 원격 저장소에 올라와 있는 코드 clone 받기 
-```
-# 백엔드
-git clone https://github.com/devSpartaFinal/ReadRiddle.git
 
-# 프론트엔드
-git clone https://github.com/devSpartaFinal/client.git
-```
-2. 백엔드 라이브러리 사용을 위한 가상환경 세팅
-```
-python -m venv venv
-```
+<details>
+  <summary>Local Server Version</summary>
 
-3. 환경 활성화
+   1. 원격 저장소에 올라와 있는 코드 clone 받기 
 ```
-source vevn/bin/activate
+# Docker
+git clone https://github.com/devSpartaFinal/container.git
 ```
+2-1. Backend .env 설정
+```
+OPENAI_API_KEY=
+DRF_SECRET_KEY=
+DJANGO_SETTINGS_MODULE=
+HOSTUSER_EMAIL=
+HOSTUSER_EMAIL_PASSWORD=
+POSTGRES_USER=
+POSTGRES_PASSWORD=
+POSTGRES_DB=
+POSTGRES_HOST=
 
-4. 필요한 라이브러리 & 모듈 다운로드 (백엔드/프론트엔드 각각의 디렉터리에서)
-```
-# 백엔드
-pip install -r requirements.txt 
+GOOGLE_OAUTH_CLIENT_ID=
+GOOGLE_OAUTH_CLIENT_SECRET=
+GOOGLE_OAUTH_CALLBACK_URL=
 
-# 프론트엔드
-npm install 
-```
-
-5. .env 설정
-```
-# open AI API Key, DRF 초기 secret Key, 본 서비스의 루트 이메일 계정 및 비밀번호
-OPENAI_API_KEY, DRF_SECRET_KEY, HOSTUSER_EMAIL, HOSTUSER_EMAIL_PASSWORD
-
-<예시>
-DJANGO_SETTINGS_MODULE="coding_helper.settings"
-REACT_APP_API_URL="http://localhost:8000"
-POSTGRES_USER="user"
-POSTGRES_PASSWORD="password"
-POSTGRES_DB="postgres"
-POSTGRES_HOST="db"
+GITHUB_CLIENT_ID=
+GITHUB_CLIENT_SECRET=
+GITHUB_REDIRECT_URI=
 ```
 
-6. 실행 
+2-2. Frontend .env 설정
 ```
-# 백엔드
-python manage.py runserge
-  
-# 프론트엔드
-npm start
+REACT_APP_BASE_URL=
+REACT_APP_WS_BASE_URL=
+```
 
-7. docker-compose로 실행 / 빌드 취소를 원할 경우 (docker-compose down)
+3. 실행 
+```
 docker-compose up --build
-
 ```
 
-pip install channels
-pip install channels_redis
+  </details>
+
 
 
 ---
 ## 🗝️ Key Function
 
 
-### 🤖 RAG를 이용한 챗봇 기능
+### 🤖 RAG를 이용한 챗봇 기능 & 💬 Polling 실시간 채팅방식
 > - 사용자는 원하는 카테고리/주제를 선택해 문제를 통한 학습 이전에 간단한 궁금증을 해소하거나 주제 관련 요약을 제공받아 학습 방향을 설정할 수 있습니다.
 > - 질문할 수 있는 범위는 AI 강의관련 내용, 강의 관련 오픈소스 코드, 웹 개발 프레임 워크 공식문서입니다.
 > - 사용자는 채팅화면 오른쪽에 있는 채팅 세션 파트에서 이전 채팅 내용들을 불러올 수 있습니다.
+> - 실시간으로 대화가 저장/관리가 가능합니다.
+> - 각 채팅은 주지/카테고리 별로 선택할 수 있습니다.
+> - 새로운 채팅방 생성 시/채팅방 선택 시에 해당 채팅방 위치로 자동 스크롤을 가능하게 합니다.
+> - 코드와 일반 Text를 구분해 사용자에게 좋은 채팅 뷰를 제공하고자 합니다.
 
    <details>
   <summary>동작화면</summary>
 
-   ![home](./img/summary.png)
+   ![home](./img/read.gif)
   </details>
 
 ### 📝 RAG를 이용한 문제 출제/피드백 기능
@@ -107,45 +102,57 @@ pip install channels_redis
 <details>
   <summary>동작화면</summary>
 
-   ![home](./img/sheet.png)
+   ![home](./img/riddle.gif)
   </details>
 
-### 🔐 JWT 로그인
+### 🔐 JWT 인증 & 구글 소셜 로그인
 > - 백엔드에서 설정할 쿠키에는 짧은 생명 주기의 AccessToken만 저장합니다.
 > - 해당 AccessToken을 갱신할 때에는 accessToken을 디코딩하여 사용자를 인식한 후 사용자에 맞는 refreshToken을 DB에서 가져옵니다.
 > - refreshToken 만료 기한 이전에 자동으로 accessToken을 자동 갱신하게 하기 위해 로그인할 때 발급되는 시점에서 프론트 측에서 로그인 시간을 기록해 둔 후 자동으로 백엔드 측에서 설정해둔 accessToken 만료 기한 이전에 refreshToken 갱신 API를 호출한 후 새로 발급된 accessToken을 프론트 측에 저장해 둬 로그인을 유지할 수 있게 됩니다.
+> - 구글에서 Cloud 프로젝트 생성 후 로그인 관련 설정을 해줍니다.
+> - 해당 설정은 서버 측에서 먼저 완료를 해둔 후 구글 인증 후 로그인 후 리다이렉트 될 프론트엔드의 페이지를 설정해두어 해당 페이지에서 인증 관련 정보를 가져와 정상적으로 소셜 로그인이 진행되도록 합니다.
+
+<details>
+  <summary>동작화면</summary>
+
+   ![home](./img/google.gif)
+  </details>
+
+
+### 💬 WebSocket 방식을 활용한 실시간 알고리즘 단체 채팅 퀴즈
+> - redis 서버를 활용하여 각 클라이언트와 서버간의 웹소켓 방식을 구현했습니다.
+> - 정해진 시간마다 채팅창에 POP QUIZ가 생성되면, 유저들은 화면을 보고 퀴즈를 풀게됩니다.
+> - 문제를 먼저 맞춘 유저는 RiddleScore를 획득하고, 왼쪽 랭킹판에 점수가 갱신됩니다.
+> - 제한시간 내에 참여자들이 모두 문제를 맞추지 못한 경우, ReadRiddle이 정답을 공개하고 다음 QUIZ까지 대기시간이 적용됩니다.
+
 
 
 <details>
   <summary>동작화면</summary>
 
-   ![home](./img/home_auth.png)
+   ![home](./img/popquiz.gif)
   </details>
 
 
-### 💬 Polling 방식을 활용한 실시간 채팅
-> - 실시간으로 대화가 저장/관리가 가능합니다.
-> - 각 채팅은 주지/카테고리 별로 선택할 수 있습니다.
-> - 새로운 채팅방 생성 시/채팅방 선택 시에 해당 채팅방 위치로 자동 스크롤을 가능하게 합니다.
-> - 코드와 일반 Text를 구분해 사용자에게 좋은 채팅 뷰를 제공하고자 합니다.
-
-<details>
-  <summary>동작화면</summary>
-
-   ![home](./img/chatbot.png)
-  </details>
-
-
-Deployment Diagram
-![home](./img/deploymentDiagram.png)
 
 ---
 ## 🔍 Architecture
 ![home](./img/architecture.png)
 
+
+### Deployment Diagram
+![home](./img/deploymentDiagram.png)
+
+
+### Cloud Diagram
+![home](./img/cloud_diagram.png)
+
+
 ---
 ## 💻 Trouble Shooting
 
+
+> 박성진
 <details>
   <summary> DBeaver 에서 docker-compose로 실행한 PostgresSQL DB 연결 시 EOFException 오류 발생</summary>
 
@@ -254,6 +261,235 @@ code_blocks = soup.find_all("pre")
 ```
   </details>
 
+
+<details>
+  <summary> 웹소켓 구현 시 FE에서 송신한 정보에 대해 경로를 찾지 못하는 현상</summary>
+
+   ```bash
+2025-01-17 17:24:54 Not Found: /ws/chat/test_room/
+2025-01-17 17:24:54 [17/Jan/2025 17:24:54] "GET /ws/chat/test_room/ HTTP/1.1" 404 2655
+```
+(원인) Django의 runserver에서는 ASGI Websocket 을 완전히 지원하지 않기 때문
+(수정) daphne을 통해서 ASGI Websocket 환경 구축
+```bash
+1. daphne 설치 및 등록(requirements.txt)
+2. settings.py 의 INSTALLED_APPS 의 맨 윗부분에 추가
+ - 다른 "django.contrib."로 구성된 APPS 이전에 실행되어야 하므로 순서가 선행되어야 한다
+3. docker-compose 파일의 backend 커맨드라인 변경
+<기존>
+exec python manage.py runserver 0.0.0.0:8000 (마지막 라인)
+<변경>
+exec python manage.py runserver 0.0.0.0:8000 &&
+exec daphne coding_helper.asgi:application --port 8000
+```
+  </details>
+
+
+  <details>
+  <summary> 특정 타입에 대한 group_send 를 보냈을 때, 프론트에서 해당 타입에 대한 처리를 선언해도 처리가 되지 않는현상</summary>
+
+  (에러코드) : No handler for message type pop_quiz_result
+```javascript
+# BE
+if self.pop_quiz_active and message.lower() == "a":
+  print("\nTeddy : 정답!\n")
+  self.pop_quiz_active = False  # POP QUIZ 비활성화
+  # 정답 알림 브로드캐스트
+  await self.channel_layer.group_send(
+      self.room_group_name,
+      {
+          "type": "pop_quiz_result",
+          "message": f"{username}님이 정답을 맞췄습니다!",
+          "username": username,
+          "timestamp": timestamp,
+      },
+  )
+  return
+
+# FE
+socket.current.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+    // 일반 메시지 수신
+    if (data.type === "user_message") {
+        setMessages((prevMessages) => [...prevMessages, data]);
+    }
+    // 참여자 목록 수신
+    else if (data.type === "participants") {
+        setParticipants(data.participants);
+    }
+    // POP QUIZ 결과 처리
+    else if (data.type === "pop_quiz_result") {
+        setMessages((prevMessages) => [...prevMessages, data]);
+        setPopQuizActive(false); // POP QUIZ 비활성화
+    }
+};
+```
+
+(원인) 
+1. self.channel_layer.group_send로 전송된 메시지는 type 필드의 값을 기준으로 ChatConsumer 클래스의 메서드를 호출 (예: type: "pop_quiz_result"는 pop_quiz_result 메서드를 찾음.)
+2. pop_quiz_result 메서드가 정의되지 않았다면 에러가 발생.
+
+(수정)
+서버 코드에 pop_quiz_result 메서드를 추가하여 처리
+```py
+class ChatConsumer(AsyncWebsocketConsumer):
+  # 기존 메서드 생략...
+  async def pop_quiz_result(self, event):
+      """
+      Handles 'pop_quiz_result' messages sent to the group.
+      """
+      message = event["message"]
+      username = event["username"]
+      timestamp = event["timestamp"]
+
+      # 클라이언트로 메시지 전송
+      await self.send(text_data=json.dumps({
+          "type": "pop_quiz_result",  # 클라이언트가 인식할 메시지 타입
+          "message": message,
+          "username": username,
+          "timestamp": timestamp,
+      }))
+```
+
+  </details>
+
+
+   <details>
+  <summary> 동일한 값을 나타내는 두 변수에 대해 조건문 처리 과정이 상이한 현상
+(문제 코드)</summary>
+
+   ```js
+if (popQuizTimeLeft <= 1 && !popQuizActive) { 
+```
+(원인) setPopQuizTimeLeft(timeToNextQuiz / 1000); 로 업데이트된 상태 업데이트는 즉시 적용되지 않고 React의 렌더링 사이클에 따라 다음 렌더링에서 업데이트된 값이 적용되는 비동기 변수이기 떄문에 발생.
+(수정) 비동기 변수가 아닌 실제 변수를 사용하여 해결
+```js
+if (timeToNextQuiz <= 1 && !popQuizActive) { 
+```
+
+
+  </details>
+
+
+  <details>
+  <summary> 단체 퀴즈 채팅방에 QUIZ가 참여자 수만큼 출력되는 문제</summary>
+
+(문제 코드)
+```py
+if data["type"] == "pop_quiz_active":
+  # 클라이언트에서 POP QUIZ 활성화 메시지 수신
+      ChatConsumer.pop_quiz_active = data["active"]
+      print(f"POP QUIZ active state updated: {ChatConsumer.pop_quiz_active}")
+      
+      # 퀴즈 브로드캐스트
+      if data['active'] == True:    
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                "type": "quiz_broadcast",
+                "message": ChatConsumer.question,
+                "username": "ReadRiddle",
+            }
+        )
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                "type": "quiz_intro",
+                "message": "문제의 보기 번호를 정답으로 입력하세요!",
+                "username": "ReadRiddle",
+            }
+        )
+      return
+```
+(원인) POP QUIZ 생성시간이 되었을 때, 퀴즈를 Broadcast 하는 과정에서 모든 참여자의 인원수만큼 문제가 출력
+
+(수정)
+1. isOwner 로 방이 최초 생성되었을 때 방장을 나타내는 변수 설정. 이후 isOwner 로 설정된 유저가 대화방을 떠날 떄(웹소켓이 DISCONNECT) 다른 참여자들 그룹 중 가장 먼저 입장한 유저의 isOwner 값 True 로 변경
+```py
+elif data["type"] == "join":
+  # 클라이언트가 보낸 join 메시지 처리
+  self.isOwner = False
+  self.pop_quiz_active = False
+  username = data["myusername"]
+  print(f"User {username} joined the room.")
+
+  # 참여자 목록에 추가
+  if not hasattr(self.channel_layer, "participants"):
+      self.channel_layer.participants = set()
+      print(f"participants 그룹이 생성되었습니다.")
+      self.isOwner = True # 방장 여부
+      print(f"{username} 가 방장이 되었습니다.")
+  self.channel_layer.participants.add(username)
+
+...
+
+# 남아있는 참여자가 있다면 새로운 방장을 지정
+  other_participants = [
+      participant for participant in self.channel_layer.participants
+      if participant != data["myusername"]
+  ]
+  if other_participants and self.isOwner:
+      print(f"방장 {username} 이 방을 나갔습니다.")
+      new_owner = other_participants[0]  # 첫번째 참여자 선택
+      print(f"New owner assigned: {new_owner}")
+      # 새로운 방장에게 owner 권한 부여 메시지 전송
+      await self.channel_layer.group_send(
+          self.room_group_name,
+          {
+              "type": "assign_owner",
+              "new_owner": new_owner,
+          }
+      )
+  elif not other_participants:
+      del self.channel_layer.participants
+      print("참여자가 없어 participants 그룹이 삭제되었습니다.")
+```
+2. isOwner 가 설정된 유저만 퀴즈 생성 및 group_send 가 가 가능하도록 조건 추가
+```py
+# 퀴즈 브로드캐스트
+  if data['active'] == True and self.isOwner:    
+      await self.channel_layer.group_send(
+          self.room_group_name,
+          {
+              "type": "quiz_broadcast",
+              "message": ChatConsumer.question,
+              "username": "ReadRiddle",
+          }
+      )
+```
+
+  </details>
+
+  <details>
+  <summary> 사용자가 다른 페이지로 이동하거나 로그아웃해서 채팅방 연결을 종료했을 때, 채팅 참여목록이 갱신되지 않는 현상</summary>
+
+   (원인) useEffect의 return에 선언한 아래 구문이 이미 소켓 연결이 종료된 시점에 호출되어서 메세지가 송신되지 않음
+```js
+if (socket.current.readyState === WebSocket.OPEN) {
+    socket.current.send(JSON.stringify({ type: "leave", username }));
+}
+```
+
+(수정) WebSocket 연결이 DISCONNECT 되기 전에 beforeunload 이벤트를 추가하여 페이지를 떠날 때 leave 메시지를 전송해서 참여목록 갱신
+```js
+const handleBeforeUnload = () => {
+    if (socket.current && socket.current.readyState === WebSocket.OPEN) {
+        socket.current.send(JSON.stringify({ type: "leave", username }));
+    }
+};
+window.addEventListener("beforeunload", handleBeforeUnload);
+return () => {
+  // beforeunload 이벤트 제거
+  window.removeEventListener("beforeunload", handleBeforeUnload);
+
+  if (socket.current) {
+      socket.current.close(); // disconnect 메서드 호출
+  }
+};
+```
+
+  </details>
+
 <details>
   <summary> 회원가입 페이지에서 정상적인 가입 요청 시 오류 문구가 "회원가입 실패"로만 노출되는 현상</summary>
 
@@ -286,34 +522,11 @@ const location = useLocation(); // 현재 경로 감지
   }, [location]); // location을 useEffect의 의존성 배열에 추가하여 페이지가 변경될 때마다 유저 정보를 새로 로드하도록 유도
 ```
   </details>
-  <details>
-  <summary> 사용자 로그인 후 페이지 갱신 시 로그인이 풀려버리는 현상</summary>
 
-(원인 - 문제 코드)
-아래 App.js 에서 useEffect 함수 중복호출  
-최초에 정상적으로 accessToken을 체크하여 IsLoggedIn 변수를 갱신하였지만, 이후 선언된 useEffect에서 /after_email 경로가 아닌 경우에 쿠키의 "acceess" 변수를 체크하여 로그인 상태를 다시 갱신 --> 쿠키에는 access 관련 정보가 없으므로 로그인이 계속 풀리게 됨
-```js
-useEffect(() => {
-      const token = getCookie("accessToken");
-      setIsLoggedIn(!!token); // 토큰이 있으면 true, 없으면 false
-    }, []);
 
-useEffect(() => {
-      if (window.location.pathname !== '/after_email') {
-        const token = getCookie("access");
-        setIsLoggedIn(!!token);
-      }
-    }, []);
-```
-(수정)
-access 변수를 체크하는 useEffect 구문 삭제 후 해결
-```js
-useEffect(() => {
-      const token = getCookie("accessToken");
-      setIsLoggedIn(!!token); // 토큰이 있으면 true, 없으면 false
-    }, []);
-```
-  </details>
+</br>
+
+> 나영웅
   <details>
   <summary> db 컨테이너가 생성되기 전에 접속 시도</summary>
 
@@ -351,25 +564,31 @@ command: >
 description에 상세하게 기술하는 것으로 대체
   </details>
   </details>
-  <details>
-  <summary> 채팅 컴포넌트 넘침 문제</summary>
 
-(수정) 
-1. 채팅 Container height 속성값 줄이기
-2. 채팅 바로 위의 Container height 속성 % 줄이기, overflow: hidden 적용 
-(부모 컨테이너를 넘어가는 것을 숨김)
+  <details>
+  <summary>  React-Drf-DB 컨테이너 생성 시 오류 </summary>
+
+문제
+```yaml
+ERROR in ./src/components/Navigation.js 6:0-128
+Module not found: Error: Can't resolve 'react-icons/ai' in '/app/frontend/src/components'
+ESLint 경고: 코드에서 사용되지 않는 변수나 잘못된 속성 값들이 경고를 발생시키고 있습니다. 이를 해결하려면 해당 코드 수정이 필요합니다.
+```
+
+
+해결
+
+Dockerfile 에 설치 명령어 추가
+```yaml
+RUN yarn add react-icons
+```
+
   </details>
-  <details>
-  <summary> docker build 시 'ContainerConfig' 오류 발생</summary>
-
-(원인) 
-- KeyError: 'ContainerConfig’
-
-- 원인 : 이전에 중단된 컨테이너나 이미지가 문제를 일으킴
+  
 </br>
-(수정) docker 종료 후 docker-compose down 도 해주어야 함
-  </details>
 
+  > 윤수진
+  
   </details>
   <details>
   <summary> Ddocker 빌드 시 pgAdmin에서 오류 발생</summary>
@@ -443,6 +662,33 @@ sudo chmod -R 755 /home/ubuntu/ReadRiddle/DB_test/data
 sudo chmod 644 /home/ubuntu/ReadRiddle/DB_test/pgadmin/pgadmin4.db
   </details>
     </details>
+
+ <details>
+  <summary> docker build 시 'ContainerConfig' 오류 발생</summary>
+
+(원인) 
+- KeyError: 'ContainerConfig’
+
+- 원인 : 이전에 중단된 컨테이너나 이미지가 문제를 일으킴
+</br>
+(수정) docker 종료 후 docker-compose down 도 해주어야 함
+  </details>
+
+
+</br>
+
+> 구수연
+
+<details>
+
+  <summary> 채팅 컴포넌트 넘침 문제</summary>
+
+(수정) 
+1. 채팅 Container height 속성값 줄이기
+2. 채팅 바로 위의 Container height 속성 % 줄이기, overflow: hidden 적용 
+(부모 컨테이너를 넘어가는 것을 숨김)
+  </details>
+ 
   <details>
   <summary> 채팅형식 퀴즈 질문과 봇 메시지로 인식하지 않고 함께 전송하도록</summary>
 
@@ -529,7 +775,7 @@ import React, { useRef, useState, useEffect } from 'react';
 
 ```
   </details>
-    </details>
+
   <details>
   <summary>같은 퀴즈 세션에 대해서만 답변, 결과가 업데이트 되던 문제</summary>
 
@@ -586,6 +832,103 @@ const detail_response = await quizApiRequest.get(`/feedback/detail/${session_no}
 
   </details>
 
+  <details>
+  <summary> 로컬 소셜 로그인 HTTP 기반 서버에서 로그인 못함 에러</summary>
+
+## 문제 상황
+
+배포에서의 구글 소셜 로그인의 리다이렉트 시에 400번 에러가 뜨며 구글 소셜 로그인이 되지 못하는 문제가 있었습니다.
+
+### 문제 상황 파악
+
+로컬에서의 구글 소셜 로그인의 경우
+
+프론트의 리다이렉트 경로를 로컬의 경우에만 http 리다이렉트를 허용하고 그 외는 허용하지 않는 상황이었습니다.
+
+### 해결
+
+서버 자체를 HTTPS → HTTP 포트포워딩을 통해 프론트엔드에 백엔드로 보내는 방법 자체를 HTTPS로도 접근이 가능하게 해 해결하였습니다.
+
+이때 필요한 설정으로는 
+
+- 도메인 구입,
+- EC2와 연결된 ELB 설정
+- Route53 설정
+
+입니다.
+  </details>
+
+  <details>
+  <summary> Debug 모드 페이지 배포, 로컬에서 안보이도록 설정</summary>
+
+## 문제
+
+배포시에 보이지 말아야 할 백엔드 서버 url이 보여 보안에 취약한 문제
+
+### 문제 파악
+
+`DEBUG = False` 였기 때문에 보이지 말아야 했을 개발자 페이지가 보였습니다.
+
+따라서 로컬에서는 settings.py에 
+
+```python
+ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
+
+# React 프론트 관련 / # 모든 출처 허용
+CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "https://localhost:3000"]
+```
+
+이렇게 함으로 해결할 수 있었지만
+
+배포시에는 또다른 문제점이 발생하였습니다.
+
+이유는 배포 시에는 elb를 통해 프론트와 백엔드를 연결하는데 이때 사용하는 백엔드의 url과 프론트엔드의 url이 다르기 때문에
+
+백엔드의 api url을 막아줬어야 하는 추가사항이있었습니다.
+
+이는 따로 url을 검색해 들어가는 경우를 막아주도록 MIDDLEWARE를 설정해 수정할 수 있었습니다.
+
+middleware.py
+
+```python
+from django.http import JsonResponse
+
+class BlockDirectAccessMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        allowed_origins = [
+            "http://localhost:3000",
+            "https://www.letsreadriddle.com",
+        ]
+        referer = request.META.get("HTTP_REFERER", "")
+
+        # 만약 referer가 없거나, 허용된 출처에 포함되지 않으면 차단
+        if not any(referer.startswith(origin) for origin in allowed_origins):
+            return JsonResponse({"error": "Direct access to the API is not allowed."}, status=403)
+
+        return self.get_response(request)
+
+```
+
+settings.py
+
+```python
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = DRF_SECRET_KEY
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = False
+
+ALLOWED_HOSTS = ["127.0.0.1", "172.31.87.147", "18.232.172.210", "54.208.56.239", "dualstack.readriddleelb-1938316956.us-east-1.elb.amazonaws.com.", "api.letsreadriddle.com", "www.letsreadriddle.com", "letsreadriddle.com"]
+
+# React 프론트 관련 / # 모든 출처 허용
+CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "https://www.letsreadriddle.com"]
+CORS_ALLOW_CREDENTIALS = True
+```
+
+  </details>
 
   
 
@@ -593,252 +936,12 @@ const detail_response = await quizApiRequest.get(`/feedback/detail/${session_no}
 ## 🦾 Team
 | 이름   | 역할                            |
 |--------|---------------------------------|
-| 박성진 | 초기 BE 설계, 공식문서 크롤링/전처리, 회원 관련기능 (이메일 인증, JWT 설계), FE 회원관련기능 개선|
+| 박성진 | 초기 BE 설계, 공식문서 크롤링/전처리, 회원 관련기능 (이메일 인증, JWT 설계), FE 프로필, 정보변경 개발, FE 홈/대화세션 UI 개선 및 버그수정|
 | 윤수진 | PostGreSQL DB 구축, AWS 연동, 스파르타 문서 전처리, 데이터 전처리관련 모듈 개발, FE 전체 UI 및 style 개선|
-| 구수연 | 초기 FE 설계, FE 퀴즈폼 개발, FE 대화세션 관련기능 개발, FE JWT 인증관련 개발 |
-| 나영웅 |Docker CI/CD 설계, Quiz/QnA 관련 API 개발, RAG 모델 구축, JWT 인증방식 개선|
+| 구수연 | 초기 FE 설계, FE 퀴즈폼 개발, FE 채팅 개발, FE 대화세션 관련기능 개발, FE JWT 인증관련 개발, AWS 배포, LLM 개발 및 개선 |
+| 나영웅 |Quiz/QnA 관련 API 개발, RAG 모델 구축, JWT 인증방식 개선, LLM 개발 및 개선|
 
 
 
 ---
-<details>
-  <summary>Container</summary>
 
-   # container
-
-```bash
-# 컨테이너 실행
-docker-compose up --build
-
-# 컨테이너 종료
-ctrl + c
-
-# 컨테이너 삭제
-docker-compose down
-```
-
-```
-project/
-├── frontend/
-│   ├── Dockerfile
-│   ├── package.json
-│   ├── package-lock.json
-│   ├── src/
-├── backend/
-│   ├── Dockerfile
-│   ├── manage.py
-│   └── ...
-├── db/
-├── docker-compose.yml
-```
-  </details>
-
-## 트러블 슈팅
-
-[박성진]
-
-1. 웹소켓 구현 시 FE에서 송신한 정보에 대해 경로를 찾지 못하는 현상
-(에러 로그)
-```bash
-2025-01-17 17:24:54 Not Found: /ws/chat/test_room/
-2025-01-17 17:24:54 [17/Jan/2025 17:24:54] "GET /ws/chat/test_room/ HTTP/1.1" 404 2655
-```
-(원인) Django의 runserver에서는 ASGI Websocket 을 완전히 지원하지 않기 때문
-(수정) daphne을 통해서 ASGI Websocket 환경 구축
-```bash
-1. daphne 설치 및 등록(requirements.txt)
-2. settings.py 의 INSTALLED_APPS 의 맨 윗부분에 추가
- - 다른 "django.contrib."로 구성된 APPS 이전에 실행되어야 하므로 순서가 선행되어야 한다
-3. docker-compose 파일의 backend 커맨드라인 변경
-<기존>
-exec python manage.py runserver 0.0.0.0:8000 (마지막 라인)
-<변경>
-exec python manage.py runserver 0.0.0.0:8000 &&
-exec daphne coding_helper.asgi:application --port 8000
-```
-
-2. 사용자가 다른 페이지로 이동하거나 로그아웃해서 채팅방 연결을 종료했을 때, 채팅 참여목록이 갱신되지 않는 현상
-(원인) useEffect의 return에 선언한 아래 구문이 이미 소켓 연결이 종료된 시점에 호출되어서 메세지가 송신되지 않음
-```js
-if (socket.current.readyState === WebSocket.OPEN) {
-    socket.current.send(JSON.stringify({ type: "leave", username }));
-}
-```
-
-(수정) WebSocket 연결이 DISCONNECT 되기 전에 beforeunload 이벤트를 추가하여 페이지를 떠날 때 leave 메시지를 전송해서 참여목록 갱신
-```js
-const handleBeforeUnload = () => {
-    if (socket.current && socket.current.readyState === WebSocket.OPEN) {
-        socket.current.send(JSON.stringify({ type: "leave", username }));
-    }
-};
-window.addEventListener("beforeunload", handleBeforeUnload);
-return () => {
-  // beforeunload 이벤트 제거
-  window.removeEventListener("beforeunload", handleBeforeUnload);
-
-  if (socket.current) {
-      socket.current.close(); // disconnect 메서드 호출
-  }
-};
-```
-
-3. 특정 타입에 대한 group_send 를 보냈을 때, 프론트에서 해당 타입에 대한 처리를 선언해도 처리가 되지 않는현상
-(에러코드) : No handler for message type pop_quiz_result
-```javascript
-# BE
-if self.pop_quiz_active and message.lower() == "a":
-  print("\nTeddy : 정답!\n")
-  self.pop_quiz_active = False  # POP QUIZ 비활성화
-  # 정답 알림 브로드캐스트
-  await self.channel_layer.group_send(
-      self.room_group_name,
-      {
-          "type": "pop_quiz_result",
-          "message": f"{username}님이 정답을 맞췄습니다!",
-          "username": username,
-          "timestamp": timestamp,
-      },
-  )
-  return
-
-# FE
-socket.current.onmessage = (event) => {
-    const data = JSON.parse(event.data);
-    // 일반 메시지 수신
-    if (data.type === "user_message") {
-        setMessages((prevMessages) => [...prevMessages, data]);
-    }
-    // 참여자 목록 수신
-    else if (data.type === "participants") {
-        setParticipants(data.participants);
-    }
-    // POP QUIZ 결과 처리
-    else if (data.type === "pop_quiz_result") {
-        setMessages((prevMessages) => [...prevMessages, data]);
-        setPopQuizActive(false); // POP QUIZ 비활성화
-    }
-};
-```
-
-(원인) 
-1. self.channel_layer.group_send로 전송된 메시지는 type 필드의 값을 기준으로 ChatConsumer 클래스의 메서드를 호출 (예: type: "pop_quiz_result"는 pop_quiz_result 메서드를 찾음.)
-2. pop_quiz_result 메서드가 정의되지 않았다면 에러가 발생.
-
-(수정)
-서버 코드에 pop_quiz_result 메서드를 추가하여 처리
-```py
-class ChatConsumer(AsyncWebsocketConsumer):
-  # 기존 메서드 생략...
-  async def pop_quiz_result(self, event):
-      """
-      Handles 'pop_quiz_result' messages sent to the group.
-      """
-      message = event["message"]
-      username = event["username"]
-      timestamp = event["timestamp"]
-
-      # 클라이언트로 메시지 전송
-      await self.send(text_data=json.dumps({
-          "type": "pop_quiz_result",  # 클라이언트가 인식할 메시지 타입
-          "message": message,
-          "username": username,
-          "timestamp": timestamp,
-      }))
-```
-
-4. 동일한 값을 나타내는 두 변수에 대해 조건문 처리 과정이 상이한 현상
-(문제 코드)
-```js
-if (popQuizTimeLeft <= 1 && !popQuizActive) { 
-```
-(원인) setPopQuizTimeLeft(timeToNextQuiz / 1000); 로 업데이트된 상태 업데이트는 즉시 적용되지 않고 React의 렌더링 사이클에 따라 다음 렌더링에서 업데이트된 값이 적용되는 비동기 변수이기 떄문에 발생.
-(수정) 비동기 변수가 아닌 실제 변수를 사용하여 해결
-```js
-if (timeToNextQuiz <= 1 && !popQuizActive) { 
-```
-
-5. 단체 퀴즈 채팅방에 QUIZ가 참여자 수만큼 출력되는 문제
-(문제 코드)
-```py
-if data["type"] == "pop_quiz_active":
-  # 클라이언트에서 POP QUIZ 활성화 메시지 수신
-      ChatConsumer.pop_quiz_active = data["active"]
-      print(f"POP QUIZ active state updated: {ChatConsumer.pop_quiz_active}")
-      
-      # 퀴즈 브로드캐스트
-      if data['active'] == True:    
-        await self.channel_layer.group_send(
-            self.room_group_name,
-            {
-                "type": "quiz_broadcast",
-                "message": ChatConsumer.question,
-                "username": "ReadRiddle",
-            }
-        )
-        await self.channel_layer.group_send(
-            self.room_group_name,
-            {
-                "type": "quiz_intro",
-                "message": "문제의 보기 번호를 정답으로 입력하세요!",
-                "username": "ReadRiddle",
-            }
-        )
-      return
-```
-(원인) POP QUIZ 생성시간이 되었을 때, 퀴즈를 Broadcast 하는 과정에서 모든 참여자의 인원수만큼 문제가 출력
-
-(수정)
-1. isOwner 로 방이 최초 생성되었을 때 방장을 나타내는 변수 설정. 이후 isOwner 로 설정된 유저가 대화방을 떠날 떄(웹소켓이 DISCONNECT) 다른 참여자들 그룹 중 가장 먼저 입장한 유저의 isOwner 값 True 로 변경
-```py
-elif data["type"] == "join":
-  # 클라이언트가 보낸 join 메시지 처리
-  self.isOwner = False
-  self.pop_quiz_active = False
-  username = data["myusername"]
-  print(f"User {username} joined the room.")
-
-  # 참여자 목록에 추가
-  if not hasattr(self.channel_layer, "participants"):
-      self.channel_layer.participants = set()
-      print(f"participants 그룹이 생성되었습니다.")
-      self.isOwner = True # 방장 여부
-      print(f"{username} 가 방장이 되었습니다.")
-  self.channel_layer.participants.add(username)
-
-...
-
-# 남아있는 참여자가 있다면 새로운 방장을 지정
-  other_participants = [
-      participant for participant in self.channel_layer.participants
-      if participant != data["myusername"]
-  ]
-  if other_participants and self.isOwner:
-      print(f"방장 {username} 이 방을 나갔습니다.")
-      new_owner = other_participants[0]  # 첫번째 참여자 선택
-      print(f"New owner assigned: {new_owner}")
-      # 새로운 방장에게 owner 권한 부여 메시지 전송
-      await self.channel_layer.group_send(
-          self.room_group_name,
-          {
-              "type": "assign_owner",
-              "new_owner": new_owner,
-          }
-      )
-  elif not other_participants:
-      del self.channel_layer.participants
-      print("참여자가 없어 participants 그룹이 삭제되었습니다.")
-```
-2. isOwner 가 설정된 유저만 퀴즈 생성 및 group_send 가 가 가능하도록 조건 추가
-```py
-# 퀴즈 브로드캐스트
-  if data['active'] == True and self.isOwner:    
-      await self.channel_layer.group_send(
-          self.room_group_name,
-          {
-              "type": "quiz_broadcast",
-              "message": ChatConsumer.question,
-              "username": "ReadRiddle",
-          }
-      )
-```
