@@ -39,24 +39,8 @@ ALLOWED_HOSTS = ["127.0.0.1", "172.31.87.147", "18.232.172.210", "54.208.56.239"
 
 # React 프론트 관련 / # 모든 출처 허용
 CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "https://www.letsreadriddle.com"]
+CORS_ALLOW_CREDENTIALS = True
 
-
-CORS_ALLOWED_ORIGIN_REGEXES = [
-    r"^https:\/\/.*\.letsreadriddle\.com$",
-    r"^https:\/\/api\.letsreadriddle\.com$"
-]
-
-# 모든 HTTP 메서드 허용 (선택적, 필요 시 추가)
-CORS_ALLOW_METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
-
-# 프론트엔드와 통신을 위한 헤더 허용
-CORS_ALLOW_HEADERS = ["*"]
-
-# ELB Health Check 및 내부 요청 허용
-CSRF_TRUSTED_ORIGINS = [
-    "https://www.letsreadriddle.com",
-    "https://api.letsreadriddle.com"
-]
 # Application definition
 
 INSTALLED_APPS = [
@@ -127,6 +111,8 @@ ACCOUNT_AUTHENTICATION_METHOD = "email"  # 이메일 인증 방식
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = "none"  # 이메일 확인을 요구하지 않음
+MIDDLEWARE.insert(1, "coding_helper.middleware.BlockDirectAccessMiddleware")
+
 
 SITE_ID = 1
 
