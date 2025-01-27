@@ -148,6 +148,9 @@ docker-compose up --build
 ![home](./img/cloud_diagram.png)
 
 
+### ERD
+![home](./img/erd.png)
+
 ---
 ## 💻 Trouble Shooting
 
