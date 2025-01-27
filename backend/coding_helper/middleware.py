@@ -9,7 +9,13 @@ class BlockDirectAccessMiddleware:
             "http://localhost:3000",
             "https://www.letsreadriddle.com",
         ]
+        allowed_path = "/verify-email/"
         referer = request.META.get("HTTP_REFERER", "")
+
+        path = request.path
+        
+        if allowed_path in path:
+            return self.get_response(request)
 
         # 만약 referer가 없거나, 허용된 출처에 포함되지 않으면 차단
         if not any(referer.startswith(origin) for origin in allowed_origins):
