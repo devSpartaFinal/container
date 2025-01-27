@@ -38,6 +38,11 @@ const Navigation = ({ isLoggedIn }) => {
     document.cookie = "access=; path=/; max-age=0; SameSite=Lax";
     document.cookie = "username=; path=/; max-age=0; SameSite=Lax";
     document.cookie = "refresh=; path=/; max-age=0; SameSite=Lax";
+
+
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("username");
+    localStorage.removeItem("lastLoggedInAt");
     window.location.href = "/login";
   };
 

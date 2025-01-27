@@ -23,6 +23,7 @@ const GoogleLogin = ({ setIsLoggedIn }) => {
   
       localStorage.setItem("accessToken", access);
       localStorage.setItem("username", username);
+      localStorage.setItem("lastLoggedInAt", JSON.stringify(new Date()));
   
       setIsLoggedIn(true);
       navigate("/profile");

@@ -79,7 +79,7 @@ const Home = () => {
               - Read Summary 로 교재에 대한 요약내용을 확인할 수 있습니다. <br></br>
               - 대화를 시작하면 화면 우측의 대화내역에 채팅내용이 저장됩니다. <br></br>
               - 대화내역 아래의 '+' 버튼을 눌러 새로운 대화를 시작할 수 있습니다. <br></br>
-              - 공식문서와 관련된 학습을 할 수 있습니다.
+              - 스파르타 교재와 공식문서에 관련된 학습을 할 수 있습니다.
             </ButtonDescription>
           </ButtonHalf>
           <ButtonHalf onClick={() => handleButtonClick("/multi_chat")}>

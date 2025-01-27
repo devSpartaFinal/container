@@ -25,16 +25,16 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("username", userID);
 
-      // 55분 기준 갱신 로직
+      // 30분 기준 갱신 로직
       const lastLoggedInAt = JSON.parse(localStorage.getItem("lastLoggedInAt"));
       const now = new Date();
-      const fiftyFiveMinutesLater = new Date(lastLoggedInAt).getTime() + 7 * 24 * 60 * 1000;
+      const fiftyNineMinutesLater = new Date(lastLoggedInAt).getTime() + 30 * 60 * 1000;
 
-      if (now.getTime() >= fiftyFiveMinutesLater && lastLoggedInAt) {
-        // 55분 이후: Access Token 갱신
+      if (now.getTime() >= fiftyNineMinutesLater && lastLoggedInAt) {
+        // 30분 이후: Access Token 갱신
         await refreshAccessToken(accessToken);
       } else {
-        // 55분 이전: 기존 로직 유지
+        // 30분 이전: 기존 로직 유지
         if (accessToken) {
           apiRequest.interceptors.request.use(
             (config) => {
@@ -120,7 +120,6 @@ export const AuthProvider = ({ children }) => {
       document.cookie = `accessToken=${newAccessToken}; path=/; max-age=86400; SameSite=Lax`;
       localStorage.setItem("lastLoggedInAt", JSON.stringify(new Date()));
       
-      // 인터셉터 업데이트
       apiRequest.interceptors.request.use(
         (config) => {
           config.headers["Authorization"] = `Bearer ${newAccessToken}`;
@@ -162,6 +161,10 @@ export const AuthProvider = ({ children }) => {
     document.cookie = "accessToken=; path=/; max-age=3600;  SameSite=Lax";
     document.cookie = "username=; path=/; max-age=3600;  UTC; SameSite=Lax";
     document.cookie = "lastLoggedInAt=; path=/; max-age=3600;  UTC; SameSite=Lax";
+
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("username");
+    localStorage.removeItem("lastLoggedInAt");
 
     setUser(null);
     if (user?.username) {
