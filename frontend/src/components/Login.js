@@ -80,53 +80,7 @@ const Login = ({ setIsLoggedIn, isLoggedIn }) => {
       return;
     }
     
-    if (!isLoggedIn) return; // 로그인하지 않았으면 실행하지 않음
-
-    // console.log("컴포넌트 마운트됨, setInterval 설정 시작");
-
-    // const checkTokenExpiry = () => {
-    //   console.log("토큰 만료 체크 시작");
-    //   const accessToken = document.cookie
-    //     .split("; ")
-    //     .find((row) => row.startsWith("accessToken="))
-    //     ?.split("=")[1];
-
-    //   if (accessToken) {
-    //     const payload = JSON.parse(atob(accessToken.split(".")[1]));
-    //     const expiryTime = payload.exp * 1000; // ms 단위로 변환
-    //     const currentTime = Date.now();
-    //     const remainingTime = expiryTime - currentTime;
-
-    //     if (remainingTime < 5 * 60 * 1000) { // 5분 미만
-    //       console.log("5분 미만, 토큰 갱신 필요");
-    //       // Access Token 재발급 요청
-    //       refreshAccessToken();
-    //     }
-    //   }
-    // };
-
-    // const refreshAccessToken = async () => {
-    //   const refreshToken = document.cookie
-    //     .split("; ")
-    //     .find((row) => row.startsWith("refreshToken="))
-    //     ?.split("=")[1];
-
-    //   if (refreshToken) {
-    //     try {
-    //       const response = await apiRequest.post("refresh/", { refresh: refreshToken });
-    //       const newAccessToken = response.data.access;
-    //       document.cookie = `accessToken=${newAccessToken}; path=/; max-age=3600;`;
-    //     } catch (err) {
-    //       console.error("토큰 재발급 실패:", err);
-    //     }
-    //   }
-    // };
-
-    // const interval = setInterval(checkTokenExpiry, 60 * 1000); // 매 1분마다 실행
-    // return () => {
-    //   console.log("컴포넌트 언마운트됨, setInterval 해제");
-    //   clearInterval(interval);
-    // };
+    if (!isLoggedIn) return; 
   }, [isLoggedIn]);
 
   return (

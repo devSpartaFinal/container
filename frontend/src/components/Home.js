@@ -52,21 +52,6 @@ const Home = () => {
     <HomeContainer>
       {/* <Header> */}
       <img className="image" alt="title" src={logo}/>
-      <a href="https://forms.gle/CA7SaahEhNMG7DUw8" style={{ textAlign: "center"}}>
-      <img
-        src={gift}
-        alt="React Animated"
-        style={{
-          width: "10%",
-          zIndex: '1000',
-          position: 'fixed',
-          marginTop: '-17%',
-          marginLeft: '33%',
-          transform: `rotate(${rotation}deg)`,
-          transition: "transform 10s linear",
-        }}
-      />
-    </a>
       <Content>
         <ButtonGroup>
           <ButtonHalf onClick={() => handleButtonClick("/read")}>

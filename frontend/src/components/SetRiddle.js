@@ -406,20 +406,6 @@ const SetRiddle = () => {
       ) : (
         <>
           <HomeContainer>
-            <a href="https://forms.gle/CA7SaahEhNMG7DUw8" style={{ textAlign: "center"}}>
-                  <img
-                    src={gift}
-                    alt="React Animated"
-                    style={{
-                      width: "10%",
-                      zIndex: '1000',
-                      position: 'fixed',
-                      marginLeft: '32%',
-                      transform: `rotate(${rotation}deg)`,
-                      transition: "transform 10s linear",
-                    }}
-                  />
-                </a>
           <DropDownParentContainer>
           <TitleContainer>
               <div style={{
