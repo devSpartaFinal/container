@@ -44,6 +44,7 @@ const Login = ({ setIsLoggedIn, isLoggedIn }) => {
       // 토큰 저장
       localStorage.setItem("accessToken", token.access);
       localStorage.setItem("username", user.username);
+      // localStorage.setItem("lastLoggedInAt", JSON.stringify(new Date()));
 
       setSuccess(true);
       setError(""); 

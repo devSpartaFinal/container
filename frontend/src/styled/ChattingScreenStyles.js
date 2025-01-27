@@ -86,7 +86,7 @@ export const GenerateQuizButton = styled.button`
 
 export const ChatScreenContainer = styled.div`
     display: flex;
-    height: 89%;
+    height: 85%;
     width: 77%;
     justify-content: space-between;
     flex-direction: column; 
@@ -104,7 +104,7 @@ export const ChatScreenContainer = styled.div`
 
     @media (max-width: 1800px) {
       top: 11%;
-      height: 87%;
+      height: 85%;
     }
     
     @media (max-width: 1600px) {

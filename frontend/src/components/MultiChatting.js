@@ -32,6 +32,25 @@ import ruby from "../assets/ruby.png";
 import gold from "../assets/gold.png";
 
 const MultiChatRoom = () => {
+
+
+    // // 로컬 스토리지에서 accessToken 가져오기
+    // const accessToken = localStorage.getItem("accessToken");
+    // // Base64 디코딩을 위한 함수
+    // const decodeBase64 = (base64) => {
+    // return decodeURIComponent(
+    //     atob(base64)
+    //     .split("")
+    //     .map((c) => `%${c.charCodeAt(0).toString(16).padStart(2, "0")}`)
+    //     .join("")
+    // );
+    // };
+    // // JWT의 payload 부분 디코딩
+    // const payload = accessToken.split(".")[1];
+    // const decodedPayload = JSON.parse(decodeBase64(payload));
+    // const myusername = decodedPayload.username;
+    // // username 가져오기
+    // console.log("Username:", myusername);
     const myusername = localStorage.getItem("username");
     const location = useLocation();
     const [messages, setMessages] = useState([]);
@@ -409,7 +428,7 @@ const MultiChatRoom = () => {
                                     marginBottom: "-3%",
                                     }}
                                 />
-                                <span style={{ marginLeft: "10px" }}>{user.username} </span>
+                                <span style={{ marginLeft: "10px" }}>{user.username}</span>
                                 ({user.RiddleScore !== undefined ? user.RiddleScore : 'Score not found'})
 
                                 
