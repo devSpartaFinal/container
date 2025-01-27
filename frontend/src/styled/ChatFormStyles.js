@@ -6,7 +6,7 @@ export const MessageForm = styled.form`
     align-items: center;
     height: 5%;
     margin-top: -20px;
-    margin-bottom: 0px;
+    margin-bottom: 10px;
     gap: 10px; 
 
     & input {
