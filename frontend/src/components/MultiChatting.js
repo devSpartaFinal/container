@@ -53,8 +53,8 @@ const MultiChatRoom = () => {
 
     const socket = useRef(null);
     const chatContainerRef = useRef(null);
-    const wsUrl = "ws://localhost:8000/ws/chat/global_room/"; // 고정된 room_name
-    // const wsUrl = "wss://api.letsreadriddle.com/ws/chat/global_room/";
+    const wsBaseUrl = process.env.REACT_APP_WS_BASE_URL;
+    const wsUrl = `${wsBaseUrl}/ws/chat/global_room/`; // 고정된 room_name
     const fetchScores = async () => {
 
         try{
