@@ -38,7 +38,7 @@ DEBUG = False
 ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
 
 # React 프론트 관련 / # 모든 출처 허용
-CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "https://localhost:3000"]
+CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "https://localhost:3000", "http://127.0.0.1:3000"]
 
 # Application definition
 
