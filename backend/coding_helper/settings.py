@@ -33,12 +33,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = DRF_SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
 
 # React 프론트 관련 / # 모든 출처 허용
-CORS_ALLOW_ALL_ORIGINS = True  
+CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "https://localhost:3000"]
 
 # Application definition
 
