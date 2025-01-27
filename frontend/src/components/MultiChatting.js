@@ -400,19 +400,17 @@ const MultiChatRoom = () => {
                                 onClick={() => handleUsernameClick(user.username)}
                             >
                                 {getMedalIcon(user.rank)}
-                                <span style={{ marginLeft: "10px" }}>{user.username}</span>
-                                 
-                                 <img
+                                <img
                                     src={renderRiddleRankIcon(user.RiddleScore)}
                                     alt="Rank Icon"
                                     style={{
                                     marginLeft: "10px",
                                     width: "20px",
-                                    marginBottom: "-2%",
+                                    marginBottom: "-3%",
                                     }}
                                 />
-
-                                 ({user.RiddleScore !== undefined ? user.RiddleScore : 'Score not found'})
+                                <span style={{ marginLeft: "10px" }}>{user.username} </span>
+                                ({user.RiddleScore !== undefined ? user.RiddleScore : 'Score not found'})
 
                                 
                             </li>
