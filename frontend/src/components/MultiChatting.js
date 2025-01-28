@@ -50,8 +50,8 @@ const MultiChatRoom = () => {
     // const decodedPayload = JSON.parse(decodeBase64(payload));
     // const myusername = decodedPayload.username;
     // // username 가져오기
-    // console.log("Username:", myusername);
     const myusername = localStorage.getItem("username");
+    console.log("Username:", myusername);
     const location = useLocation();
     const [messages, setMessages] = useState([]);
     const [message, setMessage] = useState("");

@@ -199,7 +199,7 @@ const Nav = styled.nav`
   z-index: 1000;
 
   @media (max-width: 1200px) {
-    display: none;
+    // display: none;
   }
 `;
 

@@ -12,11 +12,11 @@
     position: relative;
 }
 
-@media (max-width: 1200px) {
+/* @media (max-width: 1200px) {
     .chat-container {
         margin-left: 0%;
     }
-}
+} */
 
 .header {
     text-align: center;

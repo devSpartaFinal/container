@@ -120,8 +120,8 @@ export const ChatScreenContainer = styled.div`
     @media (max-width: 1200px) {
       top: 14%;
       height: 81%;
-      width: 81%;
-      left: 2%;
+      width: 77%;
+      // left: 2%;
     }
 
     @media (max-width: 992px) {

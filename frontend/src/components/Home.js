@@ -125,7 +125,7 @@ const Header = styled.header`
   margin-right: -8%;
 
   @media (max-width: 1200px) {
-  margin-right: 0%;
+  // margin-right: 0%;
 `;
 
 const Title = styled.h1`
@@ -168,7 +168,7 @@ const ButtonGroup = styled.div`
   height: 93%;
 
   @media (max-width: 1200px) {
-  margin-left: 4%;
+  // margin-left: 4%;
 `;
 
 const ButtonHalf = styled.div`

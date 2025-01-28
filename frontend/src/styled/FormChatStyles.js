@@ -113,10 +113,10 @@ export const FormQuizContainer = styled.div`
 
   @media (max-width: 1200px) {
   gap: 1vw;
-  width: 95%;
+  width: 90%;
   height: 82%;
   padding: 1vh;
-  left: -3%;
+  // left: -3%;
   }
 `;
 

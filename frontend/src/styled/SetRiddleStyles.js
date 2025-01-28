@@ -27,7 +27,7 @@ export const DropDownParentContainer = styled.div`
   overflow: auto;
   
   @media (max-width: 1200px) {
-  margin-left: 0%;
+  // margin-left: 0%;
   width: 65%;
   height: 70%;
   }
@@ -201,7 +201,7 @@ export const ParentContainer = styled.div`
   margin-top: 5%;
 
   @media (max-width: 1200px) {
-    margin-left: 0%;
+    // margin-left: 0%;
   }
 `;
 

@@ -24,7 +24,7 @@ export const SessionHeaderContainer = styled.div`
   z-index: 1000;
 
   @media (max-width: 1200px) {
-    display: none; 
+    // display: none; 
   }
 `;
 

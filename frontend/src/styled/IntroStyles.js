@@ -18,9 +18,9 @@ export const ParentContainer = styled.div`
   width: 80%;
   margin: 5% auto;
 
-  @media (max-width: 1200px) {
-    margin-left: 0%;
-  }
+  // @media (max-width: 1200px) {
+  //   margin-left: 0%;
+  // }
 `;
 
 export const ButtonRow = styled.div`
@@ -90,9 +90,9 @@ export const DropDownParentContainer = styled.div`
   border-radius: 30px;
   margin-bottom: 1%;
 
-  @media (max-width: 1200px) {
-  left: 0%;
-  }
+  // @media (max-width: 1200px) {
+  // left: 0%;
+  // }
 `;
 
 
@@ -310,7 +310,7 @@ export const MyModal = styled.div`
   }
 
   @media (max-width: 1200px) {
-  left: 11%;
+  // left: 11%;
   width: 100%;
   height: 105%;
   }

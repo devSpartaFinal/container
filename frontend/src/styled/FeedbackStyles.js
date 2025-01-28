@@ -22,7 +22,7 @@ export const FeedbackPanel = styled.div`
   justify-content: center;
 
   @media (max-width: 1200px) {
-  margin-left: 2%;
+  // margin-left: 2%;
   width: 72%;
 `;
 
