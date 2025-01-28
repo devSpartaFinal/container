@@ -59,28 +59,58 @@ RAG(Relevant Answer Generation) 모델 기반으로 강의 자료를 활용해 �
 ---
 
 ## 🦾 팀 구성 및 역할 배분
-<table style="width: 100%;">
+<table style="width: 100%; text-align: center;">
   <tr>
-    <th style="width: 40%; text-align: center;">이름</th>
-    <th style="width: 60%;">역할</th>
+    <td><img src="/img/박성진.png" alt="박성진 사진" style="width: 80px; height: 80px"></td>
+    <td><img src="/img/윤수진.png" alt="윤수진 사진" style="width: 80px; height: 80px; "></td>
+    <td><img src="/img/구수연.png" alt="구수연 사진" style="width: 80px; height: 80px; "></td>
+    <td><img src="/img/나영웅.png" alt="나영웅 사진" style="width: 80px; height: 80px; "></td>
   </tr>
   <tr>
-    <td style="text-align: center;">박성진  </td>
-    <td>초기 BE 설계, 공식문서 크롤링/전처리, 이메일 인증, JWT 설계, FE 홈/프로필/대화세션 UI 개선 및 버그수정, 웹소켓 연결/단체 POP QUIZ 개발</td>
+    <td>박성진</td>
+    <td>윤수진</td>
+    <td>구수연</td>
+    <td>나영웅</td>
   </tr>
   <tr>
-    <td style="text-align: center;">윤수진  </td>
-    <td>PostGreSQL DB 구축, AWS 연동, 스파르타 문서 전처리, 데이터 전처리 관련 모듈 개발, FE 전체 UI 및 style 개선, 피드백 결과페이지 개발</td>
-  </tr>
-  <tr>
-    <td style="text-align: center;">구수연  </td>
-    <td>초기 FE 설계, FE 퀴즈폼, AI 챗폼 개발, FE 대화세션 기능 개발, FE JWT 인증관련 개발, AWS 배포, QUIZ LLM 개선, 소셜 로그인 기능</td>
-  </tr>
-  <tr>
-    <td style="text-align: center;">나영웅  </td>
-    <td>Quiz/QnA 관련 API 개발, Docker, RAG 모델 구축, JWT 인증방식 개선, LLM 개발 및 개선, 소셜 로그인 기능</td>
+    <td>
+      초기 BE 설계<br>
+      공식문서 크롤링/전처리<br>
+      이메일 인증<br>
+      JWT 설계<br>
+      FE 홈/프로필/대화세션 UI 개선 및 버그수정<br>
+      웹소켓 연결<br>
+      단체 POP QUIZ 개발
+    </td>
+    <td>
+      PostGreSQL DB 구축<br>
+      AWS 연동<br>
+      스파르타 문서 전처리<br>
+      데이터 전처리 관련 모듈 개발<br>
+      FE 전체 UI 및 style 개선<br>
+      피드백 결과페이지 개발
+    </td>
+    <td>
+      초기 FE 설계<br>
+      FE 퀴즈폼<br>
+      AI 챗폼 개발<br>
+      FE 대화세션 기능 개발<br>
+      FE JWT 인증관련 개발<br>
+      AWS 배포<br>
+      QUIZ LLM 개선<br>
+      소셜 로그인 기능
+    </td>
+    <td>
+      Quiz/QnA 관련 API 개발<br>
+      Docker<br>
+      RAG 모델 구축<br>
+      JWT 인증방식 개선<br>
+      LLM 개발 및 개선<br>
+      소셜 로그인 기능
+    </td>
   </tr>
 </table>
+
 
 
 - 협업 도구
