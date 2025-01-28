@@ -4,6 +4,7 @@ from .views import *
 
 urlpatterns = [
     path("", SignInOutAPIView.as_view(), name="signinout"),
+    path("user/<int:user_id>", UsernameAPIView.as_view(), name="username"),
     path("<str:username>", ProfileAPIView.as_view(), name="profile"),
     path("refresh/", TokenRefresh.as_view(), name="refresh_token"),
     path("auth/", AuthAPIView.as_view(), name="auth"),
