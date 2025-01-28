@@ -55,7 +55,7 @@ export const SummaryGenerateContainer = styled.div`
   margin-left: 25%;
 
   @media (max-width: 1200px) {
-  margin-left: 0%;
+  // margin-left: 0%;
   }
 `;
 
