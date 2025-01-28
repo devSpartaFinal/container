@@ -1,13 +1,16 @@
 
 # 🤖 개발자들을 위한 학습용 AI 챗봇 ReadRiddle
 
-## 📖 Navigation
+### 📖 Navigation
 1. [Introduction](#-introduction)
-2. [How To Use](#-how-to-use)
-3. [Key Function](#-key-function)
-4. [Architecture](#-architecture)
-5. [Trouble Shooting](#-trouble-shooting)
-6. [Team](#-team)
+2. [Project Overview](#about-project)
+3. [Goal](#-프로젝트-핵심-목표)
+4. [Team](#-팀-구성-및-역할-배분)
+5. [How To Use](#-how-to-use)
+6. [Directory Structure](#-directory-structure)
+7. [Key Summary](#key-summary)
+8. [Architecture](#-architecture)
+9. [Trouble Shooting](#-trouble-shooting)
 ---
 ## 👀 Introduction
 
@@ -19,11 +22,111 @@
 ReadRiddle은 개발/AI 관련 학습을 원하는 사용자가 챗봇 / 시험지 형식을 통해 
 원하는 지식을 학습하거나 학습한 지식의 깊이를 확인해 볼 수 있는 서비스를 제공합니다.
 
+개발 기간 :  2024년 12월 30일 ~ 2025년 1월 31일
+
+
+---
+<a id="about-project"></a>
+## ✍️ 프로젝트 개요
+
+#### 프로젝트 주제: 
+개발자들을 위한 학습용 AI 챗봇
+
+#### 선정 배경:
+이번 스파르타 과정에서 저희가 배웠던 여러가지 내용들을 복습하는데 활용하는 AI 챗봇을 개발하면 유용할 것 같다는 생각에, 해당 자료들을 바탕으로 AI가 퀴즈를 내고 사용자가 정답을 입력하면 이에 대해 피드백해주는 학습용 AI 모델을 개발하게 되었습니다.
+여기에 좀 더 확장성을 고려하여 오픈소스와 공식문서(Django, DRF, React) 를 참고자료(RAG)로 사용하는 QnA 용 AI 챗봇을 추가해서 퀴즈와 학습을 병행할 수 있도록 했습니다.
+
+#### 기획 의도:
+학습 내용을 기반으로 퀴즈를 제공하고 피드백을 통해 학습 효율을 높이는 학습 보조 AI를 개발합니다.
+주제 및 교재 선택, 피드백 제공 등 다양한 기능을 통해 사용자 편의성을 높였습니다.
+특화 포인트 및 차별화된 내용:
+RAG(Relevant Answer Generation) 모델 기반으로 강의 자료를 활용해 퀴즈와 피드백을 생성하고 유저의 질문에 적절히 답변하는 기능을 제공합니다.
+대화 세션 관리와 대화 기록 저장을 통해 학습 진척도를 추적할 수 있습니다.
+웹소켓을 활용한 사용자 간 실시간 단체 채팅과 POP QUIZ 및 랭크 시스템을 구현하였습니다.
+
+
+---
+
+## ❕ 프로젝트 핵심 목표
+* 저희 프로젝트의 목적은
+
+개발 중에 떠오르는 궁금증을 공식문서나 스파르타 교재를 기반으로 검증된 데이터를 얻을 수 있게 해주는 챗봇기능,
+복습 학습을 진행할 수 있는 문제집 및 채점 기능,
+주제에 대한 간단한 요약본을 받아볼 수 있는 기능,
+알고리즘 문제에 대한 실시간 단체 퀴즈 채팅 기능을 제공하여 
+개발자들 및 스파르타 수강생들의 흥미를 자극하며 개발 학습을 도와줄 수 있도록 설계되었습니다.
+
+---
+
+## 🦾 팀 구성 및 역할 배분
+<table style="width: 100%; text-align: center;" align="center">
+  <tr>
+     <td style="text-align: center;" align="center"><img src="/img/박성진.png" alt="박성진 사진" style="width: 80px; height: 80px"></td>
+    <td style="text-align: center;" align="center"><img src="/img/윤수진.png" alt="윤수진 사진" style="width: 80px; height: 80px; "></td>
+     <td style="text-align: center;" align="center"><img src="/img/구수연.png" alt="구수연 사진" style="width: 80px; height: 80px; "></td>
+     <td style="text-align: center;" align="center"><img src="/img/나영웅.png" alt="나영웅 사진" style="width: 80px; height: 80px; "></td>
+  </tr>
+  <tr>
+     <td style="text-align: center;" align="center">박성진</td>
+     <td style="text-align: center;" align="center">윤수진</td>
+     <td style="text-align: center;" align="center">구수연</td>
+     <td style="text-align: center;" align="center">나영웅</td>
+  </tr>
+  <tr align="center">
+     <td style="text-align: center;" align="center">
+      초기 BE 설계<br>
+      공식문서 크롤링/전처리<br>
+      이메일 인증<br>
+      JWT 설계<br>
+      FE 홈/프로필/대화세션 UI 개선 및 버그수정<br>
+      웹소켓 연결<br>
+      단체 POP QUIZ 개발
+    </td>
+     <td style="text-align: center;" align="center">
+      PostGreSQL DB 구축<br>
+      AWS 연동<br>
+      스파르타 문서 전처리<br>
+      데이터 전처리 관련 모듈 개발<br>
+      FE 전체 UI 및 style 개선<br>
+      피드백 결과페이지 개발
+    </td>
+     <td style="text-align: center;" align="center">
+      초기 FE 설계<br>
+      FE 퀴즈폼<br>
+      AI 챗폼 개발<br>
+      FE 대화세션 기능 개발<br>
+      FE JWT 인증관련 개발<br>
+      AWS 배포<br>
+      QUIZ LLM 개선<br>
+      소셜 로그인 기능
+    </td>
+     <td style="text-align: center;" align="center">
+      Quiz/QnA 관련 API 개발<br>
+      Docker<br>
+      RAG 모델 구축<br>
+      JWT 인증방식 개선<br>
+      LLM 개발 및 개선<br>
+      소셜 로그인 기능
+    </td>
+  </tr>
+</table>
+
+
+
+- 협업 도구
+  - Github
+  - Slack
+  - Notion
+  - Figma
+- 버전관리
+  - Git
+
 
 ---
 ## 📣 How To Use
 
-👇 ReadRiddle 사이트 접속 👇
+👇 ReadRiddle 사이트 접속 👇 </br>
+
 https://www.letsreadriddle.com/home
 
 ![home](./img/preview2.gif)
@@ -71,10 +174,52 @@ docker-compose up --build
 
   </details>
 
+---
 
+## 🔍 Directory Structure
+
+- docker로 백엔드, 프론트엔드 함께 실행 (로컬)
+
+```
+.
+├── backend                   # 서버 측 애플리케이션 코드
+│   ├── accounts              # 사용자 계정 관련 모듈
+│   ├── chat                  # 실시간 단체 퀴즈 채팅 기능 관련 모듈
+│   ├── chatbot               # 챗봇 기능 구현 모듈
+│   ├── coding_helper         # Setting 관련 모듈
+│   ├── quizbot               # 퀴즈봇 관련 모듈
+│   ├── docker_test.md        # Docker 관련 테스트 문서
+│   ├── Dockerfile            # 백엔드 Docker 설정 파일
+│   ├── manage.py             # Django 관리 스크립트
+│   └── requirements.txt      # Python 패키지 의존성 목록
+├── db                        # 데이터베이스 관련 파일 (스키마, 설정 등)
+├── frontend                  # 클라이언트 측 애플리케이션 코드
+│   ├── public                # 정적 파일 (HTML, 이미지 등)
+│   ├── src                   # React 소스 코드
+│   │   ├── assets            # 정적 리소스 (이미지, 폰트 등)
+│   │   ├── components        # React 컴포넌트 모음
+│   │   ├── context           # 전역 상태 관리 Context API 관련 파일
+│   │   ├── hooks             # React 커스텀 훅 모음
+│   │   ├── styled            # 스타일링 관련 파일
+│   │   ├── apiFeedbackRequest.js # API 피드백 요청 모듈
+│   │   ├── apiRequest.js     # API 요청 처리 모듈
+│   │   ├── App.css           # App 컴포넌트의 스타일 파일
+│   │   ├── App.js            # 메인 React 컴포넌트
+│   │   ├── index.css         # 전역 스타일 파일
+│   │   ├── index.js          # React 엔트리포인트
+│   ├── .gitignore            # Git에서 제외할 파일/폴더 설정
+│   ├── Dockerfile            # 프론트엔드 Docker 설정 파일
+│   ├── package.json          # Node.js 패키지 설정 및 의존성 목록
+│   ├── yarn.lock             # Yarn 패키지 버전 고정 파일
+│   ├── img                   # 이미지 파일 모음
+├── docker-compose.yml        # Docker Compose 구성 파일
+└── README.md                 # 프로젝트 설명 및 실행 가이드
+```
 
 ---
-## 🗝️ Key Function
+
+<a id="key-summary"></a>
+## 🔑 Key Summary
 
 
 ### 🤖 RAG를 이용한 챗봇 기능 & 💬 Polling 실시간 채팅방식
@@ -132,6 +277,19 @@ docker-compose up --build
   </details>
 
 
+### ☁️ 프론트엔드 & 백엔드 안정적이고 독립적인 운영환경 구축 
+> - S3 : 
+S3는 정적 웹 페이지를 호스팅하는 데 매우 저렴한 옵션이며, 사용량 기반 과금이라 초기 비용 부담이 적은 선택이었습니다.또한 트래픽이 증가해도 S3는 자동으로 확장되므로 따로 서버 관리 없이 대응할 수 있게 되었습니다.
+> - CloudFront ,ROUTE53 : 
+S3로 배포한 프론트엔드 컨텐츠를 전 세계 엣지 로케이션을 활용해 지연 시간을 최소화했으며 정적 컨텐츠를 캐시해 원본 서버의 부하를 감소시켰습니다.
+> - ELB : 
+웹서버 Nginx를 설정하여 포트 포워딩을 구성할 수도 있었지만, 보다 쉽고 간편한 방법으로 ELB의 포트 포워딩 기능을 활용하여 배포된 EC2 인스턴스의 내부 및 외부 데이터 전송 방식을 효과적으로 조정했습니다.
+> - EC2 - T3 SMALL : 
+여러가지 인스턴스 스펙으로 테스트 해보던 중에 여러명의 사용자가 접속할 경우 동시 다발적인 LLM응답 생성에 대응할 수 있으며 현재 트래픽에서 CPU 크레딧이 여유로운 T3 small 모델을 사용했습니다.
+지속가능하면서 과금되지 않을 스펙의 EC2 인스턴스를 구동하게 되었습니다.
+> - HTTPS 배포: 
+보안 강화를 위해 HTTPS 프로토콜을 사용하여 안전한 연결을 보장하며, SSL 인증서를 설정하여 데이터를 암호화하고, 사용자의 개인정보 보호를 최우선으로 고려한 배포 환경을 구성했습니다.
+
 
 ---
 ## 🔍 Architecture
@@ -148,6 +306,10 @@ docker-compose up --build
 
 ### ERD
 ![home](./img/erd.png)
+
+
+### SA 문서
+https://citrine-blue-23b.notion.site/Software-Architecture-3-189e28323d18808d9753f23b9f369603?pvs=4
 
 ---
 ## 💻 Trouble Shooting
@@ -585,12 +747,181 @@ RUN yarn add react-icons
 ```
 
   </details>
+
+  <details>
+  <summary> 벡터 DB 용량 초과로 Push 불가능한 문제</summary>
+
+## 문제 상황
+
+벡터 DB 용량이 100mb 초과로 리포지토리에 Push가 불가능한 상황
+
+### 원인
+
+레퍼런스 문서를 분할하는 과정에서 청크사이즈가 너무 작게 설정되어 데이터가 과도하게 생성됨
+
+```python
+CHUNK_SIZE = 200
+CHUNK_OVERLAP = 50
+```
+
+## 해결
+
+레퍼런스 문서의 형태를 고려하여 청크 사이즈 증가시켜가며 테스트
+
+- 학습 교재와 공식문서
+    - 논문 형식의 문서
+    - 필요한 정보를 담기 위해 어느 정도 큰 사이즈의 분할 필요
+
+여러번 테스트한 결과 2000/200 사이즈로 결정
+
+- 요량 20mb로 감소하여 문제 해결
+
+```python
+CHUNK_SIZE = 2000
+CHUNK_OVERLAP = 200
+```
+  </details>
+
+  <details>
+  <summary> 퀴즈 생성 LLM이 때때로 의도한 JSON 형태를 반환하지 않는 문제</summary>
+
+## 문제 상황
+
+LLM으로 퀴즈 생성 시 낮은 확률이지만 원하는 JSON형태를 반환하지 않는 경우 발생
+
+### 원인
+
+JSON 형식 반환을 프롬프트로 설정, 일정 확률로 다른 형태의 구조로 생성하거나 몇가지 항목 누락
+
+```python
+"""
+return json format, do not include ```json```
+"""
+```
+
+- 몇가지만 누락되어도 DB에 반영될 때 오류 발생
+
+## 해결
+
+- 구조화된 출력 기능 사용
+    - 특정 구조로만 답변 생성
+
+```python
+    class QuestionChoice(BaseModel):
+        id: int
+        content: str
+        is_correct: bool
+
+    class Question(BaseModel):
+        id: int
+        content: str
+        code_snippets: str
+        answer_type: str
+        choices: list[QuestionChoice]
+
+    class QuizResponse(BaseModel):
+        # id: int # DB에서 자동 생성
+        title: str
+        description: str
+        questions: list[Question]
+
+    # OpenAI 클라이언트 설정
+    client = OpenAI(api_key=openai.api_key)
+    prompt = f"""
+
+        """
+    # 퀴즈 데이터를 구조화하여 응답
+    completion = client.beta.chat.completions.parse(
+        model="gpt-4o",
+        messages=[
+            {"role": "system", "content": prompt},
+        ],
+        temperature=0.5,
+        response_format=QuizResponse,  # QuizResponse 모델을 설정
+    )
+    # 응답 데이터
+    quiz = completion.choices[0].message.parsed
+    # JSON 형태로 추출
+    quiz_json = json.dumps(quiz.model_dump(), indent=2)
+    return quiz_json
+```
+  </details>
+
+<details>
+  <summary> 퀴즈 생성 시 1번과 2번 선택지에만 정답을 생성하는 문제</summary>
+
+# 문제
+
+퀴즈 LLM을 생성하면 1번 또는 2번 선택지만을 정답으로 생성\
+
+# 해결
+
+정답으로 들어갈 번호를 난수 생성한 뒤에 문제 생성
+
+- 4지선다 : 1부터 4까지의 숫자 중 랜덤으로 생성
+- ox : 1 또는 2 중 랜덤으로 생성
+
+```python
+def quizz_chain(content, input):
+    type = input.get("type", "ox")
+    count = input.get("count", 5)
+    difficulty = input.get("difficulty", "easy")
+    correct_answer_distribution = []
+    if type == "4_multiple_choice":
+        for _ in range(1, int(count) + 1):
+            correct_index = random.randint(1, 4)
+            suffle = f"""
+                qustions_id : {_},
+                choices_id : {correct_index},
+                is_correct : true
+                """
+            correct_answer_distribution.append(suffle)
+        description = f"create {count}, {difficulty} quiz with 4_multiple_choice. and follow answer_sheet : {correct_answer_distribution}"
+    elif type == "ox":
+        for _ in range(1, int(count) + 1):
+            correct_index = random.randint(1, 2)
+            correct_answer_distribution.append(correct_index)
+        description = f"create {count}, {difficulty} quiz with true or false (O/X). and follow answer_sheet : {correct_answer_distribution}"
+        ...
+```
+  </details>
   
+  <details>
+  <summary> 컨테이너 빌드 시 DB 오류 발생</summary>
+
+# 문제
+
+컨테이너 빌드 시 DB에 파일 누락 또는 지속석인 오류 발생
+
+## 문제 원인
+
+테스트 후 파일 정리 시 DB의 volumes 경로인 DB/data 를 삭제하지 않아서 DB 빌드 시 이전 DB가 있다고 간주하고 DB초기화를 생략
+
+```python
+  db:
+    image: postgres:15
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./db/data:/var/lib/postgresql/data # 볼륨 저장
+      - ./db/init:/docker-entrypoint-initdb.d # 컨테이너 생성 시 초기화 sql 파일
+```
+
+# 해결
+
+테스트 후 마이그레이션 로그 파일, DB파일 및 차가로 생성된 경로 폴더도 모두 삭제
+  </details>
+
 </br>
 
   > 윤수진
   
-  </details>
   <details>
   <summary> Ddocker 빌드 시 pgAdmin에서 오류 발생</summary>
 
@@ -934,15 +1265,5 @@ CORS_ALLOW_CREDENTIALS = True
   
 
 ---
-## 🦾 Team
-| 이름   | 역할                            |
-|--------|---------------------------------|
-| 박성진 | 초기 BE 설계, 공식문서 크롤링/전처리, 이메일 인증, JWT 설계, FE 홈/프로필/대화세션 UI 개선 및 버그수정, 웹소켓 연결/단체 POP QUIZ 개발|
-| 윤수진 | PostGreSQL DB 구축, AWS 연동, 스파르타 문서 전처리, 데이터 전처리 관련 모듈 개발, FE 전체 UI 및 style 개선, 피드백 결과페이지 개발|
-| 구수연 | 초기 FE 설계, FE 퀴즈폼, AI 챗폼 개발, FE 대화세션 기능 개발, FE JWT 인증관련 개발, AWS 배포, QUIZ LLM 개선, 소셜 로그인 기능 |
-| 나영웅 |Quiz/QnA 관련 API 개발, Docker, RAG 모델 구축, JWT 인증방식 개선, LLM 개발 및 개선, 소셜 로그인 기능|
 
-
-
----
 
