@@ -1,13 +1,15 @@
 
 # 🤖 개발자들을 위한 학습용 AI 챗봇 ReadRiddle
 
-## 📖 Navigation
+### 📖 Navigation
 1. [Introduction](#-introduction)
-2. [How To Use](#-how-to-use)
-3. [Key Function](#-key-function)
-4. [Architecture](#-architecture)
-5. [Trouble Shooting](#-trouble-shooting)
-6. [Team](#-team)
+2. [Team](#-team)
+3. [Goal](#-프로젝트-핵심-목표)
+4. [How To Use](#-how-to-use)
+5. [Directory Structure](#-directory-structure)
+6. [Key Summary](#key-summary)
+7. [Architecture](#-architecture)
+8. [Trouble Shooting](#-trouble-shooting)
 ---
 ## 👀 Introduction
 
@@ -19,11 +21,42 @@
 ReadRiddle은 개발/AI 관련 학습을 원하는 사용자가 챗봇 / 시험지 형식을 통해 
 원하는 지식을 학습하거나 학습한 지식의 깊이를 확인해 볼 수 있는 서비스를 제공합니다.
 
+개발 기간 :  2024년 12월 30일 ~ 2025년 1월 31일
+
+---
+
+## 🦾 Team
+| 이름   | 역할                            |
+|--------|---------------------------------|
+| 박성진 | 초기 BE 설계, 공식문서 크롤링/전처리, 이메일 인증, JWT 설계, FE 홈/프로필/대화세션 UI 개선 및 버그수정, 웹소켓 연결/단체 POP QUIZ 개발|
+| 윤수진 | PostGreSQL DB 구축, AWS 연동, 스파르타 문서 전처리, 데이터 전처리 관련 모듈 개발, FE 전체 UI 및 style 개선, 피드백 결과페이지 개발|
+| 구수연 | 초기 FE 설계, FE 퀴즈폼, AI 챗폼 개발, FE 대화세션 기능 개발, FE JWT 인증관련 개발, AWS 배포, QUIZ LLM 개선, 소셜 로그인 기능 |
+| 나영웅 |Quiz/QnA 관련 API 개발, Docker, RAG 모델 구축, JWT 인증방식 개선, LLM 개발 및 개선, 소셜 로그인 기능|
+
+- 협업 도구
+  - Github
+  - Slack
+  - Notion
+  - Figma
+- 버전관리
+  - Git
+
+---
+
+## ❕ 프로젝트 핵심 목표
+저희 프로젝트의 목적은 
+
+개발 중에 떠오르는 궁금증을 공식문서나 스파르타 교재를 기반으로 검증된 데이터를 얻을 수 있게 해주는 챗봇기능,
+복습 학습을 진행할 수 있는 문제집 및 채점 기능,
+주제에 대한 간단한 요약본을 받아볼 수 있는 기능,
+알고리즘 문제에 대한 실시간 단체 퀴즈 채팅 기능을 제공하여 
+개발자들 및 스파르타 수강생들의 흥미를 자극하며 개발 학습을 도와줄 수 있도록 설계되었습니다.
 
 ---
 ## 📣 How To Use
 
-👇 ReadRiddle 사이트 접속 👇
+👇 ReadRiddle 사이트 접속 👇 </br>
+
 https://www.letsreadriddle.com/home
 
 ![home](./img/preview2.gif)
@@ -71,10 +104,52 @@ docker-compose up --build
 
   </details>
 
+---
 
+## 🔍 Directory Structure
+
+- docker로 백엔드, 프론트엔드 함께 실행 (로컬)
+
+```
+.
+├── backend                   # 서버 측 애플리케이션 코드
+│   ├── accounts              # 사용자 계정 관련 모듈
+│   ├── chat                  # 실시간 단체 퀴즈 채팅 기능 관련 모듈
+│   ├── chatbot               # 챗봇 기능 구현 모듈
+│   ├── coding_helper         # Setting 관련 모듈
+│   ├── quizbot               # 퀴즈봇 관련 모듈
+│   ├── docker_test.md        # Docker 관련 테스트 문서
+│   ├── Dockerfile            # 백엔드 Docker 설정 파일
+│   ├── manage.py             # Django 관리 스크립트
+│   └── requirements.txt      # Python 패키지 의존성 목록
+├── db                        # 데이터베이스 관련 파일 (스키마, 설정 등)
+├── frontend                  # 클라이언트 측 애플리케이션 코드
+│   ├── public                # 정적 파일 (HTML, 이미지 등)
+│   ├── src                   # React 소스 코드
+│   │   ├── assets            # 정적 리소스 (이미지, 폰트 등)
+│   │   ├── components        # React 컴포넌트 모음
+│   │   ├── context           # 전역 상태 관리 Context API 관련 파일
+│   │   ├── hooks             # React 커스텀 훅 모음
+│   │   ├── styled            # 스타일링 관련 파일
+│   │   ├── apiFeedbackRequest.js # API 피드백 요청 모듈
+│   │   ├── apiRequest.js     # API 요청 처리 모듈
+│   │   ├── App.css           # App 컴포넌트의 스타일 파일
+│   │   ├── App.js            # 메인 React 컴포넌트
+│   │   ├── index.css         # 전역 스타일 파일
+│   │   ├── index.js          # React 엔트리포인트
+│   ├── .gitignore            # Git에서 제외할 파일/폴더 설정
+│   ├── Dockerfile            # 프론트엔드 Docker 설정 파일
+│   ├── package.json          # Node.js 패키지 설정 및 의존성 목록
+│   ├── yarn.lock             # Yarn 패키지 버전 고정 파일
+│   ├── img                   # 이미지 파일 모음
+├── docker-compose.yml        # Docker Compose 구성 파일
+└── README.md                 # 프로젝트 설명 및 실행 가이드
+```
 
 ---
-## 🗝️ Key Function
+
+<a id="key-summary"></a>
+## 🔑 Key Summary
 
 
 ### 🤖 RAG를 이용한 챗봇 기능 & 💬 Polling 실시간 채팅방식
@@ -131,6 +206,17 @@ docker-compose up --build
    ![home](./img/popquiz.gif)
   </details>
 
+
+### ☁️ 프론트엔드 & 백엔드 안정적이고 독립적인 운영환경 구축 
+> - S3 : 
+S3는 정적 웹 페이지를 호스팅하는 데 매우 저렴한 옵션이며, 사용량 기반 과금이라 초기 비용 부담이 적은 선택이었습니다.또한 트래픽이 증가해도 S3는 자동으로 확장되므로 따로 서버 관리 없이 대응할 수 있게 되었습니다.
+> - CloudFront ,ROUTE53 : 
+S3로 배포한 프론트엔드 컨텐츠를 전 세계 엣지 로케이션을 활용해 지연 시간을 최소화했으며 정적 컨텐츠를 캐시해 원본 서버의 부하를 감소시켰습니다.
+> - ELB : 
+웹서버 Nginx를 설정하여 포트 포워딩을 구성할 수도 있었지만, 보다 쉽고 간편한 방법으로 ELB의 포트 포워딩 기능을 활용하여 배포된 EC2 인스턴스의 내부 및 외부 데이터 전송 방식을 효과적으로 조정했습니다.
+> - EC2 - T3 SMALL : 
+여러가지 인스턴스 스펙으로 테스트 해보던 중에 여러명의 사용자가 접속할 경우 동시 다발적인 LLM응답 생성에 대응할 수 있으며 현재 트래픽에서 CPU 크레딧이 여유로운 T3 small 모델을 사용했습니다.
+지속가능하면서 과금되지 않을 스펙의 EC2 인스턴스를 구동하게 되었습니다.
 
 
 ---
@@ -934,15 +1020,5 @@ CORS_ALLOW_CREDENTIALS = True
   
 
 ---
-## 🦾 Team
-| 이름   | 역할                            |
-|--------|---------------------------------|
-| 박성진 | 초기 BE 설계, 공식문서 크롤링/전처리, 이메일 인증, JWT 설계, FE 홈/프로필/대화세션 UI 개선 및 버그수정, 웹소켓 연결/단체 POP QUIZ 개발|
-| 윤수진 | PostGreSQL DB 구축, AWS 연동, 스파르타 문서 전처리, 데이터 전처리 관련 모듈 개발, FE 전체 UI 및 style 개선, 피드백 결과페이지 개발|
-| 구수연 | 초기 FE 설계, FE 퀴즈폼, AI 챗폼 개발, FE 대화세션 기능 개발, FE JWT 인증관련 개발, AWS 배포, QUIZ LLM 개선, 소셜 로그인 기능 |
-| 나영웅 |Quiz/QnA 관련 API 개발, Docker, RAG 모델 구축, JWT 인증방식 개선, LLM 개발 및 개선, 소셜 로그인 기능|
 
-
-
----
 
