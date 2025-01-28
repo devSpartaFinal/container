@@ -307,6 +307,10 @@ S3로 배포한 프론트엔드 컨텐츠를 전 세계 엣지 로케이션을 �
 ### ERD
 ![home](./img/erd.png)
 
+
+### SA 문서
+https://citrine-blue-23b.notion.site/Software-Architecture-3-189e28323d18808d9753f23b9f369603?pvs=4
+
 ---
 ## 💻 Trouble Shooting
 
@@ -743,12 +747,181 @@ RUN yarn add react-icons
 ```
 
   </details>
+
+  <details>
+  <summary> 벡터 DB 용량 초과로 Push 불가능한 문제</summary>
+
+## 문제 상황
+
+벡터 DB 용량이 100mb 초과로 리포지토리에 Push가 불가능한 상황
+
+### 원인
+
+레퍼런스 문서를 분할하는 과정에서 청크사이즈가 너무 작게 설정되어 데이터가 과도하게 생성됨
+
+```python
+CHUNK_SIZE = 200
+CHUNK_OVERLAP = 50
+```
+
+## 해결
+
+레퍼런스 문서의 형태를 고려하여 청크 사이즈 증가시켜가며 테스트
+
+- 학습 교재와 공식문서
+    - 논문 형식의 문서
+    - 필요한 정보를 담기 위해 어느 정도 큰 사이즈의 분할 필요
+
+여러번 테스트한 결과 2000/200 사이즈로 결정
+
+- 요량 20mb로 감소하여 문제 해결
+
+```python
+CHUNK_SIZE = 2000
+CHUNK_OVERLAP = 200
+```
+  </details>
+
+  <details>
+  <summary> 퀴즈 생성 LLM이 때때로 의도한 JSON 형태를 반환하지 않는 문제</summary>
+
+## 문제 상황
+
+LLM으로 퀴즈 생성 시 낮은 확률이지만 원하는 JSON형태를 반환하지 않는 경우 발생
+
+### 원인
+
+JSON 형식 반환을 프롬프트로 설정, 일정 확률로 다른 형태의 구조로 생성하거나 몇가지 항목 누락
+
+```python
+"""
+return json format, do not include ```json```
+"""
+```
+
+- 몇가지만 누락되어도 DB에 반영될 때 오류 발생
+
+## 해결
+
+- 구조화된 출력 기능 사용
+    - 특정 구조로만 답변 생성
+
+```python
+    class QuestionChoice(BaseModel):
+        id: int
+        content: str
+        is_correct: bool
+
+    class Question(BaseModel):
+        id: int
+        content: str
+        code_snippets: str
+        answer_type: str
+        choices: list[QuestionChoice]
+
+    class QuizResponse(BaseModel):
+        # id: int # DB에서 자동 생성
+        title: str
+        description: str
+        questions: list[Question]
+
+    # OpenAI 클라이언트 설정
+    client = OpenAI(api_key=openai.api_key)
+    prompt = f"""
+
+        """
+    # 퀴즈 데이터를 구조화하여 응답
+    completion = client.beta.chat.completions.parse(
+        model="gpt-4o",
+        messages=[
+            {"role": "system", "content": prompt},
+        ],
+        temperature=0.5,
+        response_format=QuizResponse,  # QuizResponse 모델을 설정
+    )
+    # 응답 데이터
+    quiz = completion.choices[0].message.parsed
+    # JSON 형태로 추출
+    quiz_json = json.dumps(quiz.model_dump(), indent=2)
+    return quiz_json
+```
+  </details>
+
+<details>
+  <summary> 퀴즈 생성 시 1번과 2번 선택지에만 정답을 생성하는 문제</summary>
+
+# 문제
+
+퀴즈 LLM을 생성하면 1번 또는 2번 선택지만을 정답으로 생성\
+
+# 해결
+
+정답으로 들어갈 번호를 난수 생성한 뒤에 문제 생성
+
+- 4지선다 : 1부터 4까지의 숫자 중 랜덤으로 생성
+- ox : 1 또는 2 중 랜덤으로 생성
+
+```python
+def quizz_chain(content, input):
+    type = input.get("type", "ox")
+    count = input.get("count", 5)
+    difficulty = input.get("difficulty", "easy")
+    correct_answer_distribution = []
+    if type == "4_multiple_choice":
+        for _ in range(1, int(count) + 1):
+            correct_index = random.randint(1, 4)
+            suffle = f"""
+                qustions_id : {_},
+                choices_id : {correct_index},
+                is_correct : true
+                """
+            correct_answer_distribution.append(suffle)
+        description = f"create {count}, {difficulty} quiz with 4_multiple_choice. and follow answer_sheet : {correct_answer_distribution}"
+    elif type == "ox":
+        for _ in range(1, int(count) + 1):
+            correct_index = random.randint(1, 2)
+            correct_answer_distribution.append(correct_index)
+        description = f"create {count}, {difficulty} quiz with true or false (O/X). and follow answer_sheet : {correct_answer_distribution}"
+        ...
+```
+  </details>
   
+  <details>
+  <summary> 컨테이너 빌드 시 DB 오류 발생</summary>
+
+# 문제
+
+컨테이너 빌드 시 DB에 파일 누락 또는 지속석인 오류 발생
+
+## 문제 원인
+
+테스트 후 파일 정리 시 DB의 volumes 경로인 DB/data 를 삭제하지 않아서 DB 빌드 시 이전 DB가 있다고 간주하고 DB초기화를 생략
+
+```python
+  db:
+    image: postgres:15
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./db/data:/var/lib/postgresql/data # 볼륨 저장
+      - ./db/init:/docker-entrypoint-initdb.d # 컨테이너 생성 시 초기화 sql 파일
+```
+
+# 해결
+
+테스트 후 마이그레이션 로그 파일, DB파일 및 차가로 생성된 경로 폴더도 모두 삭제
+  </details>
+
 </br>
 
   > 윤수진
   
-  </details>
   <details>
   <summary> Ddocker 빌드 시 pgAdmin에서 오류 발생</summary>
 
