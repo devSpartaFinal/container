@@ -59,25 +59,25 @@ RAG(Relevant Answer Generation) 모델 기반으로 강의 자료를 활용해 �
 ---
 
 ## 🦾 팀 구성 및 역할 배분
-<table>
+<table style="width: 100%;">
   <tr>
     <th style="width: 40%; text-align: center;">이름</th>
     <th style="width: 60%;">역할</th>
   </tr>
   <tr>
-    <td style="text-align: center;">박성진</td>
+    <td style="text-align: center;">박성진  </td>
     <td>초기 BE 설계, 공식문서 크롤링/전처리, 이메일 인증, JWT 설계, FE 홈/프로필/대화세션 UI 개선 및 버그수정, 웹소켓 연결/단체 POP QUIZ 개발</td>
   </tr>
   <tr>
-    <td style="text-align: center;">윤수진</td>
+    <td style="text-align: center;">윤수진  </td>
     <td>PostGreSQL DB 구축, AWS 연동, 스파르타 문서 전처리, 데이터 전처리 관련 모듈 개발, FE 전체 UI 및 style 개선, 피드백 결과페이지 개발</td>
   </tr>
   <tr>
-    <td style="text-align: center;">구수연</td>
+    <td style="text-align: center;">구수연  </td>
     <td>초기 FE 설계, FE 퀴즈폼, AI 챗폼 개발, FE 대화세션 기능 개발, FE JWT 인증관련 개발, AWS 배포, QUIZ LLM 개선, 소셜 로그인 기능</td>
   </tr>
   <tr>
-    <td style="text-align: center;">나영웅</td>
+    <td style="text-align: center;">나영웅  </td>
     <td>Quiz/QnA 관련 API 개발, Docker, RAG 모델 구축, JWT 인증방식 개선, LLM 개발 및 개선, 소셜 로그인 기능</td>
   </tr>
 </table>
