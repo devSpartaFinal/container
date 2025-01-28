@@ -228,11 +228,11 @@ class ProfileAPIView(APIView):
 
 class UsernameAPIView(APIView):
 
-    def get(self, request, pk):
-        user = get_object_or_404(User, pk=pk)
+    def get(self, request, user_id):
+        user = get_object_or_404(User, id=user_id)
 
         serializer = UserSerializer(user)
-        return Response(serializer.data.username)
+        return Response(serializer.data["username"])
 
 
 class AuthAPIView(APIView):

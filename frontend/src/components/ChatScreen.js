@@ -35,6 +35,7 @@ import {
 import ReactMarkdown from "react-markdown";
 import Session from "./Session";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useAuth } from "../context/AuthContext";
 
 const ChatScreen = () => {
   useEffect(() => {
@@ -230,7 +231,8 @@ const ChatScreen = () => {
   };
 
   const location = useLocation();
-  const username = localStorage.getItem("username")
+  const { user } = useAuth(); 
+  const username = user.username;
   const [session_no, setSessionNo] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(
     location.state?.category || null

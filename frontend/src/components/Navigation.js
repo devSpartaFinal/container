@@ -20,6 +20,8 @@ const Navigation = ({ isLoggedIn }) => {
   const isActive = (url) => location.pathname === url;
   const [activeButton, setActiveButton] = useState("");
   const [highlightLoginButton, setHighlightLoginButton] = useState(false);
+
+  
   useEffect(() => {
     const currentPath = window.location.pathname;
     if (currentPath === "/home") setActiveButton("home");
@@ -36,12 +38,10 @@ const Navigation = ({ isLoggedIn }) => {
   const handleLogout = async () => {
     document.cookie = "accessToken=; path=/; max-age=0; SameSite=Lax";
     document.cookie = "access=; path=/; max-age=0; SameSite=Lax";
-    document.cookie = "username=; path=/; max-age=0; SameSite=Lax";
     document.cookie = "refresh=; path=/; max-age=0; SameSite=Lax";
 
 
     localStorage.removeItem("accessToken");
-    localStorage.removeItem("username");
     localStorage.removeItem("lastLoggedInAt");
     window.location.href = "/login";
   };

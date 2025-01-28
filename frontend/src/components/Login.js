@@ -36,19 +36,19 @@ const Login = ({ setIsLoggedIn, isLoggedIn }) => {
     try {
       const response = await apiRequest.post("auth/", formData);
 
-      const { token, user } = response.data;
+      const { token} = response.data;
       document.cookie = `accessToken=${token.access}; path=/; max-age=86400; SameSite=Lax`;
       // document.cookie = `refreshToken=${token.refresh}; path=/; max-age=86400;`;
-      document.cookie = `username=${user.username}; path=/; max-age=86400; SameSite=Lax`;
+      // document.cookie = `username=${user.username}; path=/; max-age=86400; SameSite=Lax`;
 
       // 토큰 저장
       localStorage.setItem("accessToken", token.access);
-      localStorage.setItem("username", user.username);
+      // localStorage.setItem("username", user.username);
       localStorage.setItem("lastLoggedInAt", JSON.stringify(new Date()));
 
       setSuccess(true);
       setError(""); 
-      setIsLoggedIn(true);  
+      setIsLoggedIn(true);
       navigate("/profile");
 
     } catch (err) {

@@ -15,17 +15,15 @@ const GoogleLogin = ({ setIsLoggedIn }) => {
     try {
       const response = await apiRequest.get(`/google/callback/?code=${code}`);
       const access = response.data.access;
-      const username = response.data.username;
   
       document.cookie = `accessToken=${access}; path=/; max-age=86400; SameSite=Lax;`;
-      document.cookie = `username=${username}; path=/; max-age=86400; SameSite=Lax;`;
 
   
       localStorage.setItem("accessToken", access);
-      localStorage.setItem("username", username);
       localStorage.setItem("lastLoggedInAt", JSON.stringify(new Date()));
   
       setIsLoggedIn(true);
+      
       navigate("/profile");
     } catch (error) {
       console.error("Error fetching access token:", error);

@@ -10,6 +10,41 @@ export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  function base64Decode(str) {
+    try {
+        return decodeURIComponent(
+        atob(str)
+            .split('')
+            .map((c) => `%${c.charCodeAt(0).toString(16).padStart(2, '0')}`)
+            .join('')
+        );
+    } catch (error) {
+        console.error('Invalid token format:', error);
+        return null;
+    }
+    }
+    
+    // JWT 디코딩 함수
+    function decodeToken(token) {
+        if (!token) return null;
+    
+        const parts = token.split('.');
+        if (parts.length !== 3) {
+            console.error('Invalid JWT token');
+            return null;
+        }
+    
+    const payload = base64Decode(parts[1]); // 페이로드는 두 번째 부분
+        if (!payload) return null;
+    
+        try {
+            return JSON.parse(payload); // JSON으로 변환
+        } catch (error) {
+            console.error('Failed to parse payload:', error);
+            return null;
+    }
+    }
+
   useEffect(() => {
     const loadUserData = async () => {
       const getCookie = (name) => {
@@ -19,11 +54,16 @@ export const AuthProvider = ({ children }) => {
       };
 
       const accessToken = getCookie("accessToken") || getCookie("access");
-      const userID = getCookie("username");
+      console.log(accessToken);
+      const decoded= decodeToken(accessToken);
+      const user_id = decoded.user_id;
+      const response = await apiRequest.get(`user/${user_id}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      const username = response.data;
 
-      // 로컬 스토리지에 저장
-      localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("username", userID);
 
       // 30분 기준 갱신 로직
       const lastLoggedInAt = JSON.parse(localStorage.getItem("lastLoggedInAt"));
@@ -69,9 +109,9 @@ export const AuthProvider = ({ children }) => {
           );
         }
 
-        if (userID && accessToken) {
+        if (accessToken) {
           try {
-            const response = await apiRequest.get(`${userID}`, {
+            const response = await apiRequest.get(`${username}`, {
               headers: {
                 Authorization: `Bearer ${accessToken}`,
               },

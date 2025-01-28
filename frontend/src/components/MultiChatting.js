@@ -30,52 +30,14 @@ import silver from "../assets/silver.png";
 import sapphire from "../assets/sapphire.png";
 import ruby from "../assets/ruby.png";
 import gold from "../assets/gold.png";
-// import jwtDecode from 'jwt-decode';
-
-// Base64 디코딩 함수
-function base64Decode(str) {
-try {
-    return decodeURIComponent(
-    atob(str)
-        .split('')
-        .map((c) => `%${c.charCodeAt(0).toString(16).padStart(2, '0')}`)
-        .join('')
-    );
-} catch (error) {
-    console.error('Invalid token format:', error);
-    return null;
-}
-}
-
-// JWT 디코딩 함수
-function decodeToken(token) {
-    if (!token) return null;
-
-    const parts = token.split('.');
-    if (parts.length !== 3) {
-        console.error('Invalid JWT token');
-        return null;
-    }
-
-const payload = base64Decode(parts[1]); // 페이로드는 두 번째 부분
-    if (!payload) return null;
-
-    try {
-        return JSON.parse(payload); // JSON으로 변환
-    } catch (error) {
-        console.error('Failed to parse payload:', error);
-        return null;
-}
-}
+import { useAuth } from "../context/AuthContext";
 
 const MultiChatRoom = () => {
 
-    const accessToken = localStorage.getItem("accessToken");
-    const decoded = decodeToken(accessToken);
-    const userId = decoded.user_id;
+    const { user } = useAuth(); 
     
-    const myusername = localStorage.getItem("username");
-    console.log("userID:", userId, "Username:", myusername);
+    // const myusername = localStorage.getItem("username");
+    const myusername =  user.username;
     const location = useLocation();
     const [messages, setMessages] = useState([]);
     const [message, setMessage] = useState("");
