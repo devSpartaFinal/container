@@ -61,8 +61,8 @@ RAG(Relevant Answer Generation) 모델 기반으로 강의 자료를 활용해 �
 ## 🦾 팀 구성 및 역할 배분
 <table>
   <tr>
-    <th style="width: 20%; text-align: center;">이름</th>
-    <th style="width: 80%;">역할</th>
+    <th style="width: 40%; text-align: center;">이름</th>
+    <th style="width: 60%;">역할</th>
   </tr>
   <tr>
     <td style="text-align: center;">박성진</td>
