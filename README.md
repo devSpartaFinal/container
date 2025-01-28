@@ -39,31 +39,29 @@ https://www.letsreadriddle.com/home
 # Docker
 git clone https://github.com/devSpartaFinal/container.git
 ```
-2-1. Backend .env 설정
+2-1. Backend .env 설정 (로컬)
 ```
-OPENAI_API_KEY=
-DRF_SECRET_KEY=
-DJANGO_SETTINGS_MODULE=
-HOSTUSER_EMAIL=
-HOSTUSER_EMAIL_PASSWORD=
-POSTGRES_USER=
-POSTGRES_PASSWORD=
-POSTGRES_DB=
-POSTGRES_HOST=
+OPENAI_API_KEY= {your openAPI key}
+DRF_SECRET_KEY= {your DRF secret key}
+DJANGO_SETTINGS_MODULE="coding_helper.settings"
 
-GOOGLE_OAUTH_CLIENT_ID=
-GOOGLE_OAUTH_CLIENT_SECRET=
-GOOGLE_OAUTH_CALLBACK_URL=
+HOSTUSER_EMAIL= {write your e-mail address that will be used for sending verification mails to users.}
+HOSTUSER_EMAIL_PASSWORD= {write your e-mail password in API password type.}
 
-GITHUB_CLIENT_ID=
-GITHUB_CLIENT_SECRET=
-GITHUB_REDIRECT_URI=
+POSTGRES_USER= {write your postgres user ID}
+POSTGRES_PASSWORD= {write your postgres account password}
+POSTGRES_DB= "postgres"
+POSTGRES_HOST= "db"
+
+GOOGLE_OAUTH_CLIENT_ID= {write your google client ID}
+GOOGLE_OAUTH_CLIENT_SECRET= {write your google client secret key}
+GOOGLE_OAUTH_CALLBACK_URL= "http://localhost:3000/google/login"
 ```
 
-2-2. Frontend .env 설정
+2-2. Frontend .env 설정 (로컬)
 ```
-REACT_APP_BASE_URL=
-REACT_APP_WS_BASE_URL=
+REACT_APP_BASE_URL=http://localhost:8000
+REACT_APP_WS_BASE_URL=ws://localhost:8000
 ```
 
 3. 실행 
@@ -939,10 +937,10 @@ CORS_ALLOW_CREDENTIALS = True
 ## 🦾 Team
 | 이름   | 역할                            |
 |--------|---------------------------------|
-| 박성진 | 초기 BE 설계, 공식문서 크롤링/전처리, 회원 관련기능 (이메일 인증, JWT 설계), FE 프로필, 정보변경 개발, FE 홈/대화세션 UI 개선 및 버그수정|
-| 윤수진 | PostGreSQL DB 구축, AWS 연동, 스파르타 문서 전처리, 데이터 전처리관련 모듈 개발, FE 전체 UI 및 style 개선|
-| 구수연 | 초기 FE 설계, FE 퀴즈폼 개발, FE 채팅 개발, FE 대화세션 관련기능 개발, FE JWT 인증관련 개발, AWS 배포, LLM 개발 및 개선 |
-| 나영웅 |Quiz/QnA 관련 API 개발, RAG 모델 구축, JWT 인증방식 개선, LLM 개발 및 개선|
+| 박성진 | 초기 BE 설계, 공식문서 크롤링/전처리, 이메일 인증, JWT 설계, FE 홈/프로필/대화세션 UI 개선 및 버그수정, 웹소켓 연결/단체 POP QUIZ 개발|
+| 윤수진 | PostGreSQL DB 구축, AWS 연동, 스파르타 문서 전처리, 데이터 전처리 관련 모듈 개발, FE 전체 UI 및 style 개선, 피드백 결과페이지 개발|
+| 구수연 | 초기 FE 설계, FE 퀴즈폼, AI 챗폼 개발, FE 대화세션 기능 개발, FE JWT 인증관련 개발, AWS 배포, QUIZ LLM 개선, 소셜 로그인 기능 |
+| 나영웅 |Quiz/QnA 관련 API 개발, Docker, RAG 모델 구축, JWT 인증방식 개선, LLM 개발 및 개선, 소셜 로그인 기능|
 
 
 
