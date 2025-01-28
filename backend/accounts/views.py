@@ -226,6 +226,15 @@ class ProfileAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class UsernameAPIView(APIView):
+
+    def get(self, request, pk):
+        user = get_object_or_404(User, pk=pk)
+
+        serializer = UserSerializer(user)
+        return Response(serializer.data.username)
+
+
 class AuthAPIView(APIView):
 
     def get_permissions(self):
@@ -269,7 +278,7 @@ class AuthAPIView(APIView):
                 status=status.HTTP_200_OK,
             )
             # jwt 토큰 => 쿠키에 저장
-            res.set_cookie("username", user.username, httponly=False)
+            # res.set_cookie("username", user.username, httponly=False)
             res.set_cookie("access", access_token, httponly=False)
 
             user.refresh_token = refresh_token
@@ -492,7 +501,7 @@ class GoogleLoginCallback(APIView):
             res = Response(
                 {
                     "access": access,
-                    "username": username,
+                    # "username": username,
                 },
                 status=status.HTTP_200_OK,
             )
