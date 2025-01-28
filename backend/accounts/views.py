@@ -86,39 +86,16 @@ class SignInOutAPIView(APIView):
         input_username = request.data.get("username")
         input_password = request.data.get("password")
 
-        # 입력값 검증
-        if not input_username or not input_password:
-            return Response(
-                {"detail": "Username and password are required."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        # 삭제 대상 유저 가져오기
-        user = get_object_or_404(User, username=input_username)
-
-        # 현재 로그인한 사용자와 삭제 대상 사용자 정보 비교
-        if request.user != user:
-            return Response(
-                {"detail": "You can only delete your own account."},
-                status=status.HTTP_403_FORBIDDEN,
-            )
-
-        # 아이디와 비밀번호 인증
-        authenticated_user = authenticate(
-            username=input_username, password=input_password
-        )
-        if authenticated_user is None or authenticated_user != user:
-            return Response(
-                {"detail": "Invalid username or password."},
-                status=status.HTTP_401_UNAUTHORIZED,
-            )
-
-        # 인증 완료 시 회원탈퇴 처리
-        user.delete()
-        return Response(
-            {"detail": "Account deleted successfully."},
-            status=status.HTTP_204_NO_CONTENT,
-        )
+        # 사용자 인증
+        try:
+            user = User.objects.get(username=input_username)
+            if user.check_password(input_password):
+                user.delete()  # 사용자를 삭제
+                return Response({"message": "Account deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+            else:
+                return Response({"error": "Invalid password."}, status=status.HTTP_400_BAD_REQUEST)
+        except User.DoesNotExist:
+            return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
 
 
 class EmailVerificationView(APIView):

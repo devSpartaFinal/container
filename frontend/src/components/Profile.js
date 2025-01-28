@@ -24,16 +24,20 @@ import silver from "../assets/silver.png";
 import sapphire from "../assets/sapphire.png";
 import ruby from "../assets/ruby.png";
 import gold from "../assets/gold.png";
+import { apiRequest } from '../apiRequest';
 
 const Profile = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { user, loading: authLoading, logout } = useAuth();
+  const [localUser, setLocalUser] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isRiddleModalOpen, setIsRiddleModalOpen] = useState(false);
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     document.title = "ReadRiddle - Profile";
   }, []);
-
-  const { user, loading } = useAuth();
-  const navigate = useNavigate();
 
   if (!user) {
     navigate("/login");
@@ -58,8 +62,49 @@ const Profile = () => {
     return master;
   };
 
-  const toggleModal = () => {
-    setIsModalOpen(!isModalOpen);
+  const toggleRiddleModal = () => {
+    setIsRiddleModalOpen(!isRiddleModalOpen);
+  };
+
+  const toggleDeleteModal = () => {
+    setIsDeleteModalOpen(!isDeleteModalOpen);
+  };
+
+  const handleDeleteAccount = async () => {
+    const username = user.username;
+
+    if (!password) {
+      alert('Please enter your password.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await deleteAccount(username, password); // API 호출
+      alert('회원 탈퇴되었습니다!');
+      setIsDeleteModalOpen(false);
+      document.cookie = "accessToken=; path=/; max-age=3600; SameSite=Lax";
+      document.cookie = "lastLoggedInAt=; path=/; max-age=3600; UTC; SameSite=Lax";
+
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("lastLoggedInAt");
+      
+      navigate("/home");
+    } catch (error) {
+    } finally {
+      setLoading(false); 
+    }
+};
+
+  const deleteAccount = async (username, password) => {
+    try {
+      // DELETE 요청을 baseURL을 /api/v1/accounts로 설정한 후 전송
+      await apiRequest.delete(`/`, {
+        data: { username, password },
+      });
+    } catch (error) {
+      throw new Error("Failed to delete account.");
+    }
   };
 
   return (
@@ -114,7 +159,7 @@ const Profile = () => {
                 <Label>
                   <span
                     style={{ cursor: "pointer", color: " #ea3a53", textDecoration: "underline" }}
-                    onClick={toggleModal}
+                    onClick={toggleRiddleModal}
                   >
                     Riddle Score
                   </span>
@@ -132,12 +177,17 @@ const Profile = () => {
                 </ActionButton>
               )}
             </ButtonContainer>
+            {!user.is_social && (
+            <ButtonContainer>
+              <ActionButton onClick={toggleDeleteModal}>Delete Account</ActionButton>
+            </ButtonContainer>
+            )}
           </ProfileCard>
         </ProfileContainer>
 
-        {isModalOpen && (
+        {isRiddleModalOpen && (
           <Modal>
-            <ModalOverlay onClick={toggleModal} />
+            <ModalOverlay onClick={toggleRiddleModal} />
             <ModalContent>
               <h2 style={{ textAlign: "center",  fontSize: "3em"}}> ✨ Riddle Rank ✨</h2>
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
@@ -164,10 +214,32 @@ const Profile = () => {
                   ))}
                 </tbody>
               </table>
-              <ActionButton onClick={toggleModal} style={{ marginTop: "10px", marginLeft: "40%" }}>Close</ActionButton>
+              <ActionButton onClick={toggleRiddleModal} style={{ marginTop: "10px", marginLeft: "40%" }}>Close</ActionButton>
             </ModalContent>
           </Modal>
         )}
+
+        {isDeleteModalOpen && (
+                  <Modal>
+                    <ModalOverlay onClick={toggleDeleteModal} />
+                    <ModalContent>
+                      <h3>회원을 탈퇴하시겠습니까?</h3>
+                      <div>
+                        <input
+                          type="password"
+                          placeholder="비밀번호를 입력해주세요."
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          disabled={loading}
+                        />
+                        <button onClick={handleDeleteAccount} disabled={loading}>
+                          {loading ? "삭제 중..." : "삭제"}
+                        </button>
+                        <button onClick={toggleDeleteModal}>취소</button>
+                      </div>
+                    </ModalContent>
+                  </Modal>
+                )}
       </div>
     </>
   );
