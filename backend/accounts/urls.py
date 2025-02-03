@@ -1,6 +1,16 @@
 from django.contrib import admin
 from django.urls import path
-from .views import *
+from .views import (
+  SignInOutAPIView,
+  ProfileAPIView,
+  TokenRefresh,
+  AuthAPIView,
+  PasswordAPIView,
+  GoogleLogin,
+  GoogleLoginCallback,
+  GithubLogin,
+  GitHubLoginCallback
+)
 
 urlpatterns = [
     path("", SignInOutAPIView.as_view(), name="signinout"),

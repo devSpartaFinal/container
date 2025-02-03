@@ -15,6 +15,4 @@ RUN npm install @fortawesome/fontawesome-svg-core \
 
 COPY . .
 
-EXPOSE 3000
-
 CMD ["yarn", "start"]

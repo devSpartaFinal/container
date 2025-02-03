@@ -17,6 +17,7 @@ class ChatHistory(models.Model):
     )  # 요약된 대화 내역과 함께 제공
     content = models.TextField(null=True, blank=True)  # 간단 QnA용
     content_info = models.JSONField(null=True, blank=True)
+    status = models.CharField(max_length=255, blank=True, null=True)
 
 class Documents(models.Model):
     category = models.CharField(max_length=255, null=True, blank=True)

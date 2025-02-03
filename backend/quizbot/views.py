@@ -1,8 +1,8 @@
 import json
 from . import llm
-from .models import *
-from chatbot.llm import *
-from .serializers import *
+from .models import Quiz, Question, Choice, Reference
+from chatbot.llm import get_retriever, multi_query_llm, summary, YoutubeScript
+from .serializers import QuizSerializer
 from django.conf import settings
 from rest_framework import status
 from django.core.cache import cache
@@ -107,81 +107,70 @@ class QuizRequestView(APIView):
         try:
             category = request.data["category"]
             title_no = request.data.get("title_no", "")
+
+            # Content 가져오기
             if category == "OFFICIAL_DOCS":
                 keyword = request.data["keyword"]
-                documents_cache = cache.get("documents")
-                if documents_cache:
-                    print("공식문서 케시 호출")
-                    documents = documents_cache.filter(title_no=title_no).first()
+                documents = cache.get("documents", None)
+                if documents:
+                    documents = documents.filter(title_no=title_no).first()
                 else:
                     documents = Documents.objects.filter(title_no=title_no).first()
-                title = documents.title
-                retriever = get_retriever(title)
+
+                if not documents:
+                    return Response({"error": "문서를 찾을 수 없습니다."}, status=status.HTTP_404_NOT_FOUND)
+
+                retriever = get_retriever(documents.title)
                 multi_query = multi_query_llm(keyword)
-                contents = []
-                for query in multi_query:
-                    contents.append(retriever.invoke(query))
+                contents = [retriever.invoke(query) for query in multi_query]
                 content = summary(contents, keyword)
+
             elif category == "YOUTUBE":
                 url = request.data["URL"]
-                cache_key = url
-                script = cache.get(cache_key)
-                content = script
+                script = cache.get(url)
                 if not script:
                     try:
-                        content = YoutubeScript(url)
-                        script = cache.set(cache_key, content)
+                        script = YoutubeScript(url)
+                        cache.set(url, script)
                     except:
-                        return Response(
-                            {"error": "URL 또는 영상길이를 확인해 주세요."},
-                            status=status.HTTP_404_NOT_FOUND,
-                        )
+                        return Response({"error": "URL 또는 영상길이를 확인해 주세요."}, status=status.HTTP_404_NOT_FOUND)
+                content = script
+
             else:
-                reference_cache = cache.get("reference")
-                if reference_cache:
-                    print("레퍼런스 케시 호출")
-                    reference = reference_cache.filter(
-                        category=category, title_no=title_no
-                    ).first()
+                reference = cache.get("reference", None)
+                if reference:
+                    reference = reference.filter(category=category, title_no=title_no).first()
                 else:
-                    reference = Reference.objects.filter(
-                        category=category, title_no=title_no
-                    ).first()
+                    reference = Reference.objects.filter(category=category, title_no=title_no).first()
+
+                if not reference:
+                    return Response({"error": "Reference not found"}, status=status.HTTP_404_NOT_FOUND)
+                
                 content = reference.content
+
+            # LLM으로 퀴즈 생성
             response = llm.quizz_chain(content, request.data)
             response_dict = json.loads(response)
-            quiz = Quiz.objects.create(
-                user=request.user,
-                title=response_dict["title"],
-                description=response_dict["description"],
-            )
-            for question_data in response_dict["questions"]:
-                question = Question.objects.create(
-                    quiz=quiz,
-                    number=question_data["id"],
-                    content=question_data["content"],
-                    code_snippets=question_data["code_snippets"],
-                    answer_type=question_data["answer_type"],
+
+            # 시리얼라이저를 사용해 저장
+            quiz_data = {
+                "user": request.user.id,
+                "title": response_dict["title"],
+                "description": response_dict["description"],
+                "questions": response_dict["questions"],
+            }
+
+            serializer = QuizSerializer(data=quiz_data)
+            if serializer.is_valid():
+                quiz = serializer.save(user=request.user)
+                return Response(
+                    {"detail": "문제가 생성되었습니다.", "id": quiz.id, "questions": response_dict["questions"]},
+                    status=status.HTTP_201_CREATED,
                 )
-                for choice_data in question_data["choices"]:
-                    Choice.objects.create(
-                        question=question,
-                        number=choice_data["id"],
-                        content=choice_data["content"],
-                        is_correct=choice_data["is_correct"],
-                    )
-            return Response(
-                {
-                    "detail": "문제가 생성되었습니다.",
-                    "id": quiz.id,
-                    "questions": response_dict["questions"],
-                },
-                status=status.HTTP_200_OK,
-            )
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
         except Reference.DoesNotExist:
-            return Response(
-                {"error": "Reference not found"}, status=status.HTTP_404_NOT_FOUND
-            )
+            return Response({"error": "Reference not found"}, status=status.HTTP_404_NOT_FOUND)
 
     def delete(self, request):
         try:

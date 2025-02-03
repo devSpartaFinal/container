@@ -4,11 +4,30 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 import re
 from datetime import date
 
+
 class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = "__all__"
+        fields = [
+            "username",
+            "email",
+            "first_name",
+            "last_name",
+            "nickname",
+            "birth_date",
+            "gender",
+            "intro",
+            "RiddleScore",
+            "is_superuser",
+            "is_active",
+            "is_social",
+            "social_login",
+            "is_staff",
+            "created_at",
+            "updated_at",
+            "refresh_token",
+        ]
 
     def validate_birth_date(self, value):
         today = date.today()
@@ -17,7 +36,7 @@ class UserSerializer(serializers.ModelSerializer):
 
         if value < min_date or value > max_date:
             raise serializers.ValidationError("유효하지 않은 날짜입니다.")
-        
+
         return value
 
     def validate_new_password(self, value):
@@ -62,7 +81,7 @@ class ProfileEditSerializer(serializers.ModelSerializer):
             "gender",
             "intro",
         ]
-        
+
     def validate_birth_date(self, value):
         today = date.today()
         min_date = today.replace(year=today.year - 150)
@@ -70,7 +89,7 @@ class ProfileEditSerializer(serializers.ModelSerializer):
 
         if value < min_date or value > max_date:
             raise serializers.ValidationError("유효하지 않은 날짜입니다.")
-        
+
         return value
 
     def update(self, instance, validated_data):

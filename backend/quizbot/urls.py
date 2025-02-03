@@ -1,5 +1,11 @@
 from django.urls import path
-from .views import *
+from .views import (
+  QuizRequestView,
+  QuizAPIView,
+  QuizResultView,
+  TotalFeedbackView,
+  FeedbackGetView
+)
 
 urlpatterns = [
     path('request/', QuizRequestView.as_view(), name='quiz-request'),

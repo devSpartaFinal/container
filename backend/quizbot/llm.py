@@ -40,6 +40,7 @@ def quizz_chain(content, input):
 
     class QuestionChoice(BaseModel):
         id: int
+        number : int
         content: str
         is_correct: bool
 
@@ -55,6 +56,7 @@ def quizz_chain(content, input):
 
     class Question(BaseModel):
         id: int
+        number : int
         content: str
         code_snippets: str
         answer_type: str

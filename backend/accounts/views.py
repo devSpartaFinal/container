@@ -1,7 +1,7 @@
 import jwt
 from .models import User
-from .serializers import *
 from rest_framework import status
+from .serializers import UserSerializer, ProfileEditSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth import login, authenticate
