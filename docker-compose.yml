@@ -36,10 +36,9 @@ services:
       dockerize -wait tcp://db:5432 -timeout 30s &&
       python manage.py makemigrations &&
       python manage.py migrate &&
-      python manage.py createsuperuser --noinput || true &&
-      exec python manage.py runserver 0.0.0.0:8000 &&
-      exec daphne coding_helper.asgi:application --port 8000
+      exec daphne -b 0.0.0.0 -p 8000 coding_helper.asgi:application
       "
+# exec python manage.py runserver 0.0.0.0:8000 &&
 # 로컬 세팅 : exec daphne coding_helper.asgi:application --port 8000
 # daphne 또는 python manage.py runserver 0.0.0.0:8000 && 둘 중 하나만 실행
       

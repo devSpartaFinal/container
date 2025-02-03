@@ -1,17 +1,18 @@
 # asgi.py
 import os
-from django.core.asgi import get_asgi_application
+import django
 from channels.routing import ProtocolTypeRouter, URLRouter
-from channels.auth import AuthMiddlewareStack
-from chat.routing import websocket_urlpatterns  # 채팅용 라우팅 추가
+from django.core.asgi import get_asgi_application
 
+# Django 환경 로드
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "coding_helper.settings")
+django.setup()  # Django 앱을 명시적으로 로드
 
-application = ProtocolTypeRouter({
-    "http": get_asgi_application(),
-    "websocket": AuthMiddlewareStack(
-        URLRouter(
-            websocket_urlpatterns
-        )
-    ),
-})
+from chat.routing import websocket_urlpatterns  # django.setup() 이후에 import
+
+application = ProtocolTypeRouter(
+    {
+        "http": get_asgi_application(),
+        "websocket": URLRouter(websocket_urlpatterns),
+    }
+)
