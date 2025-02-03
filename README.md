@@ -155,6 +155,16 @@ POSTGRES_USER= {write your postgres user ID}
 POSTGRES_PASSWORD= {write your postgres account password}
 POSTGRES_DB= "postgres"
 POSTGRES_HOST= "db"
+POSTGRES_VOLUME = {write your postgres volume location}:{write your postgres volume location in container}
+POSTGRES_INIT = {write your postgres init file location}:{write your postgres init file location in container}
+
+PGADMIN_DEFAULT_EMAIL= {write your pgadmin user ID}
+PGADMIN_DEFAULT_PASSWORD= {write your pgadmin account password}
+PGADMIN_VOLUME = {write your pgadmin volume location}:{write your pgadmin volume location in container}
+
+NGINX_VOLUME = "./nginx/nginx.conf:/etc/nginx/nginx.conf:ro"
+NGINX_STATIC = "./backend/static:/app/backend/static"
+NGINX_MEDIA = "./backend/media:/app/backend/media"
 
 GOOGLE_OAUTH_CLIENT_ID= {write your google client ID}
 GOOGLE_OAUTH_CLIENT_SECRET= {write your google client secret key}
@@ -163,8 +173,8 @@ GOOGLE_OAUTH_CALLBACK_URL= "http://localhost:3000/google/login"
 
 2-2. Frontend .env 설정 (로컬)
 ```
-REACT_APP_BASE_URL=http://localhost:8000
-REACT_APP_WS_BASE_URL=ws://localhost:8000
+REACT_APP_BASE_URL=http://localhost/api
+REACT_APP_WS_BASE_URL=ws://localhost/api
 ```
 
 3. 실행 
