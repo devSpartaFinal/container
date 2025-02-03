@@ -38,7 +38,7 @@ DEBUG = False
 ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
 
 # React 프론트 관련 / # 모든 출처 허용
-CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "https://localhost:3000", "http://127.0.0.1:3000"]
+CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "https://localhost:3000", "http://127.0.0.1:3000", "http://localhost:8000"]
 
 # Application definition
 
@@ -110,6 +110,8 @@ ACCOUNT_AUTHENTICATION_METHOD = "email"  # 이메일 인증 방식
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = "none"  # 이메일 확인을 요구하지 않음
+MIDDLEWARE.insert(1, "coding_helper.middleware.BlockDirectAccessMiddleware")
+
 
 SITE_ID = 1
 
