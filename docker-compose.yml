@@ -61,23 +61,25 @@ services:
       - ${PGADMIN_VOLUME}
 
   redis:
-    image: redis
+    image: redis:7.4.2
     container_name: redis
     ports:
       - "6379:6379"
 
 
   nginx:
-    image: nginx:latest
+    image: nginx:1.27.3
     container_name: nginx
     restart: always
+    env_file:
+      - .env
     ports:
       - "80:80"
     depends_on:
       - backend
       - frontend
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./backend/static:/app/backend/static
-      - ./backend/media:/app/backend/media
+      - ${NGINX_VOLUME}
+      - ${NGINX_STATIC}
+      - ${NGINX_MEDIA}
 # volumes: {}
