@@ -1,6 +1,8 @@
 
 # 🤖 개발자들을 위한 학습용 AI 챗봇 ReadRiddle
 
+![awards](./img/최우수상.png)
+
 ### 📖 Navigation
 1. [Introduction](#-introduction)
 2. [Project Overview](#about-project)
